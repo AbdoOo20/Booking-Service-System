@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookingServices.Data;
 
 public partial class Payment
 {
+    [Key]
     public int PaymentId { get; set; }
 
-    public int CustomerId { get; set; }
+    public string CustomerId { get; set; }
 
     public int BookingId { get; set; }
 

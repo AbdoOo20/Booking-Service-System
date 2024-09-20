@@ -1,13 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\ITI\\Projects\\Graduation Project\\BookingServices\\",
+  "WorkspaceRootPath": "E:\\GraduationProjectITI\\Booking-Service-System\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E2E808B3-52A1-4FB2-9CB7-BC03D740D610}|BookingServices\\BookingServices.csproj|d:\\iti\\projects\\graduation project\\bookingservices\\bookingservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E2E808B3-52A1-4FB2-9CB7-BC03D740D610}|BookingServices\\BookingServices.csproj|solutionrelative:bookingservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\Data\\Migrations\\20240920002020_FinalUpdateForTables.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookingServices\\Data\\Migrations\\20240920002020_FinalUpdateForTables.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\ITI\\4.2.3\\WebApplication1\\WebApplication1\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E2E808B3-52A1-4FB2-9CB7-BC03D740D610}|BookingServices\\BookingServices.csproj|e:\\graduationprojectiti\\booking-service-system\\bookingservices\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E2E808B3-52A1-4FB2-9CB7-BC03D740D610}|BookingServices\\BookingServices.csproj|solutionrelative:bookingservices\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E2E808B3-52A1-4FB2-9CB7-BC03D740D610}|BookingServices\\BookingServices.csproj|e:\\graduationprojectiti\\booking-service-system\\bookingservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E2E808B3-52A1-4FB2-9CB7-BC03D740D610}|BookingServices\\BookingServices.csproj|solutionrelative:bookingservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,27 +27,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\ITI\\Projects\\Graduation Project\\BookingServices\\BookingServices\\Program.cs",
-              "RelativeDocumentMoniker": "BookingServices\\Program.cs",
-              "ToolTip": "D:\\ITI\\Projects\\Graduation Project\\BookingServices\\BookingServices\\Program.cs",
-              "RelativeToolTip": "BookingServices\\Program.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAgwBEAAAAiAAAAAAAAAA==",
+              "Title": "20240920002020_FinalUpdateForTables.cs",
+              "DocumentMoniker": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\Data\\Migrations\\20240920002020_FinalUpdateForTables.cs",
+              "RelativeDocumentMoniker": "BookingServices\\Data\\Migrations\\20240920002020_FinalUpdateForTables.cs",
+              "ToolTip": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\Data\\Migrations\\20240920002020_FinalUpdateForTables.cs*",
+              "RelativeToolTip": "BookingServices\\Data\\Migrations\\20240920002020_FinalUpdateForTables.cs*",
+              "ViewState": "AgIAALwBAAAAAAAAAAAAAEkAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-19T17:47:47.811Z",
+              "WhenOpened": "2024-09-20T00:20:21.168Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\ITI\\4.2.3\\WebApplication1\\WebApplication1\\Program.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\4.2.3\\WebApplication1\\WebApplication1\\Program.cs",
-              "ToolTip": "D:\\ITI\\4.2.3\\WebApplication1\\WebApplication1\\Program.cs",
-              "RelativeToolTip": "..\\..\\..\\4.2.3\\WebApplication1\\WebApplication1\\Program.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\Data\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "BookingServices\\Data\\ApplicationDbContext.cs",
+              "ToolTip": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\Data\\ApplicationDbContext.cs",
+              "RelativeToolTip": "BookingServices\\Data\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-19T17:47:41.992Z",
+              "WhenOpened": "2024-09-20T00:19:42.701Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\Program.cs",
+              "RelativeDocumentMoniker": "BookingServices\\Program.cs",
+              "ToolTip": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\Program.cs",
+              "RelativeToolTip": "BookingServices\\Program.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAA4AAABSAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-19T17:47:47.811Z",
               "EditorCaption": ""
             }
           ]

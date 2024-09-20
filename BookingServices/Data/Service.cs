@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookingServices.Data;
 
 public partial class Service
 {
+
+    [Key]
     public int ServiceId { get; set; }
 
     public string Name { get; set; } = null!;
@@ -29,7 +32,7 @@ public partial class Service
 
     public int? AdminContractId { get; set; }
 
-    public int? ProviderId { get; set; }
+    public string? ProviderId { get; set; }
 
     public virtual AdminContract? AdminContract { get; set; }
 
@@ -48,4 +51,6 @@ public partial class Service
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     public virtual ICollection<Package> Packages { get; set; } = new List<Package>();
+
+
 }

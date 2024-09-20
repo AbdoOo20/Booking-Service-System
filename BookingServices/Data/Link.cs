@@ -5,7 +5,7 @@ namespace BookingServices.Data;
 
 public partial class Link
 {
-    public int? ProviderId { get; set; }
+    public string ProviderId { get; set; }
 
     public string SocialAccount { get; set; } = null!;
 

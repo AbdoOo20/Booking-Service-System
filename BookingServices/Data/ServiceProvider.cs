@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookingServices.Data;
 
 public partial class ServiceProvider
 {
-    public int ProviderId { get; set; }
+    [Key]
+    [ForeignKey("ApplicationUser")]
+    public string ProviderId { get; set; }
 
     public string? ImgSsn { get; set; }
 
@@ -18,4 +22,6 @@ public partial class ServiceProvider
     public virtual ICollection<ProviderContract> ProviderContracts { get; set; } = new List<ProviderContract>();
 
     public virtual ICollection<Service> Services { get; set; } = new List<Service>();
+
+    public virtual ApplicationUser ApplicationUser {  get; set; }   
 }

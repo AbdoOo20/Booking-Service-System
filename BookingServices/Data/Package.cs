@@ -17,7 +17,7 @@ public partial class Package
 
     public decimal PercentageForAdmin { get; set; }
 
-    public int? ProviderId { get; set; }
+    public string? ProviderId { get; set; }
 
     public virtual ServiceProvider? Provider { get; set; }
 
