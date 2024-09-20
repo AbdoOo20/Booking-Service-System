@@ -8,4 +8,6 @@ public partial class ServiceImage
     public int? ServiceId { get; set; }
 
     public string? Url { get; set; }
+
+    public virtual Service? Service { get; set; }
 }

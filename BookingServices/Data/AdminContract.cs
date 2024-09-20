@@ -10,4 +10,6 @@ public partial class AdminContract
     public string? UserId { get; set; }
 
     public string? Details { get; set; }
+
+    public virtual ICollection<Service> Services { get; set; } = new List<Service>();
 }

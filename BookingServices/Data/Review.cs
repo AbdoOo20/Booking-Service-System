@@ -5,7 +5,7 @@ namespace BookingServices.Data;
 
 public partial class Review
 {
-    public string CustomerId { get; set; }
+    public string CustomerId { get; set; } = null!;
 
     public int BookingId { get; set; }
 

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookingServices.Data;
 
 public partial class ServiceProvider
 {
-    [Key]
-    [ForeignKey("ApplicationUser")]
-    public string ProviderId { get; set; }
+    public string ProviderId { get; set; } = null!;
 
     public string? ImgSsn { get; set; }
 
@@ -17,11 +13,13 @@ public partial class ServiceProvider
 
     public decimal? Rate { get; set; }
 
+    public string? ServiceDetails { get; set; }
+
+    public virtual Link? Link { get; set; }
+
     public virtual ICollection<Package> Packages { get; set; } = new List<Package>();
 
     public virtual ICollection<ProviderContract> ProviderContracts { get; set; } = new List<ProviderContract>();
 
     public virtual ICollection<Service> Services { get; set; } = new List<Service>();
-
-    public virtual ApplicationUser ApplicationUser {  get; set; }   
 }
