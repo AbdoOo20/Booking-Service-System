@@ -1,0 +1,26 @@
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BookingServices.Data
+{
+    public class Customer
+    {
+        [Key]
+        [ForeignKey("IdentityUser")]
+        public string? CustomerId { get; set; }
+
+        [Required]
+        [RegularExpression(@"^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$",
+        ErrorMessage = "Please enter a valid Saudi phone number.")]
+        public string? AlternativePhone { get; set; }
+
+        public virtual IdentityUser? IdentityUser { get; set; }
+
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    }
+}
