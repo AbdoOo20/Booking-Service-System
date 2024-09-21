@@ -9,7 +9,10 @@ namespace BookingServices.Data
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ContractId { get; set; }
-        
+
+        [Required]
+        public string? ContractName { get; set; }
+
         [Required]
         public string? Details { get; set; }
         
