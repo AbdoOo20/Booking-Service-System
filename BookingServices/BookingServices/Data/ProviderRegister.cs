@@ -8,9 +8,10 @@ namespace BookingServices.Data
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProviderRegisterId { get; set; }
-        
+
+        [Required]
         [StringLength(255)]
-        public string? ProviderName { get; set; }
+        public required string ProviderName { get; set; }
 
         [Required]
         [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]

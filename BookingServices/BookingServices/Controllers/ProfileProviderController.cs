@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims; 
 
 namespace BookingServices.Controllers
 {
@@ -12,14 +13,17 @@ namespace BookingServices.Controllers
         ApplicationDbContext context;
         ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
         string UserID = "6BA8DE65-9B57-466B-87EE-3D3279CED4C6";
-
-        public ProfileProviderController([FromServices] ApplicationDbContext _context)
+        private readonly UserManager<IdentityUser> _userManager;
+        public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager)
         {
             context = _context;
+            _userManager = userManager;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
+            var user = await _userManager.GetUserAsync(User); 
+            string userIdFromManager = user?.Id ?? "";
             var provider = context.ServiceProviders.Include(p => p.IdentityUser).FirstOrDefault(p => p.ProviderId == UserID);
             ProviderDataVM providerDataVM = new ProviderDataVM()
             {
