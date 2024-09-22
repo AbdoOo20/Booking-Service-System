@@ -14,16 +14,15 @@ namespace BookingServices.Data
         public string? Name { get; set; }
 
         [Required]
-        [StringLength(255)]
         public string? Details { get; set; }
 
         [Required]
         [StringLength(100)]
         public string? Location { get; set; }
 
-        public DateTime StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
 
-        public DateTime EndTime { get; set; }
+        public TimeSpan EndTime { get; set; }
 
         [Range(0, int.MaxValue)]
         public int Quantity { get; set; }
@@ -36,7 +35,7 @@ namespace BookingServices.Data
         public bool IsRequestedOrNot {  get; set; }
 
         [ForeignKey("Category")]
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
         [ForeignKey("BaseService")]
         public int? BaseServiceId { get; set; }

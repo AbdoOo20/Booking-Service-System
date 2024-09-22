@@ -15,6 +15,13 @@ namespace BookingServices.Data
         ErrorMessage = "Please enter a valid Saudi phone number.")]
         public string? AlternativePhone { get; set; }
 
+        [Required]
+        [RegularExpression(@"^[12]\d{9}$")]
+        public required string SSN { get; set; }
+
+        [Required]
+        public required string City { get; set; }
+
         public virtual IdentityUser? IdentityUser { get; set; }
 
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();

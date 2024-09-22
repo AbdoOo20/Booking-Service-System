@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "D:\\ITI FullStack_Net\\Graduation Project\\BookingServiceSystem\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {}
+    "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {}
   },
   "projects": {
-    "D:\\ITI FullStack_Net\\Graduation Project\\BookingServiceSystem\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {
+    "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\ITI FullStack_Net\\Graduation Project\\BookingServiceSystem\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
+        "projectUniqueName": "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
         "projectName": "BookingServices",
-        "projectPath": "D:\\ITI FullStack_Net\\Graduation Project\\BookingServiceSystem\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
-        "packagesPath": "C:\\Users\\MOHMAED SHAABAN\\.nuget\\packages\\",
-        "outputPath": "D:\\ITI FullStack_Net\\Graduation Project\\BookingServiceSystem\\Booking-Service-System\\BookingServices\\BookingServices\\obj\\",
+        "projectPath": "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
+        "packagesPath": "C:\\Users\\AbdoE\\.nuget\\packages\\",
+        "outputPath": "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MOHMAED SHAABAN\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\AbdoE\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.1.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\DevExpress 24.1\\Components\\System\\Components\\Packages": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -62,11 +63,19 @@
               "target": "Package",
               "version": "[8.0.8, )"
             },
+            "Microsoft.AspNetCore.Localization": {
+              "target": "Package",
+              "version": "[2.1.1, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[8.0.8, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.Extensions.Localization": {
               "target": "Package",
               "version": "[8.0.8, )"
             },
