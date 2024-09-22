@@ -571,8 +571,7 @@ namespace BookingServices.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ServiceDetails")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProviderId");
 
