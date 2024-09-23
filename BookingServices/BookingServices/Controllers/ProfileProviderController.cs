@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims; 
 
 namespace BookingServices.Controllers
 {
@@ -14,6 +13,8 @@ namespace BookingServices.Controllers
         ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
         string UserID = "6BA8DE65-9B57-466B-87EE-3D3279CED4C6";
         private readonly UserManager<IdentityUser> _userManager;
+        ProviderDataVM providerDataVM = new ProviderDataVM();
+
         public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager)
         {
             context = _context;
@@ -25,7 +26,7 @@ namespace BookingServices.Controllers
             var user = await _userManager.GetUserAsync(User); 
             string userIdFromManager = user?.Id ?? "";
             var provider = context.ServiceProviders.Include(p => p.IdentityUser).FirstOrDefault(p => p.ProviderId == UserID);
-            ProviderDataVM providerDataVM = new ProviderDataVM()
+            providerDataVM = new ProviderDataVM()
             {
                 ProviderId = provider.ProviderId,
                 Name = provider.IdentityUser.UserName,
@@ -39,73 +40,37 @@ namespace BookingServices.Controllers
             return View(providerDataVM);
         }
 
-        // GET: ProfileProviderController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: ProfileProviderController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ProfileProviderController/Create
-        [HttpPost]
+        [HttpPost, Route("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Edit(ProviderDataVM providerDataVM)
         {
-            try
+            //var user = await _userManager.GetUserAsync(User);
+            //string userIdFromManager = user?.Id ?? "";
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                //user.UserName = providerDataVM.Name;
+                //user.PhoneNumber = providerDataVM.Phone;
+                var model = context.ServiceProviders.Find(providerDataVM.ProviderId);
+                if (model == null) 
+                {
+                    errorViewModel = new ErrorViewModel { Message = "No Provider With This Data", Controller = "ProfileProvider", Action = "Index" };
+                    return View("Error", errorViewModel);
+                }
+                model.ServiceDetails = providerDataVM.ServiceDetails;
+                try
+                {
+                    context.ServiceProviders.Update(model);
+                    //var result = await _userManager.UpdateAsync(user);
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "ProfileProvider", Action = "Index" };
+                    return View("Error", errorViewModel);
+                }
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ProfileProviderController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: ProfileProviderController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ProfileProviderController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ProfileProviderController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Index");
         }
     }
 }

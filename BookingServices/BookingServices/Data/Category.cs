@@ -11,7 +11,7 @@ namespace BookingServices.Data
         public int CategoryId { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [MinLength(10, ErrorMessage = "Name Lenght Must be at Least 10")]
         public string? Name { get; set; }
 
         public virtual ICollection<Service> Services { get; set; } = new List<Service>();

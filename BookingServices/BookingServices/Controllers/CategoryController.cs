@@ -1,22 +1,23 @@
 ﻿using BookingServices.Data;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingServices.Controllers
 {
-    public class AdminContractController : Controller
+    public class CategoryController : Controller
     {
         ApplicationDbContext context;
         ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
 
-        public AdminContractController([FromServices] ApplicationDbContext _context)
+        public CategoryController([FromServices] ApplicationDbContext _context)
         {
             context = _context;
         }
 
         public ActionResult Index()
         {
-            return View(context.AdminContracts.ToList());
+            return View(context.Categories.ToList());
         }
 
         public ActionResult Create()
@@ -26,11 +27,11 @@ namespace BookingServices.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(AdminContract adminContract)
+        public ActionResult Create(Category category)
         {
             if (ModelState.IsValid)
             {
-                context.AdminContracts.Add(adminContract);
+                context.Categories.Add(category);
                 try
                 {
                     context.SaveChanges();
@@ -38,31 +39,31 @@ namespace BookingServices.Controllers
                 }
                 catch (Exception e)
                 {
-                    errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "AdminContract", Action = "Index" };
+                    errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "Category", Action = "Index" };
                     return View("Error", errorViewModel);
                 }
             }
-            return View(adminContract);
+            return View(category);
         }
 
         public ActionResult Edit(int id)
         {
-            var adminContract = context.AdminContracts.Find(id);
-            if (adminContract == null)
+            var category = context.Categories.Find(id);
+            if (category == null)
             {
-                errorViewModel = new ErrorViewModel { Message = "No Contract Valid With This ID", Controller = "AdminContract", Action = "Index" };
+                errorViewModel = new ErrorViewModel { Message = "No Category Valid With This ID", Controller = "Category", Action = "Index" };
                 return View("Error", errorViewModel);
             }
-            return View(adminContract);
+            return View(category);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, AdminContract adminContract)
+        public ActionResult Edit(int id, Category category)
         {
             if (ModelState.IsValid)
             {
-                context.AdminContracts.Update(adminContract);
+                context.Categories.Update(category);
                 try
                 {
                     context.SaveChanges();
@@ -70,22 +71,22 @@ namespace BookingServices.Controllers
                 }
                 catch (Exception e)
                 {
-                    errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "AdminContract", Action = "Index" };
+                    errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "Category", Action = "Index" };
                     return View("Error", errorViewModel);
                 }
             }
-            return View(adminContract);
+            return View(category);
         }
 
         public ActionResult Delete(int id)
         {
-            var adminContract = context.AdminContracts.Find(id);
-            if (adminContract == null)
+            var category = context.Categories.Find(id);
+            if (category == null)
             {
-                errorViewModel = new ErrorViewModel { Message = "Contract Not Exist", Controller = "AdminContract", Action = "Index" };
+                errorViewModel = new ErrorViewModel { Message = "Category Not Exist", Controller = "Category", Action = "Index" };
                 return View("Error", errorViewModel);
             }
-            context.AdminContracts.Remove(adminContract);
+            context.Categories.Remove(category);
             try
             {
                 context.SaveChanges();
@@ -93,7 +94,7 @@ namespace BookingServices.Controllers
             }
             catch (Exception e)
             {
-                errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "AdminContract", Action = "Index" };
+                errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "Category", Action = "Index" };
                 return View("Error", errorViewModel);
             }
         }

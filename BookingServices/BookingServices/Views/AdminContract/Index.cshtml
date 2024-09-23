@@ -8,6 +8,7 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Create</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -31,14 +32,14 @@
                         @Html.DisplayFor(modelItem => item.Details)
                     </td>
                     <td>
-                            <a asp-action="Edit" asp-route-id="@item.ContractId" title="Edit">
-                                <i class="fas fa-edit text-warning" style="font-size: 24px;"></i>
-                             </a>
+                    <a asp-action="Edit" asp-route-id="@item.ContractId" class="btn btn-link" title="Edit">
+                        <i class="fas fa-edit text-warning" style="font-size: 24px;"></i>
+                    </a>
                     </td>
                     <td>
-                            <a asp-action="Delete" asp-route-id="@item.ContractId" title="Delete">
-                                <i class="fas fa-trash-alt text-danger" style="font-size: 24px;"></i>
-                            </a>
+                    <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-link" title="Delete">
+                        <i class="fas fa-trash-alt text-danger" style="font-size: 24px;"></i>
+                    </a>
                     </td>
                 </tr>
         }
