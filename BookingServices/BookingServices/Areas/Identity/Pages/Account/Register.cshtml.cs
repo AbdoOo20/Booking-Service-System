@@ -163,7 +163,6 @@ namespace BookingServices.Areas.Identity.Pages.Account
                 }
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                user.UserName = providerRegister.ProviderName;
                 user.PhoneNumber = providerRegister.ProviderPhoneNumber;
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var userResult = await _userManager.CreateAsync(user, Input.Password);
@@ -177,6 +176,7 @@ namespace BookingServices.Areas.Identity.Pages.Account
                         BookingServices.Data.ServiceProvider serviceProvider = new BookingServices.Data.ServiceProvider
                         {
                             ProviderId = user.Id,
+                            Name = providerRegister.ProviderName,
                             Balance = 0,
                             ReservedBalance = 0,
                             ServiceDetails = providerRegister.ServiceDetails,
