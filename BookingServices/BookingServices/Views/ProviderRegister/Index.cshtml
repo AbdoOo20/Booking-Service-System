@@ -1,0 +1,83 @@
+﻿@model IEnumerable<BookingServices.Data.ProviderRegister>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section CustomStyles {
+    <link rel="stylesheet" href="~/css/customStyle/StyleListProviderRegister.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+}
+
+<div class="container">
+    <h5>Provider Waiting List</h5>
+
+    <table class="table mt-5">
+        <thead>
+            <tr>
+                <th>
+                    Provider Name
+                </th>
+                <th>
+                    Provider Email
+                </th>
+                <th>
+                    Phone Number
+                </th>
+                <th>
+                    Service details
+                </th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProviderName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProviderEmail)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProviderPhoneNumber)
+                    </td>
+                    <td class="customWidth">
+                        @Html.DisplayFor(modelItem => item.ServiceDetails)
+                    </td>
+                    <td>
+                        <a asp-area="Identity" asp-page="/Account/Register" asp-route-ProviderRegisterId="@item.ProviderRegisterId">
+                            <i class="fa-solid fa-square-check" style="color:green"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.ProviderRegisterId">
+                            <i class="fa-solid fa-trash-can" style="color:crimson"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function postToRegister(providerRegisterId) {
+        var form = document.createElement('form');
+        form.method = 'post';
+        form.action = '/Identity/Account/Register';
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'ProviderRegisterId';
+        input.value = providerRegisterId;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
