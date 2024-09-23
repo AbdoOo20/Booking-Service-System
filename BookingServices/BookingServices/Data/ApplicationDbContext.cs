@@ -40,6 +40,9 @@ namespace BookingServices.Data
             modelBuilder.Entity<ServiceImage>()
                 .HasKey(bc => new { bc.ServiceId, bc.URL });
 
+            modelBuilder.Entity<ProviderRegister>()
+                .HasIndex(p => new { p.ProviderPhoneNumber }).IsUnique();
+
             base.OnModelCreating(modelBuilder);
 
         }

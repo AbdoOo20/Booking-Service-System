@@ -12,6 +12,7 @@ namespace BookingServices.Data
         public string? ProviderId { get; set; }
 
         [Required]
+        [MinLength(3, ErrorMessage = "Name must be at least 3 character")]
         public required string Name { get; set; }
 
         [Range(0.00, double.MaxValue, ErrorMessage = "Balance must be greater than or equal zero.")]

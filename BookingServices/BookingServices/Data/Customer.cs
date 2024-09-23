@@ -12,6 +12,7 @@ namespace BookingServices.Data
         public string? CustomerId { get; set; }
 
         [Required]
+        [MinLength(3, ErrorMessage = "Name must be at least 3 character")]
         public required string Name { get; set; }
 
         public bool IsOnlineOrOfflineUser { get; set; }
