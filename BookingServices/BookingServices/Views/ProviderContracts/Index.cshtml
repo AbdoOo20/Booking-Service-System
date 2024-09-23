@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BookingServices.Data.ProviderContract>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Contracts</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+<table class="table table-hover text-center">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Details)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContractName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Details)
+            </td>
+
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ContractId" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></a> |
+                <a asp-action="Details" asp-route-id="@item.ContractId" class="btn btn-outline-success"><i class="fa-solid fa-circle-info"></i></a> |
+                <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

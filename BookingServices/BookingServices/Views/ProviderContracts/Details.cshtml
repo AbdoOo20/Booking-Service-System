@@ -1,0 +1,27 @@
+﻿@model BookingServices.Data.ProviderContract
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Contract Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <div class="form-group">
+            <label asp-for="ContractName" class="control-label">Title</label>
+            <input asp-for="ContractName" readonly class="form-control" />
+            <span asp-validation-for="ContractName" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="Details" class="control-label"></label>
+            <textarea asp-for="Details" class="form-control" readonly rows="3" style="resize: none;"></textarea>
+            <span asp-validation-for="Details" class="text-danger"></span>
+        </div>
+    </dl>
+</div>
+<div class="d-flex justify-content-between mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.ContractId" class="btn btn-outline-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
