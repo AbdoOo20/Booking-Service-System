@@ -1,0 +1,26 @@
+﻿@model BookingServices.Data.ServicePrice
+
+@{
+    ViewData["Title"] = "Add Price";
+}
+
+<h1>Add New Price</h1>
+
+<form asp-action="AddPrice" method="post">
+    <div class="form-group">
+        <label asp-for="PriceDate" class="control-label"></label>
+        <input asp-for="PriceDate" type="date" class="form-control" />
+        <span asp-validation-for="PriceDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price" class="control-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <input type="hidden" asp-for="ServiceId" value="@ViewData["ServiceId"]" />
+
+    <div class="form-group pt-4 d-flex">
+        <input type="submit" value="Save" class="btn btn-outline-success" />
+        <a asp-action="Prices" asp-route-id="@ViewData["ServiceId"]" class="btn btn-outline-secondary ms-auto">Back to List</a>
+    </div>
+</form>

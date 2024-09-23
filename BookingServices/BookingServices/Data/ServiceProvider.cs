@@ -9,14 +9,16 @@ namespace BookingServices.Data
         [Key]
         [ForeignKey("IdentityUser")]
         public string? ProviderId { get; set; }
-        
+
+        [Required]
+        public required string Name { get; set; }
+
         [Range(0.00, double.MaxValue, ErrorMessage = "Balance must be greater than or equal zero.")]
         public decimal Balance { get; set; }
 
         [Range(0.00, double.MaxValue, ErrorMessage = "Reserved Balance must be greater than or equal zero.")]
         public decimal ReservedBalance { get; set; }
 
-        [StringLength(255)]
         public string? ServiceDetails { get; set; }
 
         [Range(0.0, 5.0)]

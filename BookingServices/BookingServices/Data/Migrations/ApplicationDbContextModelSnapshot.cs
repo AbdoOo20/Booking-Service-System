@@ -206,6 +206,21 @@ namespace BookingServices.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsOnlineOrOfflineUser")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SSN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("CustomerId");
 
                     b.ToTable("Customers");
@@ -401,6 +416,7 @@ namespace BookingServices.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProviderName")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -466,16 +482,15 @@ namespace BookingServices.Data.Migrations
                     b.Property<int?>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Details")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
 
                     b.Property<decimal>("InitialPaymentPercentage")
                         .HasColumnType("decimal(18,2)");
@@ -505,8 +520,8 @@ namespace BookingServices.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
 
                     b.HasKey("ServiceId");
 
@@ -564,6 +579,10 @@ namespace BookingServices.Data.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Rate")
                         .HasColumnType("decimal(18,2)");
 
@@ -571,8 +590,7 @@ namespace BookingServices.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ServiceDetails")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProviderId");
 
@@ -1037,9 +1055,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasOne("BookingServices.Data.Category", "Category")
                         .WithMany("Services")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
 
                     b.HasOne("BookingServices.Data.ProviderContract", "ProviderContract")
                         .WithMany("Services")

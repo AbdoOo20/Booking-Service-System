@@ -1,94 +1,136 @@
 ﻿@model BookingServices.Data.Service
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Service";
 }
 
-<h1>Create</h1>
+<h1 class="text-center mb-4">Create a New Service</h1>
 
-<h4>Service</h4>
-<hr />
-<div class="row">
-    <div class="col-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+<div class="container">
+    <div class="card shadow p-4">
+        <h4 class="mb-4 text-primary">Service Details</h4>
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Name and Location -->
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter service name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Location" class="form-label"></label>
+                    <select asp-for="Location" class="form-control" asp-items="ViewBag.Location">
+                        <option value="">-- Select Location --</option>
+                    </select>
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Details" class="control-label"></label>
-                <textarea asp-for="Details" class="form-control"></textarea>
-                <span asp-validation-for="Details" class="text-danger"></span>
+
+            <!-- Start Time, End Time, and Quantity -->
+            <div class="row">
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="StartTime" class="form-label">Start Time</label>
+                    <input asp-for="StartTime" type="time" class="form-control" />
+                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="EndTime" class="form-label">End Time</label>
+                    <input asp-for="EndTime" type="time" class="form-control" />
+                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label asp-for="Quantity" class="form-label">Quantity</label>
+                    <input asp-for="Quantity" class="form-control" type="number" min="0" placeholder="0" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
-                @* <input asp-for="Location" class="form-control" /> *@
-                <select asp-for="Location" class="form-control" asp-items="ViewBag.Location"></select>
-                <span asp-validation-for="Location" class="text-danger"></span>
+
+            <!-- Payment, Price -->
+            <h4 class="mb-4 text-primary">Financial Information</h4>
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="InitialPaymentPercentage" class="form-label">Initial Payment Percentage</label>
+                    <input asp-for="InitialPaymentPercentage" class="form-control" type="number" min="0" placeholder="0" />
+                    <span asp-validation-for="InitialPaymentPercentage" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label for="Price" class="form-label">Primary Price</label>
+                    <input type="number" min="1" placeholder="0" name="Price" id="Price" class="form-control" required />
+                    <small id="priceError" class="text-danger"></small>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" type="time" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
+
+            <!-- Contracts and Categories -->
+            <h4 class="mb-4 text-primary">Contract and Category Information</h4>
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="AdminContractId" class="form-label">Admin Contract</label>
+                    <select asp-for="AdminContractId" asp-items="ViewBag.AdminContractId" class="form-control">
+                        <option value="">-- Select Admin Contract --</option>
+                    </select>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="CategoryId" class="form-label">Category</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.CategoryId" class="form-control">
+                        <option value="">-- Select Category --</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" type="time" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="ProviderContractId" class="form-label">Provider Contract</label>
+                    <select asp-for="ProviderContractId" asp-items="ViewBag.ProviderContractId" class="form-control">
+                        <option value="">-- Select Provider Contract --</option>
+                    </select>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="BaseServiceId" class="form-label">Base Service</label>
+                    <select asp-for="BaseServiceId" asp-items="ViewBag.BaseServiceId" class="form-control">
+                        <option value="">-- Select Base Service --</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
+
+            <!-- Images and Service Details -->
+            <h4 class="mb-4 text-primary">Media and Additional Details</h4>
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label for="Images" class="form-label">Upload Images</label>
+                    <input type="file" name="Images" class="form-control" multiple />
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Details" class="form-label">Service Details</label>
+                    <textarea asp-for="Details" class="form-control" placeholder="Provide additional information about the service"></textarea>
+                    <span asp-validation-for="Details" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="InitialPaymentPercentage" class="control-label"></label>
-                <input asp-for="InitialPaymentPercentage" class="form-control" />
-                <span asp-validation-for="InitialPaymentPercentage" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsOnlineOrOffline" /> @Html.DisplayNameFor(model => model.IsOnlineOrOffline)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsRequestedOrNot" /> @Html.DisplayNameFor(model => model.IsRequestedOrNot)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="BaseServiceId" class="control-label"></label>
-                <select asp-for="BaseServiceId" class ="form-control" asp-items="ViewBag.BaseServiceId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProviderContractId" class="control-label"></label>
-                <select asp-for="ProviderContractId" class ="form-control" asp-items="ViewBag.ProviderContractId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="AdminContractId" class="control-label"></label>
-                <select asp-for="AdminContractId" class ="form-control" asp-items="ViewBag.AdminContractId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProviderId" class="control-label"></label>
-                <select asp-for="ProviderId" class ="form-control" asp-items="ViewBag.ProviderId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <input type="submit" value="Create" class="btn btn-outline-success btn-lg" />
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const priceInput = document.getElementById('Price');
+        const priceError = document.getElementById('priceError');
+        priceError.textContent = '';
+
+        const priceValue = parseFloat(priceInput.value);
+        if (isNaN(priceValue) || priceValue <= 0) {
+            priceError.textContent = 'Primary Price must be greater than 0.';
+            event.preventDefault();  // Prevent form submission
+        }
+    });
+</script>
