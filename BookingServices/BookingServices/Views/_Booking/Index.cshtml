@@ -1,0 +1,93 @@
+﻿@model bookingViewModel
+
+<div class="container my-5">
+    <h2 class="text-center" style="font-size: 2rem; background-color:#3366ff; font-weight: bold; color: white; padding: 15px; border-radius: 20px;">
+        Bookings
+    </h2>
+
+    <form method="get" class="mb-4" onsubmit="return validateForm()">
+        <div class="form-group row align-items-end">
+            <label for="startDate" class="col-sm-2 col-form-label">Start Date:</label>
+            <div class="col-sm-3">
+                <input type="date" id="startDate" name="startDate" class="form-control" required />
+            </div>
+
+            <label for="endDate" class="col-sm-2 col-form-label">End Date:</label>
+            <div class="col-sm-3">
+                <input type="date" id="endDate" name="endDate" class="form-control" required />
+            </div>
+
+            <div class="col-sm-2 mt-2">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.Bookings != null && Model.Bookings.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Event Date</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Booking Date</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Payment Type</th>
+                        <th>Custmer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var booking in Model.Bookings)
+                    {
+                        <tr>
+                            <td>@booking.EventDate.ToShortDateString()</td>
+                            <td>@booking.Quantity</td>
+                            <td>@booking.Price</td>
+                            <td>@booking.BookDate.ToShortDateString()</td>
+                            <td>@booking.Type</td>
+                            <td>@booking.Status</td>
+                            <td>@(booking.CashOrInstallment ? "Installment" : "Cash")</td>
+                            <td>@booking.Customer.Name</td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center my-4">
+            <div class="row">
+                <div class="col">
+                    <h3>Total Confirmed: <span class="text-success">@Model.TotalIncome</span></h3>
+                </div>
+                <div class="col">
+                    <h3>Total Cancelled: <span class="text-danger">@Model.TotalCanceled</span></h3>
+                </div>
+                <div class="col">
+                    <h3>Total Pending: <span class="text-warning">@Model.TotalPending</span></h3>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-center">No bookings found for the selected dates.</p>
+    }
+</div>
+
+<script>
+    function validateForm() {
+        var startDate = document.getElementById("startDate").value;
+        var endDate = document.getElementById("endDate").value;
+
+        if (!startDate || !endDate) {
+            alert("من فضلك اضف التاريخ الصحيح.");
+            return false; // منع إرسال النموذج
+        }
+
+        return true; // السماح بإرسال النموذج
+    }
+</script>
