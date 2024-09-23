@@ -11,6 +11,11 @@ namespace BookingServices.Data
         public string? CustomerId { get; set; }
 
         [Required]
+        public required string Name { get; set; }
+
+        public bool IsOnlineOrOfflineUser { get; set; }
+
+        [Required]
         [RegularExpression(@"^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$",
         ErrorMessage = "Please enter a valid Saudi phone number.")]
         public string? AlternativePhone { get; set; }

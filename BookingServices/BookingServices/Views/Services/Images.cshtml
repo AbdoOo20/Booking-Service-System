@@ -1,0 +1,47 @@
+﻿@model IEnumerable<BookingServices.Data.ServiceImage>
+
+@{
+    ViewData["Title"] = "Service Images";
+}
+
+<h1>@ViewData["ServiceName"] Images</h1>
+,<div>
+    <a asp-action="AddImage" asp-route-id="@ViewData["ServiceId"]" class="btn btn-outline-primary">Add Image</a>
+</div>
+
+<table class="table table-hover justify-content-center align-content-center">
+    <thead>
+        <tr>
+            <th>
+                #
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.URL)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 0;
+            foreach (var item in Model)
+            {
+                i++;
+                <tr>
+                <td>@i</td>
+                <td>
+                    <img src="@item.URL" alt="Alternate Text" class="rounded rounded-1" style="width:200px; height:100px "/>
+                </td>
+                <td>
+                    <a asp-action="DeleteImage" asp-route-id="@item.ServiceId" asp-route-url="@item.URL" class="btn btn-outline-danger">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </a>
+                </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<div class="d-flex justify-content-between mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Back to List</a>
+</div>

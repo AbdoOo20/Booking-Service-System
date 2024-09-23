@@ -1,0 +1,94 @@
+﻿@model IEnumerable<BookingServices.Data.Service>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>All Services</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+@* <div>
+    Number Of Services = @ViewData["Count"]
+</div> *@
+<table class="table table-hover text-center">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                Initial Payment Percentage
+            </th>
+            <th>
+                Online / Offline
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr class="m-auto">
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InitialPaymentPercentage) %
+            </td>
+            <td>
+                    @if (!item.IsOnlineOrOffline && !item.IsRequestedOrNot)
+                    {
+                        <a asp-action="RequestToMakeServiceOnline" asp-route-id="@item.ServiceId" class="btn btn-outline-secondary ps-3 pe-3">Offline</a>
+                    }
+                    else if (!item.IsOnlineOrOffline && item.IsRequestedOrNot)
+                    {
+                        <div class="alert alert-warning text-center m-auto pt-1 pb-1 w-75">Pending</div>
+                    }
+                    else if (item.IsOnlineOrOffline && item.IsRequestedOrNot)
+                    {
+                        <div class="alert alert-success text-center m-auto pt-1 pb-1 w-75">Online</div>
+                    }
+            </td>
+            <td>
+                    @if (item.Category is not null)
+                    {@Html.DisplayFor(modelItem => item.Category.Name)}
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.ServiceId" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></a> |
+                    <a asp-action="Details" asp-route-id="@item.ServiceId" class="btn btn-outline-success"><i class="fa-solid fa-circle-info"></i></a> |
+                    <a asp-action="Images" asp-route-id="@item.ServiceId" class="btn btn-outline-info"><i class="fa-solid fa-image"></i></a>|
+                    <a asp-action="Prices" asp-route-id="@item.ServiceId" class="btn btn-outline-info"><i class="fa-solid fa-dollar-sign"></i></a>|
+                    <a asp-action="Delete" asp-route-id="@item.ServiceId" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

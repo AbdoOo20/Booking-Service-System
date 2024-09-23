@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BookingServices.Data.ServicePrice>
+
+@{
+    ViewData["Title"] = "Prices";
+}
+
+<h1>@ViewData["ServiceName"] Prices</h1>
+
+<p>
+    <a asp-action="AddPrice" asp-route-id="@ViewData["ServiceId"]" class="btn btn-outline-primary">Add Price</a>
+</p>
+<table class="table table-hover justify-content-center align-content-center">
+    <thead>
+        <tr>
+            <td>#</td>
+            <th>Date</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 0;
+            @foreach (var item in Model) 
+            {
+                i++;
+                <tr>
+                    <td>@i</td>
+                    <td>@Html.DisplayFor(modelItem => item.PriceDate)</td>
+                    <th>@Html.DisplayFor(modelItem => item.Price)</th>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<div class="d-flex justify-content-between mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Back to List</a>
+</div>
