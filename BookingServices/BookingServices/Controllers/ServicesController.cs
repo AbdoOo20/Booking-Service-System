@@ -35,24 +35,165 @@ namespace BookingServices.Controllers
             return View(await services.ToListAsync());
         }
 
+        /// <summary>
+        /// Get Details of Each Service 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        // GET: Services/Details/5
         // GET: Services/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            var service = await _context.Services
-                .Include(s => s.AdminContract)
-                .Include(s => s.BaseService)
-                .Include(s => s.Category)
-                .Include(s => s.ProviderContract)
-                .Include(s => s.ServiceProvider)
-                .FirstOrDefaultAsync(m => m.ServiceId == id);
+            var service = await _context.Services.Where(m => m.ServiceId == id)
+                .Select(s => new
+                {
+                    s.Name,
+                    s.StartTime,
+                    s.EndTime,
+                    s.Quantity,
+                    s.Location,
+                    s.Details,
+                    s.ServiceId
+                })
+                .FirstOrDefaultAsync();
 
-            if (service == null) return NotFound();
+            if (service == null)
+            {
+                return NotFound();
+            }
 
-            return View(service);
+            var CurrentDate = DateTime.Now.Date;
+
+            var servicePrice = await (from s in _context.Services
+                                      join sp in _context.ServicePrices
+                                      on s.ServiceId equals sp.ServiceId
+                                      where sp.PriceDate.Date == CurrentDate
+                                      select new
+                                      {
+                                          ServicePrice = sp.Price
+                                      }).FirstOrDefaultAsync();
+
+            int daysBack = 1;
+            while (servicePrice == null)
+            {
+                var previousDate = CurrentDate.AddDays(-daysBack);
+
+                servicePrice = await (from s in _context.Services
+                                      join sp in _context.ServicePrices
+                                      on s.ServiceId equals sp.ServiceId
+                                      where sp.PriceDate.Date == previousDate
+                                      select new
+                                      {
+                                          ServicePrice = sp.Price
+                                      }).FirstOrDefaultAsync();
+
+                daysBack++;
+            }
+
+            var providerName = await (from s in _context.Services
+                                      join sp in _context.ServiceProviders
+                                      on s.ProviderId equals sp.ProviderId
+                                      join a in _context.Users
+                                      on sp.ProviderId equals a.Id
+                                      select new
+                                      {
+                                          ProviderName = a.UserName
+                                      }).FirstOrDefaultAsync();
+
+            var providerID = await _context.Services.Where(s => s.ServiceId == id).Select(s => s.ProviderId).FirstOrDefaultAsync();
+
+            var serviceImages = await (from s in _context.Services
+                                       join si in _context.ServiceImages
+                                       on s.ServiceId equals si.ServiceId
+                                       where s.ServiceId == id
+                                       select si.URL).ToListAsync();
+
+            var categoryName = await (from s in _context.Services
+                                      join c in _context.Categories
+                                      on s.CategoryId equals c.CategoryId
+                                      select new
+                                      {
+                                          CategoryName = c.Name
+                                      }).FirstOrDefaultAsync();
+
+            // Fix: Assign customerId inside the reviews query
+            List<ReviewModel> reviews = await (from r in _context.Reviews
+                                               join a in _context.Users on r.CustomerId equals a.Id
+                                               select new ReviewModel
+                                               {
+                                                   ReviewerName = a.UserName,
+                                                   BookingId = r.BookingId,
+                                                   CustomerComment = r.CustomerComment,
+                                                   CustomerCommentDate = r.CustomerCommentDate,
+                                                   CustomerId = r.CustomerId,
+                                                   ProviderReplayComment = r.ProviderReplayComment,
+                                                   ProviderReplayCommentDate = r.ProviderReplayCommentDate
+                                               }).ToListAsync();
+
+
+
+            var numberOfReviews = await _context.Reviews
+                   .CountAsync(r => r.CustomerComment != null);
+
+            decimal averageRating = await _context.Reviews
+                               .AverageAsync(r => r.Rating);
+
+            ServiceDetailsModel serviceDetailsModel = new ServiceDetailsModel()
+            {
+                ServiceName = service.Name,
+                servicePrice = servicePrice.ServicePrice,
+                startTime = service.StartTime,
+                endTime = service.EndTime,
+                AvailableQuantity = service.Quantity,
+                ServiceDetails = service.Details,
+                serviceLocation = service.Location,
+                providerName = providerName.ProviderName,
+                CategoryName = categoryName.CategoryName,
+                serviceImages = serviceImages,
+                Reviews = reviews,
+                providerRate = averageRating,
+                numberOfReviews = numberOfReviews,
+                ProviderID = providerID
+            };
+
+            return View(serviceDetailsModel);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> AddProviderReply(string customerId, string providerReply, int BookID)
+        {
+            if (string.IsNullOrWhiteSpace(customerId) || string.IsNullOrWhiteSpace(providerReply))
+            {
+                return Json(new { success = false, message = "Customer ID and provider reply cannot be empty." });
+            }
+
+            var review = await _context.Reviews.FirstOrDefaultAsync(r => r.CustomerId == customerId && r.BookingId == BookID);
+
+            if (review == null)
+            {
+                return Json(new { success = false, message = "Review not found." });
+            }
+
+            review.ProviderReplayComment = providerReply;
+            review.ProviderReplayCommentDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                providerReply = review.ProviderReplayComment,
+                providerReplyDate = review.ProviderReplayCommentDate
+            });
+        }
         // GET: Services/Create
         public async Task<IActionResult> CreateAsync()
         {
