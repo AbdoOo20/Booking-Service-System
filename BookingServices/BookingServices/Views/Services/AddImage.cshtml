@@ -1,0 +1,36 @@
+﻿@model BookingServices.Data.ServiceImage
+
+@{
+    ViewData["Title"] = "Add Image";
+}
+
+<h1>Add New Image</h1>
+
+<hr />
+<div class="row">
+    <div class="col-12">
+        <form asp-action="AddImage" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="col-12 form-group mb-3">
+                    <label for="Images" class="form-label">Upload New Images</label>
+                    <input type="file" name="Images" class="form-control" multiple />
+                </div>
+            </div>
+           <div class="row">
+                <div class="col-12 form-group">
+                    <div class="d-flex justify-content-between mt-4">
+                        <input type="submit" value="Save" class="btn btn-outline-success" />
+                        <a asp-action="Images" asp-route-id="@ViewData["ServiceId"]" class="btn btn-outline-secondary">Back to List</a>
+                    </div>
+               </div>
+           </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

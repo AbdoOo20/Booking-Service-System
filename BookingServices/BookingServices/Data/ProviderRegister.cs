@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookingServices.Data
@@ -8,12 +9,13 @@ namespace BookingServices.Data
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProviderRegisterId { get; set; }
-        
-        [StringLength(255)]
-        public string? ProviderName { get; set; }
 
         [Required]
-        [RegularExpression(@"%_@_%._%")]
+        [StringLength(255)]
+        public required string ProviderName { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]
         public string? ProviderEmail { get; set; }
 
         [Required]

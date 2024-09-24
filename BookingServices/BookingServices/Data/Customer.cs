@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BookingServices.Models;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,9 +12,22 @@ namespace BookingServices.Data
         public string? CustomerId { get; set; }
 
         [Required]
+        [MinLength(3, ErrorMessage = "Name must be at least 3 character")]
+        public required string Name { get; set; }
+
+        public bool IsOnlineOrOfflineUser { get; set; }
+
+        [Required]
         [RegularExpression(@"^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$",
         ErrorMessage = "Please enter a valid Saudi phone number.")]
         public string? AlternativePhone { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[12]\d{9}$")]
+        public required string SSN { get; set; }
+
+        [Required]
+        public required string City { get; set; }
 
         public virtual IdentityUser? IdentityUser { get; set; }
 

@@ -9,8 +9,11 @@ namespace BookingServices.Data
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ContractId { get; set; }
-        
-        [Required]
+
+        [Required, Display(Name = "Title"), MinLength(10, ErrorMessage = "Length must be at least 10 character")]
+        public string? ContractName { get; set; }
+
+        [Required, Display(Name = "Details"), MinLength(20, ErrorMessage = "Length must be at least 20 character")]
         public string? Details { get; set; }
         
         [ForeignKey("IdentityUser")]

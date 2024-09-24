@@ -1,0 +1,81 @@
+﻿@model IEnumerable<BookingServices.Data.ProviderRegister>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style> 
+     td, th {
+        vertical-align: middle;
+        text-align: center;
+        word-wrap: break-word;
+        white-space: normal;
+        padding: 15px !important;
+        font-size: 15px
+    }        
+    tr th {
+        background-color: #e7effd !important;
+        color: #475569 !important
+    }
+
+    a i {
+        font-size: 25px !important;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <h5>Provider Waiting List</h5>
+
+    <table class="table mt-5">
+        <thead>
+            <tr>
+                <th>
+                    Provider Name
+                </th>
+                <th>
+                    Provider Email
+                </th>
+                <th>
+                    Phone Number
+                </th>
+                <th>
+                    Service details
+                </th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProviderName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProviderEmail)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProviderPhoneNumber)
+                    </td>
+                    <td class="customWidth">
+                        @Html.DisplayFor(modelItem => item.ServiceDetails)
+                    </td>
+                    <td>
+                        <a asp-area="Identity" asp-page="/Account/Register" asp-route-ProviderRegisterId="@item.ProviderRegisterId">
+                            <i class="fa-solid fa-square-check" style="color:green"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.ProviderRegisterId">
+                            <i class="fa-solid fa-trash-can" style="color:crimson"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+

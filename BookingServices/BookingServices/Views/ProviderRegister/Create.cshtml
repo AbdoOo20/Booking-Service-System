@@ -1,0 +1,81 @@
+﻿@model BookingServices.ViewModels.ProviderRegisterViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+@{
+    if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            <strong>Error:</strong> @TempData["ErrorMessage"]
+        </div>
+    }
+}
+
+<style>
+    body {
+        background-color: #e9ecef; 
+    }
+
+    form {
+        font-size: 18px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .form-control {
+        font-size: 15px !important
+    }
+
+    input[type="submit"] {
+        height: 45px;
+        font-weight: bold
+    }
+</style>
+
+<div class="container">
+    <form class="p-5 form-container" asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <h4>Provider Data</h4>
+        <div class="form-floating input-group-lg mb-3 mt-3">
+            <input asp-for="ProviderName" class="form-control" autocomplete="ProviderName" aria-required="true" placeholder="Your name" />
+            <label asp-for="ProviderName">Name</label>
+            <span asp-validation-for="ProviderName" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating input-group-lg mb-3">
+            <input asp-for="ProviderEmail" class="form-control" autocomplete="ProviderEmail" aria-required="true" placeholder="name@example.com" />
+            <label asp-for="ProviderEmail">Email</label>
+            <span asp-validation-for="ProviderEmail" class="text-danger"></span>
+        </div>
+      
+        <div class="form-floating input-group-lg mb-3">
+            <input asp-for="ProviderPhoneNumber" class="form-control" autocomplete="ProviderPhoneNumber" aria-required="true" placeholder="" />
+            <label asp-for="ProviderPhoneNumber">Phone Number</label>
+            <span asp-validation-for="ProviderPhoneNumber" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating input-group-lg mb-3">
+            <textarea asp-for="ServiceDetails" class="form-control" style="height: 150px;" autocomplete="ServiceDetails" aria-required="true" placeholder=""></textarea>
+            <label asp-for="ServiceDetails">Service Details</label>
+            <span asp-validation-for="ServiceDetails" class="text-danger"></span>
+        </div>
+       
+        <div class="form-group">
+            <input type="submit" value="Submit" class="btn btn-primary w-100" />
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
