@@ -4,10 +4,25 @@
     ViewData["Title"] = "Index";
 }
 
-@section CustomStyles {
-    <link rel="stylesheet" href="~/css/customStyle/StyleListProviderRegister.css" />
-    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
-}
+<style> 
+     td, th {
+        vertical-align: middle;
+        text-align: center;
+        word-wrap: break-word;
+        white-space: normal;
+        padding: 15px !important;
+        font-size: 15px
+    }        
+    tr th {
+        background-color: #e7effd !important;
+        color: #475569 !important
+    }
+
+    a i {
+        font-size: 25px !important;
+        text-align: center;
+    }
+</style>
 
 <div class="container">
     <h5>Provider Waiting List</h5>
@@ -62,22 +77,5 @@
         </tbody>
     </table>
 </div>
-
-<script>
-    function postToRegister(providerRegisterId) {
-        var form = document.createElement('form');
-        form.method = 'post';
-        form.action = '/Identity/Account/Register';
-
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'ProviderRegisterId';
-        input.value = providerRegisterId;
-
-        form.appendChild(input);
-        document.body.appendChild(form);
-        form.submit();
-    }
-</script>
 
 
