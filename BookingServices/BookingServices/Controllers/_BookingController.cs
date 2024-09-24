@@ -55,7 +55,7 @@ namespace BookingServices.Controllers
 
             return View(model);
         }
-        //this is Booking controler 
+        //this is Booking controller 
 
     }
 }
