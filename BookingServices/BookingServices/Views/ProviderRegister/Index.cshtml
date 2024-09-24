@@ -45,7 +45,8 @@
                         @Html.DisplayFor(modelItem => item.ServiceDetails)
                     </td>
                     <td>
-                        <a asp-area="Identity" asp-page="/Account/Register" asp-route-ProviderRegisterId="@item.ProviderRegisterId">
+                        <a asp-area="Identity" asp-page="/Account/Register"
+                           asp-route-ProviderRegisterId="@item.ProviderRegisterId" asp-route-email="@item.ProviderEmail">
                             <i class="fa-solid fa-square-check" style="color:green"></i>
                         </a>
                     </td>
