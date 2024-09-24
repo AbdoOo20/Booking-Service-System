@@ -17,5 +17,6 @@ namespace BookingServices.Models
         public decimal Price { get; set; }
         public string CustomerName { get; set; }
         public string PaymentIncomeDescription { get; set; }
+        //this is model view 
     }
 }
