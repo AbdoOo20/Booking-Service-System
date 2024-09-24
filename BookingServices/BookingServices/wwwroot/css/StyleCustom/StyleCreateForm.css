@@ -1,0 +1,20 @@
+﻿body {
+    background-color: #e9ecef;
+}
+
+form {
+    font-size: 18px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.form-control {
+    font-size: 15px !important
+}
+
+input[type="submit"] {
+    height: 45px;
+    font-weight: bold
+}

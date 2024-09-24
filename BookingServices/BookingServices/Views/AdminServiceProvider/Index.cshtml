@@ -1,59 +1,56 @@
-﻿@model IEnumerable<BookingServices.Data.ServiceProvider>
+﻿@model IEnumerable<BookingServices.Models.ProviderDataVM>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Name
-            </th>
-            <th>
-                Balance
-            </th>
-            <th>
-                Reserved Balance
-            </th>
-            <th>
-                Service Details
-            </th>
-            <th>
-                Rate
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Balance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReservedBalance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ServiceDetails)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProviderId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProviderId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProviderId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container">
+
+    <h3>Providers</h3>
+
+    <table class="table mt-5">
+        <thead>
+            <tr>
+                <th>
+                    Provider Name
+                </th>
+                <th>
+                    Phone Number
+                </th>
+                <th>
+                    Email
+                </th>          
+                <th>
+                    Service Details
+                </th>
+                <th>
+                    Rate
+                </th>
+           
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceDetails)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rate)
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>
