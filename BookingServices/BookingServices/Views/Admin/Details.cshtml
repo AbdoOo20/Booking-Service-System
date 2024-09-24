@@ -1,0 +1,69 @@
+﻿@model ServiceDetails
+
+<section class="py-5">
+    <div class="container">
+        <div class="row gx-5">
+            <aside class="col-lg-6">
+                <div id="mainImageContainer" class="border rounded-4 mb-3 d-flex justify-content-center">
+                    @if (Model.ImageUrl != null && Model.ImageUrl.Count > 0)
+                    {
+                        <img id="mainImage" style="max-width: 100%; height: 60vh; margin: auto;" class="rounded-4 fit" src="@Model.ImageUrl[0]" />
+                    }
+                </div>
+
+                <div class="d-flex justify-content-center mb-3">
+                    @foreach (var imageUrl in Model.ImageUrl)
+                    {
+                        <a href="javascript:void(0);" onclick="changeImage('@imageUrl')" class="border mx-1 rounded-2">
+                            <img width="60" height="60" class="rounded-2" src="@imageUrl" />
+                        </a>
+                    }
+                </div>
+            </aside>
+
+            <main class="col-lg-6">
+                <div class="ps-lg-3">
+                    <h4 class="title text-dark">
+                        @Model.ServiceName
+                    </h4>
+
+                    <p>@Model.Details</p>
+
+                    <div class="row">
+                        <dt class="col-3">Category:</dt>
+                        <dd class="col-9">@Model.Category</dd>
+
+                        <dt class="col-3">Location:</dt>
+                        <dd class="col-9">@Model.Location</dd>
+
+                        <dt class="col-3">Start Time:</dt>
+                        <dd class="col-9">@Model.StartTime</dd>
+
+                        <dt class="col-3">End Time:</dt>
+                        <dd class="col-9">@Model.EndTime</dd>
+
+                        <dt class="col-3">Quantity:</dt>
+                        <dd class="col-9">@Model.Quantity</dd>
+                    </div>
+
+                    <hr />
+
+                    <a asp-controller="Admin" asp-action="Accept" asp-route-id="@Model.Id" class="btn btn-primary shadow-0">
+                        <i class="me-1 fa fa-shopping-basket"></i> Accept
+                    </a>
+
+                    <a asp-controller="Admin" asp-action="Reject" asp-route-id="@Model.Id" class="btn btn-danger shadow-0">
+                        <i class="me-1 fa fa-ban"></i> Reject
+                    </a>
+                </div>
+            </main>
+        </div>
+    </div>
+</section>
+
+<script>
+    function changeImage(imageUrl) {
+        var mainImage = document.getElementById('mainImage');
+        mainImage.src = imageUrl;
+    }
+</script>

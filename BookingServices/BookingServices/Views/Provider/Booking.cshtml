@@ -1,0 +1,218 @@
+﻿@model BookingServices.Data.Booking
+@{
+    ViewData["Title"] = "Booking Form";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header text-white bg-primary text-center">
+            <h3 class="card-title">Event Booking Form</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Booking" method="post" id="bookingForm">
+                <!-- Service Name and Price in the first row -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Service Name</label>
+                            <input class="form-control" value="@ViewBag.ServiceName" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Price" class="form-label">Price</label>
+                            <input asp-for="Price" type="number" step="0.01" class="form-control" readonly value="@ViewBag.priceOfCurrentDay" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Name, SSN Input, and Fetch Button in the second row -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Customer Name</label>
+                            <input id="CustomerName" class="form-control" value="@ViewBag.CustomerName" readonly />
+                            <span id="customerError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="CustomerId" class="form-label">SSN</label>
+                            <input asp-for="CustomerId" id="CustomerId" name="CustomerId" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" id="fetchCustomer" class="btn btn-primary mt-4">Fetch Customer</button>
+                    </div>
+                </div>
+
+                <!-- Event Date, Start Time, End Time with arrow dropdown -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="EventDate" class="form-label">Event Date</label>
+                            <input asp-for="EventDate" type="date" class="form-control" id="eventDate"
+                                   min="@DateTime.Now.ToString("yyyy-MM-dd")" max="@DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="EventDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="StartTime" class="form-label">Start Time</label>
+                            <select asp-for="StartTime" class="form-control" id="startTime" disabled></select>
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="EndTime" class="form-label">End Time</label>
+                            <select asp-for="EndTime" class="form-control" id="endTime" disabled></select>
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quantity, Payment Method, Payment Type -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Quantity" class="form-label">Quantity</label>
+                            <input asp-for="Quantity" class="form-control" placeholder="Available quantity: @ViewBag.AvailableQuantity" max="@ViewBag.AvailableQuantity" min="1" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="CashOrInstallment" class="form-label">Payment Type</label>
+                            <select asp-for="CashOrInstallment" class="form-select" id="paymentType">
+                                <option value="">-- Select Payment Type --</option>
+                                <option value="true">Cash By Hand</option>
+                                <option value="true">Cash</option>
+                                <option value="false">Installment</option>
+                            </select>
+                            <span asp-validation-for="CashOrInstallment" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="PaymentIncomeId" class="form-label">Payment Method</label>
+                            <select asp-for="PaymentIncomeId" class="form-select" id="paymentMethod">
+                                <option value="">-- Select Payment Method --</option>
+                                @foreach (var item in ViewBag.paymentMethod)
+                                {
+                                    @if (item.PaymentIncomeId == 1) continue;
+                                    <option value="@item.PaymentIncomeId">@item.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="PaymentIncomeId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Booking Button on the left -->
+                <div class="row mb-3">
+                    <div class="col-md-12 text-start">
+                        <button type="submit" class="btn btn-primary">Submit Booking</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.getElementById('paymentType').addEventListener('change', function () {
+            var paymentMethod = document.getElementById('paymentMethod');
+            if (this.value === 'CashByHand') {
+                //paymentMethod.selectedIndex = 1;
+                paymentMethod.disabled = true;
+            } else {
+                paymentMethod.disabled = false;
+            }
+        });
+
+        document.getElementById('fetchCustomer').addEventListener('click', function () {
+            var ssn = document.getElementById('CustomerId').value;
+            fetch(`/Provider/GetCustomerBySSN?ssn=${ssn}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // console.log("su " + data);
+                        document.getElementById('CustomerName').value = data.customerName;
+                        document.getElementById('customerError').textContent = '';
+                    } else {
+                        // console.log("fail " + data);
+                        document.getElementById('CustomerName').value = '';
+                        document.getElementById('customerError').textContent = 'Customer not found';
+                    }
+                });
+        });
+
+
+        document.getElementById('eventDate').addEventListener('change', function () {
+            var serviceId = @ViewBag.ServiceId;
+            var eventDate = this.value;
+            fetch(`/Provider/GetAvailableTimes?serviceId=${serviceId}&eventDate=${eventDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    var startTimeDropdown = document.getElementById('startTime');
+                    startTimeDropdown.innerHTML = '';
+
+                    // Add default "please select" option
+                    var defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Please select a start time';
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+                    startTimeDropdown.appendChild(defaultOption);
+
+                    // Populate the dropdown with available times
+                    data.forEach(time => {
+                        var option = document.createElement('option');
+                        var formattedTime = ("0" + time).slice(-2) + ":00";
+                        option.value = formattedTime;
+                        option.textContent = formattedTime;
+                        startTimeDropdown.appendChild(option);
+                    });
+
+                    startTimeDropdown.disabled = false;
+                });
+        });
+
+        document.getElementById('startTime').addEventListener('change', function () {
+            var serviceId = @ViewBag.ServiceId;
+            var eventDate = document.getElementById('eventDate').value;
+            var startTime = this.value;
+            fetch(`/Provider/GetEndTimes?serviceId=${serviceId}&eventDate=${eventDate}&startTime=${startTime}`)
+                .then(response => response.json())
+                .then(data => {
+                    var endTimeDropdown = document.getElementById('endTime');
+                    endTimeDropdown.innerHTML = '';
+
+                    // Add default "please select" option
+                    var defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Please select an end time';
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+                    endTimeDropdown.appendChild(defaultOption);
+
+                    // Populate the dropdown with available times
+                    data.forEach(time => {
+                        var option = document.createElement('option');
+                        var formattedTime = ("0" + time).slice(-2) + ":00";
+                        option.value = formattedTime;
+                        option.textContent = formattedTime;
+                        endTimeDropdown.appendChild(option);
+                    });
+
+                    endTimeDropdown.disabled = false;
+                });
+        });
+
+    </script>
+}
