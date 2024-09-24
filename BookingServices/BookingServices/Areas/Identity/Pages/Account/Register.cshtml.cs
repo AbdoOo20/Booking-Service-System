@@ -196,9 +196,7 @@ namespace BookingServices.Areas.Identity.Pages.Account
                             throw;
                         }
 
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-
-                        return LocalRedirect(returnUrl);
+                        return RedirectToAction("Index", "AdminServiceProvider");
                     }
                 }
             }
