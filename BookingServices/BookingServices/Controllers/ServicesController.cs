@@ -56,7 +56,7 @@ namespace BookingServices.Controllers
             try
             {
                 UserID = await GetCurrentUserID();
-                services = _context.Services.Where(s => s.ProviderId == UserID);
+                services = _context.Services.Where(s => s.ProviderId == UserID).Include(s => s.Category);
             }
             catch (Exception e)
             {
