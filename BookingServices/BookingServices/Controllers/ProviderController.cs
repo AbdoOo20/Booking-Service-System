@@ -29,8 +29,12 @@ namespace BookingServices.Controllers
             if (ModelState.IsValid)
             {
                 var findcustomer = await _context.Customers.FirstOrDefaultAsync(x => x.SSN == model.SSN);
-                if (findcustomer != null) return BadRequest("The Customer Already exists");
-
+                if (findcustomer != null)
+                {
+                    TempData["Message"] = "Customer with this SSN already exists!";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Register");
+                }
                 string tt = DateTime.Now.ToString();
                 string _TempUserNameAndPassword = "";
                 foreach (var x in tt) if (char.IsLetterOrDigit(x)) _TempUserNameAndPassword += x;
@@ -46,7 +50,7 @@ namespace BookingServices.Controllers
                     AccessFailedCount = 0
                 };
 
-                var result = await _userManager.CreateAsync(user, _TempUserNameAndPassword);
+                var result = await _userManager.CreateAsync(user, _TempUserNameAndPassword + "a@");
                 if (result.Succeeded)
                 {
                     _context.Customers.Add(
@@ -58,13 +62,18 @@ namespace BookingServices.Controllers
                             SSN = model.SSN,
                             City = model.City
                         });
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
+
                     // when is the registeration successfull go to the show all services to the providor
-                    return Content("User created successfully");
+                    TempData["Message"] = "Registration successful!";
+                    TempData["MessageType"] = "success";
+                    return RedirectToAction("Register");
                 }
 
+                TempData["Message"] = "Registration failed. Please try again.";
+                TempData["MessageType"] = "error";
                 foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
-                return BadRequest(ModelState); 
+                return Json(ModelState);
             }
             return View(model);
         }
@@ -104,6 +113,14 @@ namespace BookingServices.Controllers
             //SharedserviceId = 1;
             if (ModelState.IsValid)
             {
+                var customer = _context.Customers.FirstOrDefault(x => x.SSN == model.CustomerId);
+                if (customer == null)
+                {
+                    TempData["Message"] = "Customer not found.";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Booking", new { serviceId = SharedserviceId });
+                }
+
                 var bookingEntity = new Booking
                 {
                     EventDate = model.EventDate,
@@ -127,9 +144,13 @@ namespace BookingServices.Controllers
                 _context.SaveChanges();
 
                 // from this point i will go to pay
-                return Content("All is will bro, Booking");
+                //return Content("All is will bro, Booking");
+                TempData["Message"] = "Booking successful!";
+                TempData["MessageType"] = "success";
+                return RedirectToAction("Booking", new { serviceId = SharedserviceId });
             }
-
+            TempData["Message"] = "Booking failed. Please try again.";
+            TempData["MessageType"] = "error";
             return View(model);
         }
 
@@ -137,7 +158,8 @@ namespace BookingServices.Controllers
         [HttpGet]
         public IActionResult GetCustomerBySSN(string ssn)
         {
-            var customer = _context.Customers.FirstOrDefault(c => c.SSN == ssn);
+            // dont forget this is an offline customer
+            var customer = _context.Customers.FirstOrDefault(c => c.SSN == ssn && c.IsOnlineOrOfflineUser == false);
             if (customer != null)
             {
                 return Json(new { success = true, customerName = customer.Name });
@@ -193,5 +215,17 @@ namespace BookingServices.Controllers
 
             return allTimes.Except(allTimesBookedInOneDay).ToList();
         }
+
+        //private int GetAllquantity(int serviceId, DateTime eventDate)
+        //{
+        //    var result = (from b in _context.Bookings
+        //                  join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+        //                  where bs.ServiceId == serviceId && b.EventDate == eventDate
+        //                  select b.Quantity).ToList();
+
+        //    int bookingQuantity = 0;
+        //    foreach (var book in result) bookingQuantity += book;
+        //    return bookingQuantity;
+        //}
     }
 }

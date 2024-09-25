@@ -9,6 +9,13 @@
             <h3 class="card-title">Event Booking Form</h3>
         </div>
         <div class="card-body">
+            @if (TempData["Message"] != null)
+            {
+                var messageType = TempData["MessageType"]?.ToString();
+                <div class="alert @(messageType == "success" ? "alert-success" : "alert-danger")">
+                    @TempData["Message"]
+                </div>
+            }
             <form asp-action="Booking" method="post" id="bookingForm">
                 <!-- Service Name and Price in the first row -->
                 <div class="row mb-3">
