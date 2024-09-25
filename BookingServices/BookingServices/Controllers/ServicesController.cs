@@ -194,9 +194,10 @@ namespace BookingServices.Controllers
                 CategoryName = CategoryName,
                 serviceImages = serviceImages,
                 Reviews = reviews,
-                providerRate = averageRating,
+                providerRate = Math.Round(averageRating, 1),
                 numberOfReviews = numberOfReviews,
-                ProviderID = providerID
+                ProviderID = providerID,
+                ServiceId = id
             };
 
             return View(serviceDetailsModel);

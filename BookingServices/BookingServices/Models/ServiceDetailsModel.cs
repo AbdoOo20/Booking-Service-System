@@ -4,6 +4,8 @@ namespace BookingServices.Models
 {
     public class ServiceDetailsModel
     {
+        public int? ServiceId { get; set; }
+
         public string ServiceName { get; set; }
 
         public decimal? servicePrice { get; set; }

@@ -115,7 +115,7 @@
 
                             <!-- Updated spacing for quantity input and Add to Cart button -->
                             <!-- Custom button with flex-grow to make it bigger -->
-                            <button class="btn btn-primary-custom mt-2 rounded rounded-2">Book Now</button>
+                            <a asp-controller="Provider" asp-action="Booking" asp-route-id="@Model.ServiceId" class="btn btn-primary">Book Now</a>
 
                         </div>
 
