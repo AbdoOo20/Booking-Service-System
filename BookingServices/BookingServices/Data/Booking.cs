@@ -36,7 +36,7 @@ namespace BookingServices.Data
         public string? CustomerId { get; set; }
 
         [ForeignKey("PaymentIncome")]
-        public int PaymentIncomeId { get; set; }
+        public int? PaymentIncomeId { get; set; }
         
         public virtual Customer? Customer { get; set; }
         public virtual PaymentIncome? PaymentIncome { get; set; }
@@ -47,8 +47,8 @@ namespace BookingServices.Data
 
         public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
-        public virtual ICollection<Package> Packages { get; set; } = new List<Package>();
+        public virtual ICollection<BookingPackage> BookingPackages { get; set; } = new List<BookingPackage>();
 
-        public virtual ICollection<Service> Services { get; set; } = new List<Service>();
+        public virtual ICollection<BookingService> BookingServices { get; set; } = new List<BookingService>();
     }
 }
