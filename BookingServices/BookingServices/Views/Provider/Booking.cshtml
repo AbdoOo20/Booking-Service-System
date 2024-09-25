@@ -7,13 +7,13 @@
 <div class="container mt-5">
     <div class="card shadow-lg">
         <div class="card-header text-white bg-primary text-center">
-            <h3 class="card-title">Event Booking Form</h3>
+            <h2 class="text-white">Booking</h2>
         </div>
-        <div class="card-body">
+        <div class="card-body mt-2">
             @if (TempData["Message"] != null)
             {
                 var messageType = TempData["MessageType"]?.ToString();
-                <div class="alert @(messageType == "success" ? "alert-success" : "alert-danger")">
+                <div id="alertMessage" class="alert @(messageType == "success" ? "alert-success" : "alert-danger")">
                     @TempData["Message"]
                 </div>
             }
@@ -50,7 +50,7 @@
                             <input asp-for="CustomerId" id="CustomerId" name="CustomerId" class="form-control" />
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-2">
                         <button type="button" id="fetchCustomer" class="btn btn-primary mt-4">Fetch Customer</button>
                     </div>
                 </div>
@@ -97,8 +97,8 @@
                                 <option value="">-- Select Payment Type --</option>
                                 <option value="true">Cash By Hand</option>
                                 <option value="true">Cash</option>
-                                <option value="false">Installment</option>
-                            </select>
+@*                                 <option value="false">Installment</option>
+ *@                            </select>
                             <span asp-validation-for="CashOrInstallment" class="text-danger"></span>
                         </div>
                     </div>
@@ -222,5 +222,13 @@
                 });
         });
 
+    </script>
+    <script>
+            window.setTimeout(function() {
+                var alertMessage = document.getElementById('alertMessage');
+            if (alertMessage) {
+                alertMessage.style.display = 'none';
+                }
+            }, 3000);
     </script>
 }

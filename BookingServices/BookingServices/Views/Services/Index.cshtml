@@ -82,13 +82,26 @@
                     @if (item.Category is not null)
                     {@Html.DisplayFor(modelItem => item.Category.Name)}
             </td>
-            <td>
-                    <a asp-action="Edit" asp-route-id="@item.ServiceId" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></a> |
-                    <a asp-action="Details" asp-route-id="@item.ServiceId" class="btn btn-outline-success"><i class="fa-solid fa-circle-info"></i></a> |
-                    <a asp-action="Images" asp-route-id="@item.ServiceId" class="btn btn-outline-info"><i class="fa-solid fa-image"></i></a>|
-                    <a asp-action="Prices" asp-route-id="@item.ServiceId" class="btn btn-outline-info"><i class="fa-solid fa-dollar-sign"></i></a>|
-                    <a asp-action="Delete" asp-route-id="@item.ServiceId" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></a>
-            </td>
+                <td>
+                    <div class="d-flex flex-wrap">
+                        <a asp-action="Edit" asp-route-id="@item.ServiceId" class="btn btn-outline-primary me-2 mb-2">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a asp-action="Details" asp-route-id="@item.ServiceId" class="btn btn-outline-success me-2 mb-2">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </a>
+                        <a asp-action="Images" asp-route-id="@item.ServiceId" class="btn btn-outline-info me-2 mb-2">
+                            <i class="fa-solid fa-image"></i>
+                        </a>
+                        <a asp-action="Prices" asp-route-id="@item.ServiceId" class="btn btn-outline-info me-2 mb-2">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.ServiceId" class="btn btn-outline-danger mb-2">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                    </div>
+                </td>
+
         </tr>
 }
     </tbody>

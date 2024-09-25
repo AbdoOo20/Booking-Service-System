@@ -24,8 +24,14 @@ namespace BookingServices.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             string userIdFromManager = user?.Id ?? "";
-            var bookings = _context.Bookings.Include(c => c.Customer);
-
+            //var bookings = _context.Bookings.Where(b => b.Type == "Service").Include(c => c.Customer);
+            var bookings = (from b in _context.Bookings
+                                   from bs in _context.BookingServices
+                                   from s in _context.Services
+                                   where b.BookingId == bs.BookingId
+                                   && bs.ServiceId == s.ServiceId
+                                   && s.ProviderId == userIdFromManager
+                                   select b).Where(b => b.Type == "Service").Include(c => c.Customer);
             if (startDate.HasValue && endDate.HasValue)
             {
                 bookings = bookings.Where(b => b.EventDate >= startDate.Value && b.EventDate <= endDate.Value).Include(C => C.Customer);
