@@ -1,0 +1,255 @@
+﻿@model HomeInfoVM
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_LayoutProvider.cshtml";
+
+}
+<div class="row">
+    <!-- Home Content -->
+    <div class="col">
+        <div class="row">
+            <!-- Service Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card service-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="card-title">
+                                    Total Services
+                                </h3>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <h6>@Model.ServicesCount</h6>
+                                        <span class="text-muted small pt-2 ps-1">
+                                            Total Services
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h3 class="card-title">
+                                </h3>
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fa-solid fa-table-cells-large"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Service Card -->
+            <!-- Contract Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card contract-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="card-title">
+                                    Total Contracts
+                                </h3>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <h6>@Model.ContaractCount</h6>
+                                        <span class="text-muted small pt-2 ps-1">
+                                            Total Contract
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h3 class="card-title">
+                                </h3>
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fa-solid fa-file-contract"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Contract Card -->
+            <!-- BookService Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card bookService-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="card-title">
+                                    Total Book Service
+                                </h3>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <h6>@Model.BookServiceCount</h6>
+                                        <span class="text-muted small pt-2 ps-1">
+                                            Total Book Service
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h3 class="card-title">
+                                </h3>
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fa-solid fa-ticket-simple"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End BookService Card -->
+            <!-- PackageCreatedCount Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card packageCreated-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="card-title">
+                                    Total Package's Own
+                                </h3>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <h6>@Model.PackageCreateCount</h6>
+                                        <span class="text-muted small pt-2 ps-1">
+                                            Total Package's Own
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h3 class="card-title">
+                                </h3>
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fa-brands fa-bitbucket"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End PackageCreatedCount Card -->
+            <!-- Number Of Social Clicks Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card click-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="card-title">
+                                    Clicks on Social Links
+                                </h3>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <h6>@Model.TotalOfClicks</h6>
+                                        <span class="text-muted small pt-2 ps-1">
+                                            Clicks on Social Links
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h3 class="card-title">
+                                </h3>
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fa-regular fa-hand-pointer"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Number Of Social Clicks Card -->
+            <!-- Total Money From Service Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card serviceMoney-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="card-title">
+                                    Money From Service
+                                </h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <h6>@Model.TotalMoneyService</h6>
+                                        <span class="text-muted small pt-2 ps-1">
+                                            Money From Service
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h3 class="card-title">
+                                </h3>
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fa-solid fa-dollar-sign"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Total Money From Service Card -->
+            <!-- Start Chart -->
+            <h2>Activity Details</h2>
+            <canvas id="myChart" width="350" height="150"></canvas>
+            <!-- End Chart -->
+
+        </div>
+    </div>
+    <!-- End Home Content -->
+    <script>
+        var salesData = @Html.Raw(Json.Serialize(ViewBag.SalesData));
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Services', 'Total Contracts', 'Total Book Service', 'Total Package"s Own'],
+                datasets: [{
+                    label: 'Activity',
+                    data: salesData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>

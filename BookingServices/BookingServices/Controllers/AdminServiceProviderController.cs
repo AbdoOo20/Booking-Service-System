@@ -1,7 +1,12 @@
 ﻿using BookingServices.Data;
+using BookingServices.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BookingServices.Controllers
 {
@@ -17,7 +22,22 @@ namespace BookingServices.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
-            return View(_context.ServiceProviders.ToList());
+            var providers = _context.ServiceProviders.Include(p => p.IdentityUser).ToList();
+
+            List<ProviderDataVM> providerDataVMs = new List<ProviderDataVM>();
+            foreach (var p in providers)
+            {
+                var providerDataVM = new ProviderDataVM()
+                {
+                    Name = p.Name,
+                    Phone = p.IdentityUser.PhoneNumber,
+                    Email = p.IdentityUser.Email,
+                    ServiceDetails = p.ServiceDetails,
+                };
+                providerDataVMs.Add(providerDataVM);
+            }
+
+            return View(providerDataVMs);
         }
 
         // GET: AdminServiceProvider/Details/5

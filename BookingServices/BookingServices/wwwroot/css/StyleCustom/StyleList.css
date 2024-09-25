@@ -1,0 +1,18 @@
+﻿td, th {
+    vertical-align: middle;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+    padding: 15px !important;
+    font-size: 15px
+}
+
+tr th {
+    background-color: #e7effd !important;
+    color: #475569 !important
+}
+
+a i {
+    font-size: 25px !important;
+    text-align: center;
+}

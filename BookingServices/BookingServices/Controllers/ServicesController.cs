@@ -4,55 +4,235 @@ using Microsoft.EntityFrameworkCore;
 using BookingServices.Data;
 using Newtonsoft.Json;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using BookingServices.ViewModel;
 
 namespace BookingServices.Controllers
 {
+    [Authorize("PROVIDER")]
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly HttpClient _client;
         private readonly string SaudiArabiaRegionsCitiesAndDistricts;
         private readonly IWebHostEnvironment _environment;
+        private readonly UserManager<IdentityUser> _userManager;
+        string UserID;
+        ErrorViewModel errorViewModel;
 
-        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment)
+        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _client = client;
             SaudiArabiaRegionsCitiesAndDistricts = "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
             _environment = environment;
+            _userManager = userManager;
+            UserID = "";
+            errorViewModel = new ErrorViewModel();
         }
+
+        public async Task<string> GetCurrentUserID()
+        {
+            IdentityUser? user = await _userManager.GetUserAsync(User);
+            return user.Id ?? "";
+        }
+        public IActionResult ErrorHandling(string action, string message)
+        {
+            errorViewModel.Controller = "Services";
+            errorViewModel.Action = action;
+            errorViewModel.Message = message;
+
+            return View("Error", errorViewModel);
+        }
+
 
         // GET: Services
         public async Task<IActionResult> Index()
         {
-            var services = _context.Services
-                .Include(s => s.AdminContract)
-                .Include(s => s.BaseService)
-                .Include(s => s.Category)
-                .Include(s => s.ProviderContract)
-                .Include(s => s.ServiceProvider);
+            IQueryable<Service> services = Enumerable.Empty<Service>().AsQueryable();
+            try
+            {
+                UserID = await GetCurrentUserID();
+                services = _context.Services.Where(s => s.ProviderId == UserID);
+            }
+            catch (Exception e)
+            {
+                ErrorHandling(nameof(Index),e.Message);
+            }
 
-            return View(await services.ToListAsync());
+            return View(services.ToList());
         }
 
+
+        /// <summary>
+        /// Get Details of Each Service 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: Services/Details/5
+        // GET: Services/Details/5
+
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                ErrorHandling(nameof(Details), "The ID is Required");
+            }
 
-            var service = await _context.Services
-                .Include(s => s.AdminContract)
-                .Include(s => s.BaseService)
-                .Include(s => s.Category)
-                .Include(s => s.ProviderContract)
-                .Include(s => s.ServiceProvider)
-                .FirstOrDefaultAsync(m => m.ServiceId == id);
+            var service = await _context.Services.Where(m => m.ServiceId == id)
+                .Select(s => new
+                {
+                    s.Name,
+                    s.StartTime,
+                    s.EndTime,
+                    s.Quantity,
+                    s.Location,
+                    s.Details,
+                    s.ServiceId
+                })
+                .FirstOrDefaultAsync();
 
-            if (service == null) return NotFound();
+            if (service == null)
+            {
+                return NotFound();
+            }
 
-            return View(service);
+            var CurrentDate = DateTime.Now.Date;
+
+            var servicePrice = await (from s in _context.Services
+                                      join sp in _context.ServicePrices
+                                      on s.ServiceId equals sp.ServiceId
+                                      where sp.PriceDate.Date == CurrentDate
+                                      select new
+                                      {
+                                          ServicePrice = sp.Price
+                                      }).FirstOrDefaultAsync();
+
+            int daysBack = 1;
+            while (servicePrice == null)
+            {
+                var previousDate = CurrentDate.AddDays(-daysBack);
+
+                servicePrice = await (from s in _context.Services
+                                      join sp in _context.ServicePrices
+                                      on s.ServiceId equals sp.ServiceId
+                                      where sp.PriceDate.Date == previousDate
+                                      select new
+                                      {
+                                          ServicePrice = sp.Price
+                                      }).FirstOrDefaultAsync();
+
+                daysBack++;
+            }
+
+            var providerName = await (from s in _context.Services
+                                      join sp in _context.ServiceProviders
+                                      on s.ProviderId equals sp.ProviderId
+                                      join a in _context.Users
+                                      on sp.ProviderId equals a.Id
+                                      select new
+                                      {
+                                          ProviderName = sp.Name
+                                      }).FirstOrDefaultAsync();
+
+            var providerID = await _context.Services.Where(s => s.ServiceId == id).Select(s => s.ProviderId).FirstOrDefaultAsync();
+
+            var serviceImages = await (from s in _context.Services
+                                       join si in _context.ServiceImages
+                                       on s.ServiceId equals si.ServiceId
+                                       where s.ServiceId == id
+            select si.URL).ToListAsync();
+
+            var CategoryName = await(from s in _context.Services
+                                      join c in _context.Categories on s.CategoryId equals c.CategoryId
+                                      where s.ServiceId == id
+                                      select c.Name).FirstOrDefaultAsync();
+
+            // Fix: Assign customerId inside the reviews query
+            List<ReviewModel> reviews = await (from r in _context.Reviews
+                                               join a in _context.Users on r.CustomerId equals a.Id
+                                               select new ReviewModel
+                                               {
+                                                   ReviewerName = a.UserName,
+                                                   BookingId = r.BookingId,
+                                                   CustomerComment = r.CustomerComment,
+                                                   CustomerCommentDate = r.CustomerCommentDate,
+                                                   CustomerId = r.CustomerId,
+                                                   ProviderReplayComment = r.ProviderReplayComment,
+                                                   ProviderReplayCommentDate = r.ProviderReplayCommentDate
+                                               }).ToListAsync();
+
+
+
+            var numberOfReviews = await (from r in _context.Reviews
+                                         join bs in _context.BookingServices
+                                         on r.BookingId equals bs.BookingId
+                                         where bs.ServiceId == id
+                                         select r.CustomerId).CountAsync();
+            decimal averageRating = 0;
+            if (numberOfReviews > 0)
+            {
+                averageRating = await (from r in _context.Reviews
+                                       join bs in _context.BookingServices
+                                       on r.BookingId equals bs.BookingId
+                                       where bs.ServiceId == id
+                                       select r.Rating).AverageAsync();
+            }
+            ServiceDetailsModel serviceDetailsModel = new ServiceDetailsModel()
+            {
+                ServiceName = service.Name,
+                servicePrice = servicePrice.ServicePrice,
+                startTime = service.StartTime,
+                endTime = service.EndTime,
+                AvailableQuantity = service.Quantity,
+                ServiceDetails = service.Details,
+                serviceLocation = service.Location,
+                providerName = providerName.ProviderName,
+                CategoryName = CategoryName,
+                serviceImages = serviceImages,
+                Reviews = reviews,
+                providerRate = Math.Round(averageRating, 1),
+                numberOfReviews = numberOfReviews,
+                ProviderID = providerID,
+                ServiceId = id
+            };
+
+            return View(serviceDetailsModel);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> AddProviderReply(string customerId, string providerReply, int BookID)
+        {
+            if (string.IsNullOrWhiteSpace(customerId) || string.IsNullOrWhiteSpace(providerReply))
+            {
+                return Json(new { success = false, message = "Customer ID and provider reply cannot be empty." });
+            }
+
+            var review = await _context.Reviews.FirstOrDefaultAsync(r => r.CustomerId == customerId && r.BookingId == BookID);
+
+            if (review == null)
+            {
+                return Json(new { success = false, message = "Review not found." });
+            }
+
+            review.ProviderReplayComment = providerReply;
+            review.ProviderReplayCommentDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                providerReply = review.ProviderReplayComment,
+                providerReplyDate = review.ProviderReplayCommentDate
+            });
+        }
         // GET: Services/Create
         public async Task<IActionResult> CreateAsync()
         {
@@ -60,10 +240,21 @@ namespace BookingServices.Controllers
             return View();
         }
 
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Details,Location,StartTime,EndTime,Quantity,InitialPaymentPercentage,CategoryId,BaseServiceId,ProviderContractId,AdminContractId")] Service service, IFormFileCollection Images, decimal Price)
         {
+            try
+            {
+                UserID = await GetCurrentUserID();
+            }
+            catch (Exception e)
+            {
+                ErrorHandling(nameof(Create),e.Message);
+            }
+            service.ProviderId = UserID;
             service.IsOnlineOrOffline = false;
             service.IsRequestedOrNot = false;
 
@@ -85,10 +276,13 @@ namespace BookingServices.Controllers
         // GET: Services/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+
+            if (id == null)
+                ErrorHandling(nameof(Edit), "ID is Required !!!");
 
             var service = await _context.Services.FindAsync(id);
-            if (service == null) return NotFound();
+            if (service == null)
+                ErrorHandling(nameof(Edit), "The Service Dose Not Exists !!!");
 
             await AddSelectLists(service);
             return View(service);
@@ -99,7 +293,15 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("ServiceId,Name,Details,Location,StartTime,EndTime,Quantity,InitialPaymentPercentage,CategoryId,BaseServiceId,ProviderContractId,AdminContractId,ProviderId")] Service service, IFormFileCollection Images, decimal Price)
         {
             if (id != service.ServiceId) return NotFound();
-
+            try
+            {
+                UserID = await GetCurrentUserID();
+            }
+            catch (Exception e)
+            {
+                ErrorHandling(nameof(Edit), e.Message);
+            }
+            service.ProviderId = UserID;
             if (ModelState.IsValid)
             {
                 try
@@ -110,10 +312,9 @@ namespace BookingServices.Controllers
                     await FileUpload(Images, service.ServiceId);
                     await ServicePrice(Price, service.ServiceId);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception e)
                 {
-                    if (!ServiceExists(service.ServiceId)) return NotFound();
-                    else throw;
+                    ErrorHandling(nameof(Edit), e.Message);
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -125,17 +326,12 @@ namespace BookingServices.Controllers
         // GET: Services/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                ErrorHandling(nameof(Edit), "ID is Required !!!");
 
-            var service = await _context.Services
-                .Include(s => s.AdminContract)
-                .Include(s => s.BaseService)
-                .Include(s => s.Category)
-                .Include(s => s.ProviderContract)
-                .Include(s => s.ServiceProvider)
-                .FirstOrDefaultAsync(m => m.ServiceId == id);
-
-            if (service == null) return NotFound();
+            var service = await _context.Services.FindAsync(id);
+            if (service == null)
+                ErrorHandling(nameof(Edit), "The Service Dose Not Exists !!!");
 
             return View(service);
         }
@@ -146,7 +342,9 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var service = await _context.Services.FindAsync(id);
-            if (service == null) return NotFound();
+            if (service == null)
+                ErrorHandling(nameof(Delete), "The Service Dose Not Exists !!!");
+
 
             var hasBookings = _context.BookingServices.Any(b => b.ServiceId == id);
             if (hasBookings)
@@ -155,19 +353,26 @@ namespace BookingServices.Controllers
                 return View(service);
             }
 
-            _context.Services.Remove(service);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Services.Remove(service);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling(nameof(Delete), ex.Message);
+            }
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Services/Images/5
         public async Task<IActionResult> Images(int id)
         {
-            if (!ServiceExists(id)) return NotFound();
+            if (!ServiceExists(id))
+                ErrorHandling(nameof(Images), "The Service Dose Not Exists !!!");
 
             var serviceImages = _context.ServiceImages.Where(s => s.ServiceId == id).Include(s => s.Service);
             var service = await _context.Services.FindAsync(id);
-            if (service == null) return NotFound();
             ViewData["ServiceName"] = service.Name;
             ViewData["ServiceId"] = service.ServiceId;
 
@@ -178,7 +383,7 @@ namespace BookingServices.Controllers
         public Task<IActionResult> AddImage(int id)
         {
             if (!ServiceExists(id))
-                return Task.FromResult<IActionResult>(NotFound());
+                ErrorHandling(nameof(AddImage), "The Service Dose Not Exists !!!");
 
             ViewData["ServiceId"] = id;
             return Task.FromResult<IActionResult>(View());
@@ -189,7 +394,8 @@ namespace BookingServices.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddImage(int id, IFormFileCollection Images)
         {
-            if (!ServiceExists(id)) return NotFound();
+            if (!ServiceExists(id))
+                ErrorHandling(nameof(AddImage), "The Service Dose Not Exists !!!");
 
             await FileUpload(Images, id);
             return RedirectToAction(nameof(Images), new { id });
@@ -197,12 +403,15 @@ namespace BookingServices.Controllers
 
         public async Task<IActionResult> DeleteImage(int id, [FromQuery] string url)
         {
-            if (!ServiceExists(id)) return NotFound();
+            if (!ServiceExists(id))
+                ErrorHandling(nameof(DeleteImage), "The Service Dose Not Exists !!!");
 
             var serviceImage = await _context.ServiceImages
                 .FirstOrDefaultAsync(si => si.ServiceId == id && si.URL == url);
 
-            if (serviceImage == null) return NotFound();
+            if (serviceImage == null) 
+                ErrorHandling(nameof(DeleteImage), "The Service Dose Not Exists !!!");
+
 
             _context.ServiceImages.Remove(serviceImage);
             await _context.SaveChangesAsync();
@@ -213,11 +422,11 @@ namespace BookingServices.Controllers
         // GET: Prices/5
         public async Task<IActionResult> Prices(int id)
         {
-            if (!ServiceExists(id)) return NotFound();
+            if (!ServiceExists(id)) 
+                ErrorHandling(nameof(Prices), "The Service Dose Not Exists !!!");
 
             var servicePrices = _context.ServicePrices.Where(s => s.ServiceId == id).Include(s => s.Service);
             var service = await _context.Services.FindAsync(id);
-            if (service == null) return NotFound();
             ViewData["ServiceName"] = service.Name;
             ViewData["ServiceId"] = service.ServiceId;
 

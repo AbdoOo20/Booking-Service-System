@@ -1,10 +1,12 @@
 ﻿using BookingServices.Data;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingServices.Controllers
 {
+    [Authorize("ADMIN")]
     public class CategoryController : Controller
     {
         ApplicationDbContext context;

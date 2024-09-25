@@ -1,11 +1,13 @@
 ﻿using BookingServices.Data;
 using BookingServices.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace BookingServices.Controllers
 {
+    [Authorize("ADMIN")]
     public class AdminController : Controller
     {
         private ApplicationDbContext _appcontext;

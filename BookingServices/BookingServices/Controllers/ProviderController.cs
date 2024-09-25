@@ -82,24 +82,24 @@ namespace BookingServices.Controllers
         // Provider/Booking?serviceId=1
         private static int SharedserviceId;
         [HttpGet]
-        public IActionResult Booking(int serviceId)
+        public IActionResult Booking(int id)
         {
-            SharedserviceId = serviceId;
+            SharedserviceId = id;
             ViewBag.AvailableQuantity = _context.Services
-                .Where(s => s.ServiceId == serviceId)
+                .Where(s => s.ServiceId == id)
                 .Select(s => s.Quantity).FirstOrDefault();
 
             ViewBag.ServiceName = _context.Services
-                .Where(s => s.ServiceId == serviceId)
+                .Where(s => s.ServiceId == id)
                 .Select(s => s.Name).FirstOrDefault().ToString();
 
             ViewBag.paymentMethod = _context.PaymentIncomes.ToList();
             
             var today = DateTime.Now.Date;
             ViewBag.priceOfCurrentDay = _context.ServicePrices
-                .Where(x => x.ServiceId == serviceId && x.PriceDate.Date == today)
+                .Where(x => x.ServiceId == id && x.PriceDate.Date == today)
                 .Select(x => x.Price).FirstOrDefault();
-            ViewBag.ServiceId = serviceId;
+            ViewBag.ServiceId = id;
             return View();
         }
 

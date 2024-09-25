@@ -25,7 +25,7 @@ namespace BookingServices
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -37,6 +37,19 @@ namespace BookingServices
             });
 
             builder.Services.AddHttpClient();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ADMIN", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });                
+                options.AddPolicy("PROVIDER", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });
+            });
+
 
             var app = builder.Build();
 
@@ -54,8 +67,9 @@ namespace BookingServices
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

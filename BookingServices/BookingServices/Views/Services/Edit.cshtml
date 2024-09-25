@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Edit Service";
+    Layout = "~/Views/Shared/_LayoutProvider.cshtml";
+
 }
 
 <h1 class="text-center mb-4">Edit Service</h1>
@@ -65,7 +67,7 @@
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="CategoryId" class="form-label">Category</label>
                     <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
-                        <option value="">-- Select Location --</option>
+                        <option value="">-- Select Category --</option>
                     </select>
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>

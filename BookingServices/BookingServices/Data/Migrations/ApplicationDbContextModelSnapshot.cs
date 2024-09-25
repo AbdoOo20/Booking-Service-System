@@ -71,7 +71,7 @@ namespace BookingServices.Data.Migrations
                     b.Property<DateTime>("EventDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PaymentIncomeId")
+                    b.Property<int?>("PaymentIncomeId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -276,9 +276,6 @@ namespace BookingServices.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PackageId"));
 
-                    b.Property<int?>("BookingId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -301,8 +298,6 @@ namespace BookingServices.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("PackageId");
-
-                    b.HasIndex("BookingId");
 
                     b.HasIndex("ProviderId");
 
@@ -481,9 +476,6 @@ namespace BookingServices.Data.Migrations
                     b.Property<int?>("BaseServiceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BookingId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
@@ -530,8 +522,6 @@ namespace BookingServices.Data.Migrations
                     b.HasIndex("AdminContractId");
 
                     b.HasIndex("BaseServiceId");
-
-                    b.HasIndex("BookingId");
 
                     b.HasIndex("CategoryId");
 
@@ -865,9 +855,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasOne("BookingServices.Data.PaymentIncome", "PaymentIncome")
                         .WithMany("Bookings")
-                        .HasForeignKey("PaymentIncomeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PaymentIncomeId");
 
                     b.Navigation("Customer");
 
@@ -896,7 +884,7 @@ namespace BookingServices.Data.Migrations
             modelBuilder.Entity("BookingServices.Data.BookingPackage", b =>
                 {
                     b.HasOne("BookingServices.Data.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("BookingPackages")
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -915,7 +903,7 @@ namespace BookingServices.Data.Migrations
             modelBuilder.Entity("BookingServices.Data.BookingService", b =>
                 {
                     b.HasOne("BookingServices.Data.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("BookingServices")
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -966,10 +954,6 @@ namespace BookingServices.Data.Migrations
 
             modelBuilder.Entity("BookingServices.Data.Package", b =>
                 {
-                    b.HasOne("BookingServices.Data.Booking", null)
-                        .WithMany("Packages")
-                        .HasForeignKey("BookingId");
-
                     b.HasOne("BookingServices.Data.ServiceProvider", "ServiceProvider")
                         .WithMany("Packages")
                         .HasForeignKey("ProviderId");
@@ -1050,10 +1034,6 @@ namespace BookingServices.Data.Migrations
                     b.HasOne("BookingServices.Data.Service", "BaseService")
                         .WithMany("Relatedservices")
                         .HasForeignKey("BaseServiceId");
-
-                    b.HasOne("BookingServices.Data.Booking", null)
-                        .WithMany("Services")
-                        .HasForeignKey("BookingId");
 
                     b.HasOne("BookingServices.Data.Category", "Category")
                         .WithMany("Services")
@@ -1205,13 +1185,13 @@ namespace BookingServices.Data.Migrations
                 {
                     b.Navigation("BookingConsultations");
 
-                    b.Navigation("Packages");
+                    b.Navigation("BookingPackages");
+
+                    b.Navigation("BookingServices");
 
                     b.Navigation("Payments");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("BookingServices.Data.Category", b =>
