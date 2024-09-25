@@ -1,0 +1,50 @@
+﻿using BookingServices.Data;
+using Microsoft.AspNetCore.Mvc;
+using BookingServices.ViewModel;
+using Microsoft.AspNetCore.Identity;
+
+
+namespace BookingServices.Controllers
+{
+    public class ProviderHomeController : Controller
+    {
+        ApplicationDbContext context;
+        private readonly UserManager<IdentityUser> _userManager;
+        public ProviderHomeController(ApplicationDbContext _context, UserManager<IdentityUser> userManager)
+        {
+            context = _context;
+            _userManager = userManager;
+        }
+        public async Task<ActionResult> Index()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            string userIdFromManager = user?.Id ?? "";
+            var services = context.Services.Where(s => s.ProviderId == userIdFromManager).Count();
+            var contracts = context.ProviderContracts.Where(pc => pc.ProviderId == userIdFromManager).Count();
+            var totalBookingsForServiceProvider =
+                context.BookingServices.
+                Where(bs => bs.Service != null &&
+                    bs.Service.ServiceProvider != null &&
+                    bs.Service.ServiceProvider.ProviderId == userIdFromManager)
+                .Count();
+            var packageCreatedCount = context.Packages.Where(p => p.ProviderId == userIdFromManager).Count();
+            var TotalOfClicks = context.Links.Where(l => l.ProviderId == userIdFromManager).Sum(l => l.NumberOfClicks);
+            var TotalMoneyService = context.BookingServices.Where(bs => bs.Service.ProviderId == userIdFromManager).
+                Select(bs => bs.Booking).Sum(b => b.Price);
+            HomeInfoVM homeInfoVM = new HomeInfoVM();
+            homeInfoVM.ServicesCount = services;
+            homeInfoVM.ContaractCount = contracts;
+            homeInfoVM.BookServiceCount = totalBookingsForServiceProvider;
+            homeInfoVM.PackageCreateCount = packageCreatedCount;
+            homeInfoVM.TotalOfClicks = TotalOfClicks;
+            homeInfoVM.TotalMoneyService = TotalMoneyService;
+            //Start Chart
+            var salesData = new List<int> { services, contracts, totalBookingsForServiceProvider, packageCreatedCount };
+            ViewBag.SalesData = salesData;
+            //End Chart
+            if (homeInfoVM == null)
+                return NotFound();
+            return View(homeInfoVM);
+        }
+    }
+}

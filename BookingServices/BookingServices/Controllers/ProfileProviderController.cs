@@ -25,19 +25,27 @@ namespace BookingServices.Controllers
         {
             var user = await _userManager.GetUserAsync(User); 
             string userIdFromManager = user?.Id ?? "";
-            var provider = context.ServiceProviders.Include(p => p.IdentityUser).FirstOrDefault(p => p.ProviderId == UserID);
-            providerDataVM = new ProviderDataVM()
+            var provider = context.ServiceProviders.Include(p => p.IdentityUser).FirstOrDefault(p => p.ProviderId == userIdFromManager);
+            if (provider == null)
             {
-                ProviderId = provider.ProviderId,
-                Name = provider.IdentityUser.UserName,
-                Email = provider.IdentityUser.Email,
-                Phone = provider.IdentityUser.PhoneNumber,
-                Rate = provider.Rate,
-                Balance = provider.Balance,
-                ReservedBalance = provider.ReservedBalance,
-                ServiceDetails = provider.ServiceDetails
-            };
-            return View(providerDataVM);
+                errorViewModel = new ErrorViewModel { Message = "Provider Not found", Controller = "ProfileProvider", Action = "Index" };
+                return View("Error", errorViewModel);
+            }
+            else
+            {
+                providerDataVM = new ProviderDataVM()
+                {
+                    ProviderId = provider.ProviderId,
+                    Name = provider.IdentityUser.UserName,
+                    Email = provider.IdentityUser.Email,
+                    Phone = provider.IdentityUser.PhoneNumber,
+                    Rate = provider.Rate,
+                    Balance = provider.Balance,
+                    ReservedBalance = provider.ReservedBalance,
+                    ServiceDetails = provider.ServiceDetails
+                };
+                return View(providerDataVM);
+            }
         }
 
         [HttpPost, Route("Edit")]

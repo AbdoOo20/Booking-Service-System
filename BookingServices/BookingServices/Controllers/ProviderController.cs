@@ -60,7 +60,7 @@ namespace BookingServices.Controllers
                         });
                     _context.SaveChanges();
                     // when is the registeration successfull go to the show all services to the providor
-                    return Content("User created successfully");
+                    return View();
                 }
 
                 foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);

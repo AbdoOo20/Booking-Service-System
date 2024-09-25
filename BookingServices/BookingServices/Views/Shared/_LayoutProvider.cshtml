@@ -1,0 +1,383 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@if (SignInManager.IsSignedIn(User))
+{
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/font-awesome/css/all.min.css" rel="stylesheet" />
+@*     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> 
+    <link rel="stylesheet" href="~/BookingServices.styles.css" asp-append-version="true" /> *@
+    <link rel="stylesheet" href="~/css/HomeStyle.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        @* Logo *@
+        <div class="d-flex align-items-center justify-content-between">
+            <a asp-area="" asp-controller="ProviderHome" asp-action="Index" class="logo d-flex align-items-center">
+                <span class="d-none d-lg-block">BookingServices</span>
+            </a>
+            <i class="fa-solid fa-bars toggle-sidebar-btn"></i>
+        </div>
+
+        @* End Logo *@
+
+
+
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center">
+                <!-- Start Notification Icon -->
+                <li class="nav-item">
+                    <a class="nav-link nav-icon" href="#">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge bg-primary badge-number">4</span>
+                    </a>
+                    @* <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                    <li class="dropdown-header">
+                    You have 4 new notifications
+                    <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    </li>
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="notification-item">
+                    <i class="fa-regular fa-envelope text-danger"></i>
+                    <div>
+                    <h4>Lorem Ipsum</h4>
+                    <p>Quae dolorem earum veritatis oditseno</p>
+                    <p>30 min. ago</p>
+                    </div>
+                    </li>
+
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="notification-item">
+                    <i class="bi bi-x-circle text-danger"></i>
+                    <div>
+                    <h4>Atque rerum nesciunt</h4>
+                    <p>Quae dolorem earum veritatis oditseno</p>
+                    <p>1 hr. ago</p>
+                    </div>
+                    </li>
+
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="notification-item">
+                    <i class="bi bi-check-circle text-success"></i>
+                    <div>
+                    <h4>Sit rerum fuga</h4>
+                    <p>Quae dolorem earum veritatis oditseno</p>
+                    <p>2 hrs. ago</p>
+                    </div>
+                    </li>
+
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="notification-item">
+                    <i class="bi bi-info-circle text-primary"></i>
+                    <div>
+                    <h4>Dicta reprehenderit</h4>
+                    <p>Quae dolorem earum veritatis oditseno</p>
+                    <p>4 hrs. ago</p>
+                    </div>
+                    </li>
+
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+                    <li class="dropdown-footer">
+                    <a href="#">Show all notifications</a>
+                    </li>
+
+                    </ul><!-- End Notification Dropdown Items -->
+                    *@
+                </li><!-- End Notification Nav -->
+                <!-- Start Message Icon-->
+                <li class="nav-item">
+                    <a class="nav-link nav-icon" href="#">
+                        <i class="fa-regular fa-envelope"></i>
+                        <span class="badge bg-success badge-number">3</span>
+                    </a>
+                    @*
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+                    <li class="dropdown-header">
+                    You have 3 new messages
+                    <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                    </li>
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="message-item">
+                    <a href="#">
+                    <div>
+                    <h4>Maria Hudson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>4 hrs. ago</p>
+                    </div>
+                    </a>
+                    </li>
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="message-item">
+                    <a href="#">
+                    <div>
+                    <h4>Anna Nelson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>6 hrs. ago</p>
+                    </div>
+                    </a>
+                    </li>
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="message-item">
+                    <a href="#">
+                    <div>
+                    <h4>David Muldon</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>8 hrs. ago</p>
+                    </div>
+                    </a>
+                    </li>
+                    <li>
+                    <hr class="dropdown-divider">
+                    </li>
+
+                    <li class="dropdown-footer">
+                    <a href="#">Show all messages</a>
+                    </li>
+
+                    </ul><!-- End Messages Dropdown Items --> *@
+                </li>
+                <!-- End Messages Nav -->
+                <!-- Start Profile Nav -->
+                <li class="nav-item dropdown pe-3">
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage" class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
+                        <span class="d-md-block dropdown-toggle ps-2">@User.Identity?.Name</span>
+                    </a>
+              
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                    <li class="dropdown-header">
+                          <h6>@User.Identity?.Name</h6>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="ProfileProvider" asp-action="Index">
+                            <i class="bi bi-person"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <i class="bi bi-box-arrow-right"></i> 
+                            <span>
+                                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                    <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                                </form>
+                            </span>
+                        </a>
+                    </li>
+
+                </ul><!-- End Profile Dropdown Items -->
+                </li>
+                <!-- End Profile Nav -->
+
+            </ul>
+        </nav><!-- End Icons Navigation -->
+
+    </header><!-- End Header -->
+    <!-- ======= Sidebar ======= -->
+    <aside id="sidebar" class="sidebar">
+
+        <ul class="sidebar-nav" id="sidebar-nav">
+
+            <li class="nav-item">
+                    <a class="nav-link " asp-controller="ProviderHome" asp-action="Index">
+                    <i class="fa-solid fa-grip"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li><!-- End Dashboard Nav -->
+            <li class="nav-heading">Pages</li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Services-nav" data-bs-toggle="collapse">
+                    <i class="fa-solid fa-table-cells-large"></i><span>Services</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Services-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                            <a asp-controller="Services" asp-action="Index">
+                            <i class="fa-solid fa-circle"></i><span>All Services</span>
+                        </a>
+                    </li>
+                    <li>
+                            <a asp-controller="Services" asp-action="Create">
+                            <i class="fa-solid fa-circle"></i><span>Add Services</span>
+                        </a>
+                    </li>
+                </ul>
+            </li><!-- End Services Nav -->
+
+            @* <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Package-nav" data-bs-toggle="collapse" href="#">
+                    <i class="fa-solid fa-cube"></i><span>Packages</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Package-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="forms-elements.html">
+                            <i class="fa-solid fa-circle"></i><span>Show All Package's Own</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="forms-layouts.html">
+                            <i class="fa-solid fa-circle"></i><span>Show All Package</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="forms-layouts.html">
+                            <i class="fa-solid fa-circle"></i><span>Create Package</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li><!-- End Package Nav --> *@
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Offline-nav" data-bs-toggle="collapse" href="#">
+                    <i class="fa-solid fa-users"></i><span>Offline Users</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Offline-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a asp-controller="provider" asp-action="Register">
+                            <i class="fa-solid fa-circle"></i><span>Add Offline User</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li><!-- End OffLine Users Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Booking-nav" data-bs-toggle="collapse" href="#">
+                    <i class="fa-solid fa-border-top-left"></i><span>Bookings</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Booking-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                            <a asp-controller="_Booking" asp-action="Index">
+                            <i class="fa-solid fa-circle"></i><span>Show All Booking Service</span>
+                        </a>
+                        <a href="">
+                            <i class="fa-solid fa-circle"></i><span>Show All Booking Package</span>
+                        </a>
+                    </li>
+                </ul>
+            </li><!-- End Booking Users Nav -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Contract-nav" data-bs-toggle="collapse" href="#">
+                    <i class="fa-solid fa-file-contract"></i><span>Contracts</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Contract-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a asp-controller="ProviderContracts" asp-action="Index">
+                            <i class="fa-solid fa-circle"></i><span>Show All Contracts</span>
+                        </a>
+                            <a asp-controller="ProviderContracts" asp-action="Create">
+                            <i class="fa-solid fa-circle"></i><span>Add Contract</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li><!-- End Contract Users Nav -->
+           @*  <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Payment-nav" data-bs-toggle="collapse" href="#">
+                    <i class="fa-solid fa-money-bill-wave"></i><span>Payments</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Payment-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="">
+                            <i class="fa-solid fa-circle"></i><span>Show All Service Payment</span>
+                        </a>
+                        <a href="forms-elements.html">
+                            <i class="fa-solid fa-circle"></i><span>Show All Package Payment</span>
+                        </a>
+                    </li>
+
+                </ul> *@
+          @*   </li><!-- End Payment Users Nav -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Reviews-nav" data-bs-toggle="collapse" href="#">
+                    <i class="fa-solid fa-clipboard"></i><span>Reviews</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Reviews-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="">
+                            <i class="fa-solid fa-circle"></i><span>Show All Reviews</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li><!-- End Reviews Users Nav --> *@
+           @*  <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#Links-nav" data-bs-toggle="collapse" href="#">
+                    <i class="fa-solid fa-link"></i><span>Links</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                </a>
+                <ul id="Links-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="">
+                            <i class="fa-solid fa-circle"></i><span>Show Links Clicks</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li><!-- End Reviews Users Nav --> *@
+        </ul>
+
+    </aside><!-- End Sidebar-->
+    <!-- Start Main -->
+    <main id="main" class="main">
+        <section class="section dashboard">
+            @RenderBody()
+        </section>
+    </main>
+    <!-- End Main -->
+
+
+
+    <footer id="footer" class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - BookingServices - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/HomeJs.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+}

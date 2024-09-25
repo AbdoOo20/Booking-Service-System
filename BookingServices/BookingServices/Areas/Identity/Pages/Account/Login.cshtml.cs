@@ -21,11 +21,14 @@ namespace BookingServices.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -114,8 +117,20 @@ namespace BookingServices.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+
+                    // Check the user's role
+                    if (await _userManager.IsInRoleAsync(user, "Provider"))
+                    {
+                        return RedirectToAction("Index", "ProviderHome"); // Redirect to Admin page
+                    }
+                    else if (await _userManager.IsInRoleAsync(user, "User"))
+                    {
+                        return RedirectToAction("Index", "Home"); // Redirect to User page
+                    }
+
+                    // Redirect to homepage if no specific role found
+                    return RedirectToAction("Index", "Home");
                 }
                 if (result.RequiresTwoFactor)
                 {
