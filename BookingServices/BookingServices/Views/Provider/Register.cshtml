@@ -11,10 +11,11 @@
             <h4 class="card-title">Register Offline Customer</h4>
         </div>
         <div class="card-body">
-            @if (ViewData["SuccessMessage"] != null)
+            @if (TempData["Message"] != null)
             {
-                <div class="alert alert-success">
-                    @ViewData["SuccessMessage"]
+                var messageType = TempData["MessageType"]?.ToString();
+                <div class="alert @(messageType == "success" ? "alert-success" : "alert-danger")">
+                    @TempData["Message"]
                 </div>
             }
 
