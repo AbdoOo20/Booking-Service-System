@@ -38,6 +38,19 @@ namespace BookingServices
 
             builder.Services.AddHttpClient();
 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ADMIN", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });                
+                options.AddPolicy("PROVIDER", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -54,8 +67,9 @@ namespace BookingServices
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

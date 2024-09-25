@@ -1,5 +1,6 @@
 ﻿using BookingServices.Data;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingServices.Controllers
 {
+    [Authorize("PROVIDER")]
     public class ProfileProviderController : Controller
     {
         ApplicationDbContext context;
@@ -26,38 +28,29 @@ namespace BookingServices.Controllers
             var user = await _userManager.GetUserAsync(User); 
             string userIdFromManager = user?.Id ?? "";
             var provider = context.ServiceProviders.Include(p => p.IdentityUser).FirstOrDefault(p => p.ProviderId == userIdFromManager);
-            if (provider == null)
+            providerDataVM = new ProviderDataVM()
             {
-                errorViewModel = new ErrorViewModel { Message = "Provider Not found", Controller = "ProfileProvider", Action = "Index" };
-                return View("Error", errorViewModel);
-            }
-            else
-            {
-                providerDataVM = new ProviderDataVM()
-                {
-                    ProviderId = provider.ProviderId,
-                    Name = provider.IdentityUser.UserName,
-                    Email = provider.IdentityUser.Email,
-                    Phone = provider.IdentityUser.PhoneNumber,
-                    Rate = provider.Rate,
-                    Balance = provider.Balance,
-                    ReservedBalance = provider.ReservedBalance,
-                    ServiceDetails = provider.ServiceDetails
-                };
-                return View(providerDataVM);
-            }
+                ProviderId = provider.ProviderId,
+                Name = provider.Name,
+                Email = provider.IdentityUser.Email,
+                Phone = provider.IdentityUser.PhoneNumber,
+                Rate = provider.Rate,
+                Balance = provider.Balance,
+                ReservedBalance = provider.ReservedBalance,
+                ServiceDetails = provider.ServiceDetails
+            };
+            return View(providerDataVM);
         }
 
         [HttpPost, Route("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(ProviderDataVM providerDataVM)
+        public async Task<IActionResult> Edit(ProviderDataVM providerDataVM)
         {
-            //var user = await _userManager.GetUserAsync(User);
-            //string userIdFromManager = user?.Id ?? "";
+            var user = await _userManager.GetUserAsync(User);
+            string useridfrommanager = user?.Id ?? "";
             if (ModelState.IsValid)
             {
-                //user.UserName = providerDataVM.Name;
-                //user.PhoneNumber = providerDataVM.Phone;
+                user.PhoneNumber = providerDataVM.Phone;
                 var model = context.ServiceProviders.Find(providerDataVM.ProviderId);
                 if (model == null) 
                 {
@@ -65,10 +58,11 @@ namespace BookingServices.Controllers
                     return View("Error", errorViewModel);
                 }
                 model.ServiceDetails = providerDataVM.ServiceDetails;
+                model.Name = providerDataVM.Name;
                 try
                 {
                     context.ServiceProviders.Update(model);
-                    //var result = await _userManager.UpdateAsync(user);
+                    var result = await _userManager.UpdateAsync(user);
                     context.SaveChanges();
                     return RedirectToAction("Index");
                 }

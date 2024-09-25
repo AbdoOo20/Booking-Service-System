@@ -71,7 +71,7 @@
                                         foreach (var imageUrl in Model.serviceImages)
                                         {
                                             <div class="carousel-item @(index == 0 ? "active" : "")">
-                                                <img class="d-block w-100" src="~@imageUrl" alt="Service Image @index">
+                                                <img class="d-block object-fit-contain w-100" src="@imageUrl" alt="Service Image @index" style="width:200px">
                                             </div>
                                             index++;
                                         }
@@ -79,7 +79,7 @@
                                     else
                                     {
                                         <div class="carousel-item active">
-                                            <img class="d-block w-100" src="path/to/default-image.jpg" alt="No images available">
+                                            <img class="d-block object-fit-contain w-100" src="~/images/noavaliable.png" />
                                         </div>
                                     }
                                 </div>
@@ -115,7 +115,7 @@
 
                             <!-- Updated spacing for quantity input and Add to Cart button -->
                             <!-- Custom button with flex-grow to make it bigger -->
-                            <button class="btn btn-primary-custom " style="padding: 12px 40px; border-radius: 40px;">Book Now</button>
+                            <a asp-controller="Provider" asp-action="Booking" asp-route-id="@Model.ServiceId" class="btn btn-primary">Book Now</a>
 
                         </div>
 
@@ -148,14 +148,14 @@
 
             <!-- Tab Contents -->
             <div class="tab-content mt-3" id="myTabContent">
-                <div class="tab-pane fade show active" id="description" role="tabpanel">
+                <div class="tab-pane fade show active p-3" id="description" role="tabpanel">
                     <p>@Model.ServiceName</p>
                     <ul class="list-unstyled">
                         <li>@Model.ServiceDetails .</li>
 
                     </ul>
                 </div>
-                <div class="tab-pane fade" id="reviews" role="tabpanel">
+                <div class="tab-pane fade p-2" id="reviews" role="tabpanel">
                     <h5>Ratings</h5>
                     <div class="d-flex align-items-center mb-3">
                         <h3>@Model.providerRate</h3>
@@ -284,7 +284,7 @@
 
 
     <div>
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
     </div>
 
 </body>
