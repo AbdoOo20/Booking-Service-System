@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BookingServices.Areas.Identity.Pages.Account
@@ -58,6 +59,9 @@ namespace BookingServices.Areas.Identity.Pages.Account
 
         [BindProperty]
         public int ProviderRegisterId { get; set; }
+
+        [BindProperty]
+        public string ProviderEmail { get; set; }
 
         public SelectList Roles { get; set; }
 
@@ -120,10 +124,15 @@ namespace BookingServices.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-
         public async Task OnGetAsync(string returnUrl = null)
         {
-            Roles = new SelectList(_roleManager.Roles, "Id", "Name");
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null && User.IsInRole("Admin")) 
+            {
+                Roles = new SelectList(_roleManager.Roles.Where(r => r.Name == "Provider"), "Id", "Name");
+
+            }
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -132,13 +141,18 @@ namespace BookingServices.Areas.Identity.Pages.Account
             {
                 ProviderRegisterId = Convert.ToInt32(Request.Query["ProviderRegisterId"]);
             }
+
+            if (Request.Query.ContainsKey("email"))
+            {
+                ProviderEmail = Request.Query["email"].ToString();
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
+            
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -146,7 +160,7 @@ namespace BookingServices.Areas.Identity.Pages.Account
 
             var user = CreateUser();
             var currentUser = await _userManager.GetUserAsync(User);
-                
+
             if (currentUser != null && User.IsInRole("Admin"))
             {
                     
