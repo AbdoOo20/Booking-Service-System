@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookingServices.Data;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BookingServices.Controllers
 {
@@ -11,19 +12,29 @@ namespace BookingServices.Controllers
     {
         private readonly ApplicationDbContext _context;
         private ErrorViewModel errorViewModel;
+        private readonly UserManager<IdentityUser> _userManager;
+        string UserID;
 
-        public ProviderContractsController(ApplicationDbContext context)
+        public ProviderContractsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
-        }
+            _userManager = userManager;
+            UserID = "";
 
+        }
+        public async Task<string> GetCurrentUserID()
+        {
+            IdentityUser? user = await _userManager.GetUserAsync(User);
+            return user.Id ?? "";
+        }
         // GET: ProviderContracts
         public async Task<IActionResult> Index()
         {
             try
             {
-                var applicationDbContext = _context.ProviderContracts.Include(p => p.ServiceProvider);
+                UserID = await GetCurrentUserID();
+                var applicationDbContext = _context.ProviderContracts.Where(p => p.ProviderId== UserID).Include(p => p.ServiceProvider);
                 return View(await applicationDbContext.ToListAsync());
             }
             catch (Exception e)
@@ -85,6 +96,8 @@ namespace BookingServices.Controllers
             {
                 try
                 {
+                    UserID = await GetCurrentUserID();
+                    providerContract.ProviderId = UserID;
                     _context.Add(providerContract);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -146,6 +159,8 @@ namespace BookingServices.Controllers
             {
                 try
                 {
+                    UserID = await GetCurrentUserID();
+                    providerContract.ProviderId = UserID;
                     _context.Update(providerContract);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));

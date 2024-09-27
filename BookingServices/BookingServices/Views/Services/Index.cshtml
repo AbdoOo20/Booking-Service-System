@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BookingServices.Data.Service>
+﻿@model IEnumerable<BookingServices.Models.ServiceModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -10,9 +10,6 @@
 <p>
     <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
 </p>
-@* <div>
-    Number Of Services = @ViewData["Count"]
-</div> *@
 <table class="table table-hover text-center">
     <thead>
         <tr>
@@ -32,13 +29,13 @@
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th>
-                Initial Payment Percentage
+                @Html.DisplayNameFor(Model => Model.InitialPaymentPercentage)
             </th>
             <th>
-                Online / Offline
+                @Html.DisplayNameFor(Model => Model.IsOnlineOrOffline)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Category)
+                @Html.DisplayNameFor(model => model.CategoryName)
             </th>
             <th></th>
         </tr>
@@ -79,8 +76,7 @@
                     }
             </td>
             <td>
-                    @if (item.Category is not null)
-                    {@Html.DisplayFor(modelItem => item.Category.Name)}
+                    @Html.DisplayFor(modelItem => item.CategoryName)
             </td>
                 <td>
                     <div class="d-flex flex-wrap">
