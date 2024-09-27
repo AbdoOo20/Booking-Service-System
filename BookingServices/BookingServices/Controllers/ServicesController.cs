@@ -5,10 +5,7 @@ using BookingServices.Data;
 using Newtonsoft.Json;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using BookingServices.ViewModel;
 
 namespace BookingServices.Controllers
 {
@@ -47,25 +44,40 @@ namespace BookingServices.Controllers
 
             return View("Error", errorViewModel);
         }
-
-
+        
         // GET: Services
         public async Task<IActionResult> Index()
         {
-            IQueryable<Service> services = Enumerable.Empty<Service>().AsQueryable();
             try
             {
                 UserID = await GetCurrentUserID();
-                services = _context.Services.Where(s => s.ProviderId == UserID).Include(s => s.Category);
+
+                var servicesIndexModel = await _context.Services
+                    .Where(s => s.ProviderId == UserID)
+                    .Include(s => s.Category)
+                    .Select(service => new ServiceModel
+                    {
+                        ServiceId = service.ServiceId,
+                        Name = service.Name,
+                        Location = service.Location ?? "Not Exists",
+                        StartTime = service.StartTime.Hours,
+                        EndTime = service.EndTime.Hours,
+                        Quantity = service.Quantity,
+                        InitialPaymentPercentage = service.InitialPaymentPercentage,
+                        IsOnlineOrOffline = service.IsOnlineOrOffline,
+                        IsRequestedOrNot = service.IsRequestedOrNot,
+                        CategoryName =service.Category.Name ?? "Not Exists"
+                    })
+                    .ToListAsync();
+
+                return View(servicesIndexModel);
             }
             catch (Exception e)
             {
-                ErrorHandling(nameof(Index),e.Message);
+                ErrorHandling(nameof(Index), $"Error: {e.Message}, StackTrace: {e.StackTrace}");
+                return View(new List<ServiceModel>());
             }
-
-            return View(services.ToList());
         }
-
 
         /// <summary>
         /// Get Details of Each Service 
@@ -151,36 +163,77 @@ namespace BookingServices.Controllers
                                       where s.ServiceId == id
                                       select c.Name).FirstOrDefaultAsync();
 
-            // Fix: Assign customerId inside the reviews query
-            List<ReviewModel> reviews = await (from r in _context.Reviews
-                                               join a in _context.Users on r.CustomerId equals a.Id
-                                               select new ReviewModel
-                                               {
-                                                   ReviewerName = a.UserName,
-                                                   BookingId = r.BookingId,
-                                                   CustomerComment = r.CustomerComment,
-                                                   CustomerCommentDate = r.CustomerCommentDate,
-                                                   CustomerId = r.CustomerId,
-                                                   ProviderReplayComment = r.ProviderReplayComment,
-                                                   ProviderReplayCommentDate = r.ProviderReplayCommentDate
-                                               }).ToListAsync();
+            var bookingServicesIds = _context.BookingServices
+                .Where(bs => bs.ServiceId == id)
+                .Select(bs => bs.BookingId);
 
-
-
-            var numberOfReviews = await (from r in _context.Reviews
-                                         join bs in _context.BookingServices
-                                         on r.BookingId equals bs.BookingId
-                                         where bs.ServiceId == id
-                                         select r.CustomerId).CountAsync();
+            List<Review> _reviews = new List<Review>();
+            decimal sumationOfRatings = 0.0m;
+            int numberOfReviews = 0;
             decimal averageRating = 0;
-            if (numberOfReviews > 0)
+
+            foreach (var bookId in bookingServicesIds)
             {
-                averageRating = await (from r in _context.Reviews
-                                       join bs in _context.BookingServices
-                                       on r.BookingId equals bs.BookingId
-                                       where bs.ServiceId == id
-                                       select r.Rating).AverageAsync();
+                Review? review = await _context.Reviews
+                    .Where(r => r.BookingId == bookId)
+                    .Where((r => r.CustomerComment != null))
+                    .FirstOrDefaultAsync();
+                if (review != null)
+                {
+                    _reviews.Add(review);
+                    sumationOfRatings += review.Rating;
+                    numberOfReviews++;
+                }
             }
+                       
+            
+            averageRating = numberOfReviews == 0 ? 0 : (sumationOfRatings / numberOfReviews);
+
+            List<ReviewModel> reviews = new List<ReviewModel>();
+            foreach (var review in _reviews)
+            {
+                reviews.Add(new ReviewModel
+                {
+                    BookingId = review.BookingId,
+                    CustomerComment = review.CustomerComment,
+                    CustomerId = review.CustomerId,
+                    CustomerCommentDate = review.CustomerCommentDate,
+                    ProviderReplayComment = review.ProviderReplayComment,
+                    ProviderReplayCommentDate = review.ProviderReplayCommentDate,
+                    ReviewerName = await _context.Customers.Where(c => c.CustomerId == review.CustomerId).Select(c => c.Name).FirstOrDefaultAsync()
+                });
+            }
+            //// Fix: Assign customerId inside the reviews query
+            //List<ReviewModel> reviews = await (from r in _context.Reviews
+            //                                   join a in _context.Users 
+            //                                   on r.CustomerId equals a.Id
+            //                                   select new ReviewModel
+            //                                   {
+            //                                       ReviewerName = a.UserName,
+            //                                       BookingId = r.BookingId,
+            //                                       CustomerComment = r.CustomerComment,
+            //                                       CustomerCommentDate = r.CustomerCommentDate,
+            //                                       CustomerId = r.CustomerId,
+            //                                       ProviderReplayComment = r.ProviderReplayComment,
+            //                                       ProviderReplayCommentDate = r.ProviderReplayCommentDate
+            //                                   }).ToListAsync();
+
+
+
+            //var numberOfReviews = await (from r in _context.Reviews
+            //                             join bs in _context.BookingServices
+            //                             on r.BookingId equals bs.BookingId
+            //                             where bs.ServiceId == id
+            //                             select r.CustomerId).CountAsync();
+            //decimal averageRating = 0;
+            //if (numberOfReviews > 0)
+            //{
+            //    averageRating = await (from r in _context.Reviews
+            //                           join bs in _context.BookingServices
+            //                           on r.BookingId equals bs.BookingId
+            //                           where bs.ServiceId == id
+            //                           select r.Rating).AverageAsync();
+            //}
             ServiceDetailsModel serviceDetailsModel = new ServiceDetailsModel()
             {
                 ServiceName = service.Name,
@@ -206,7 +259,6 @@ namespace BookingServices.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> AddProviderReply(string customerId, string providerReply, int BookID)
         {
             if (string.IsNullOrWhiteSpace(customerId) || string.IsNullOrWhiteSpace(providerReply))
@@ -233,45 +285,63 @@ namespace BookingServices.Controllers
                 providerReplyDate = review.ProviderReplayCommentDate
             });
         }
-        // GET: Services/Create
-        public async Task<IActionResult> CreateAsync()
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
             await AddSelectLists();
             return View();
         }
 
-
-
+        // POST: Services/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Details,Location,StartTime,EndTime,Quantity,InitialPaymentPercentage,CategoryId,BaseServiceId,ProviderContractId,AdminContractId")] Service service, IFormFileCollection Images, decimal Price)
+        public async Task<IActionResult> Create(ServiceModel service, IFormFileCollection Images)
         {
-            try
-            {
-                UserID = await GetCurrentUserID();
-            }
-            catch (Exception e)
-            {
-                ErrorHandling(nameof(Create),e.Message);
-            }
-            service.ProviderId = UserID;
-            service.IsOnlineOrOffline = false;
-            service.IsRequestedOrNot = false;
-
             if (ModelState.IsValid)
             {
-                _context.Add(service);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    UserID = await GetCurrentUserID();
+                    // Create a new Service entity from the submitted form
+                    var newService = new Service
+                    {
+                        Name = service.Name,
+                        Details = service.Details,
+                        Location = service.Location,
+                        StartTime = new TimeSpan(service.StartTime,0,0),
+                        EndTime = new TimeSpan(service.EndTime,0,0),
+                        Quantity = service.Quantity ?? 0,
+                        InitialPaymentPercentage = service.InitialPaymentPercentage,
+                        IsOnlineOrOffline = service.IsOnlineOrOffline,
+                        IsRequestedOrNot = service.IsRequestedOrNot,
+                        CategoryId = service.CategoryId,
+                        AdminContractId = service.AdminContractId,
+                        BaseServiceId = service.BaseServiceId,
+                        ProviderContractId = service.ProviderContractId,
+                        ProviderId = UserID
+                    };
 
-                await FileUpload(Images, service.ServiceId);
-                await ServicePrice(Price, service.ServiceId);
+                    _context.Services.Add(newService); // Add the new service to the DbContext
+                    await _context.SaveChangesAsync(); // Save the changes to the database
 
-                return RedirectToAction(nameof(Index));
+                    await FileUpload(Images, service.ServiceId);
+                    await ServicePrice(service.ServicePrice, service.ServiceId);
+
+                    return RedirectToAction(nameof(Index)); // Redirect to the list of services
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandling(nameof(Create), ex.Message);
+                }
             }
 
-            await AddSelectLists(service);
+            // Repopulate the dropdown lists if the model is invalid or there’s an error
+            await AddSelectLists();
             return View(service);
         }
+
+
 
         // GET: Services/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -373,8 +443,8 @@ namespace BookingServices.Controllers
 
             var serviceImages = _context.ServiceImages.Where(s => s.ServiceId == id).Include(s => s.Service);
             var service = await _context.Services.FindAsync(id);
-            ViewData["ServiceName"] = service.Name;
-            ViewData["ServiceId"] = service.ServiceId;
+            ViewData["servicename"] = service.Name;
+            ViewData["serviceid"] = service.ServiceId;
 
             return View(await serviceImages.ToListAsync());
         }
@@ -479,19 +549,44 @@ namespace BookingServices.Controllers
         // Helper Method: Populate SelectLists
         private async Task AddSelectLists(Service? service = null)
         {
+            // Generate hours dictionary using a single line LINQ statement
+            var hours = Enumerable.Range(0, 24)
+                                  .ToDictionary(i => i.ToString("D2") + " :00", i => i);
+
+            // Fetch UserID
+            UserID = await GetCurrentUserID();
+
+            // Fetch Regions data from external API
             var response = await _client.GetAsync(SaudiArabiaRegionsCitiesAndDistricts);
             if (response.IsSuccessStatusCode)
             {
                 var jsonData = await response.Content.ReadAsStringAsync();
-                var Regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
-                ViewData["Location"] = new SelectList(Regions, "name_en", "name_en");
+                var regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
+                ViewData["Location"] = new SelectList(regions, "name_en", "name_en");
             }
-            if (service != null) ViewData["BaseServiceId"] = new SelectList(_context.Services.Where(s => s.ServiceId != service.ServiceId), "ServiceId", "Name", service?.BaseServiceId);
-            else ViewData["BaseServiceId"] = new SelectList(_context.Services, "ServiceId", "Name", service?.BaseServiceId);
-            ViewData["AdminContractId"] = new SelectList(_context.AdminContracts, "ContractId", "ContractName", service?.AdminContractId);
+
+            // Categories select list
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", service?.CategoryId);
-            ViewData["ProviderContractId"] = new SelectList(_context.ProviderContracts, "ContractId", "ContractName", service?.ProviderContractId);
+
+            // BaseService select list based on whether the service is null or not
+            var baseServicesQuery = _context.Services.Where(s => s.ProviderId == UserID);
+            if (service != null)
+            {
+                baseServicesQuery = baseServicesQuery.Where(s => s.ServiceId != service.ServiceId);
+            }
+            ViewData["BaseServiceId"] = new SelectList(baseServicesQuery, "ServiceId", "Name", service?.BaseServiceId);
+
+            // AdminContract select list
+            ViewData["AdminContractId"] = new SelectList(_context.AdminContracts, "ContractId", "ContractName", service?.AdminContractId);
+
+            // ProviderContract select list
+            ViewData["ProviderContractId"] = new SelectList(_context.ProviderContracts.Where(p => p.ProviderId == UserID), "ContractId", "ContractName", service?.ProviderContractId);
+
+            // Time select lists (StartTime and EndTime) using the hours dictionary
+            ViewData["StartTime"] = new SelectList(hours, "Value", "Key");
+            ViewData["EndTime"] = new SelectList(hours, "Value", "Key");
         }
+
 
         // Helper Method: Handle File Uploads
         private async Task FileUpload(IFormFileCollection Images, int serviceId)

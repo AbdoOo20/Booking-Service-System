@@ -7,14 +7,14 @@
 
 <div class="container mt-5">
     <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Register Offline Customer</h4>
+        <div class="card-header text-white bg-primary text-center">
+            <h2 class="text-white">Register Offline Customer</h2>
         </div>
-        <div class="card-body">
+        <div class="card-body mt-2">
             @if (TempData["Message"] != null)
             {
                 var messageType = TempData["MessageType"]?.ToString();
-                <div class="alert @(messageType == "success" ? "alert-success" : "alert-danger")">
+                <div id="alertMessage" class="alert @(messageType == "success" ? "alert-success" : "alert-danger")">
                     @TempData["Message"]
                 </div>
             }
@@ -72,4 +72,13 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        window.setTimeout(function () {
+            var alertMessage = document.getElementById('alertMessage');
+            if (alertMessage) {
+                alertMessage.style.display = 'none';
+            }
+        }, 3000);
+    </script>
 }
