@@ -85,8 +85,6 @@ namespace BookingServices.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         // GET: Services/Details/5
-        // GET: Services/Details/5
-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -325,8 +323,8 @@ namespace BookingServices.Controllers
                     _context.Services.Add(newService); // Add the new service to the DbContext
                     await _context.SaveChangesAsync(); // Save the changes to the database
 
-                    await FileUpload(Images, service.ServiceId);
-                    await ServicePrice(service.ServicePrice, service.ServiceId);
+                    await FileUpload(Images, newService.ServiceId);
+                    await ServicePrice(service.ServicePrice, newService.ServiceId);
 
                     return RedirectToAction(nameof(Index)); // Redirect to the list of services
                 }
@@ -336,61 +334,87 @@ namespace BookingServices.Controllers
                 }
             }
 
-            // Repopulate the dropdown lists if the model is invalid or there’s an error
             await AddSelectLists();
             return View(service);
         }
 
-
-
         // GET: Services/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-
             if (id == null)
                 ErrorHandling(nameof(Edit), "ID is Required !!!");
 
-            var service = await _context.Services.FindAsync(id);
-            if (service == null)
-                ErrorHandling(nameof(Edit), "The Service Dose Not Exists !!!");
+            var service = await _context.Services
+                .Where(s => s.ServiceId == id)
+                .Include(s => s.Category)
+                .FirstOrDefaultAsync();
 
-            await AddSelectLists(service);
-            return View(service);
+            if (service == null)
+                ErrorHandling(nameof(Edit), "The Service Does Not Exist !!!");
+
+            var serviceModel = new ServiceModel()
+            {
+                ServiceId = service.ServiceId,
+                Name = service.Name,
+                Details = service.Details,
+                Location = service.Location,
+                StartTime = service.StartTime.Hours,
+                EndTime = service.EndTime.Hours,
+                Quantity = service.Quantity,
+                InitialPaymentPercentage = service.InitialPaymentPercentage,
+                CategoryId = service.CategoryId,
+                CategoryName = service.Category.Name,
+                AdminContractId = service.AdminContractId,
+                BaseServiceId = service.BaseServiceId,
+                ProviderContractId = service.ProviderContractId,
+            };
+
+            await AddSelectLists(serviceModel);
+            return View(serviceModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ServiceId,Name,Details,Location,StartTime,EndTime,Quantity,InitialPaymentPercentage,CategoryId,BaseServiceId,ProviderContractId,AdminContractId,ProviderId")] Service service, IFormFileCollection Images, decimal Price)
+        public async Task<IActionResult> Edit(ServiceModel serviceModel)
         {
-            if (id != service.ServiceId) return NotFound();
             try
             {
-                UserID = await GetCurrentUserID();
+                var service = await _context.Services
+                    .FirstOrDefaultAsync(s => s.ServiceId == serviceModel.ServiceId);
+
+                if (service == null)
+                    ErrorHandling(nameof(Edit), "The Service Does Not Exist !!!");
+
+                if (ModelState.IsValid)
+                {
+                    service.Name = serviceModel.Name;
+                    service.Details = serviceModel.Details;
+                    service.Location = serviceModel.Location;
+                    service.StartTime = new TimeSpan(serviceModel.StartTime, 0, 0);
+                    service.EndTime = new TimeSpan(serviceModel.EndTime, 0, 0);
+                    service.Quantity = serviceModel.Quantity ?? 0;
+                    service.InitialPaymentPercentage = serviceModel.InitialPaymentPercentage;
+                    service.CategoryId = serviceModel.CategoryId;
+                    service.AdminContractId = serviceModel.AdminContractId;
+                    service.BaseServiceId = serviceModel.BaseServiceId;
+                    service.ProviderContractId = serviceModel.ProviderContractId;
+                    
+                    _context.Update(service);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                await AddSelectLists(serviceModel);
+                return View(serviceModel);
             }
             catch (Exception e)
             {
                 ErrorHandling(nameof(Edit), e.Message);
             }
-            service.ProviderId = UserID;
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(service);
-                    await _context.SaveChangesAsync();
 
-                    await FileUpload(Images, service.ServiceId);
-                    await ServicePrice(Price, service.ServiceId);
-                }
-                catch (Exception e)
-                {
-                    ErrorHandling(nameof(Edit), e.Message);
-                }
-                return RedirectToAction(nameof(Index));
-            }
-
-            await AddSelectLists(service);
-            return View(service);
+            await AddSelectLists(serviceModel);
+            return View(serviceModel);
         }
 
         // GET: Services/Delete/5
@@ -435,11 +459,11 @@ namespace BookingServices.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Services/Images/5
-        public async Task<IActionResult> Images(int id)
+        //GET: Services/Images/5
+        public async Task<IActionResult> GetImages(int id)
         {
             if (!ServiceExists(id))
-                ErrorHandling(nameof(Images), "The Service Dose Not Exists !!!");
+                ErrorHandling(nameof(GetImages), "The Service Dose Not Exists !!!");
 
             var serviceImages = _context.ServiceImages.Where(s => s.ServiceId == id).Include(s => s.Service);
             var service = await _context.Services.FindAsync(id);
@@ -450,13 +474,13 @@ namespace BookingServices.Controllers
         }
 
         // GET: AddImage
-        public Task<IActionResult> AddImage(int id)
+        public async Task<IActionResult> AddImage(int id)
         {
             if (!ServiceExists(id))
                 ErrorHandling(nameof(AddImage), "The Service Dose Not Exists !!!");
 
             ViewData["ServiceId"] = id;
-            return Task.FromResult<IActionResult>(View());
+            return View();
         }
 
 
@@ -468,7 +492,7 @@ namespace BookingServices.Controllers
                 ErrorHandling(nameof(AddImage), "The Service Dose Not Exists !!!");
 
             await FileUpload(Images, id);
-            return RedirectToAction(nameof(Images), new { id });
+            return RedirectToAction(nameof(GetImages), new { id });
         }
 
         public async Task<IActionResult> DeleteImage(int id, [FromQuery] string url)
@@ -486,7 +510,7 @@ namespace BookingServices.Controllers
             _context.ServiceImages.Remove(serviceImage);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Images), new { id });
+            return RedirectToAction(nameof(GetImages), new { id });
         }
 
         // GET: Prices/5
@@ -506,6 +530,9 @@ namespace BookingServices.Controllers
         // GET: AddPrice
         public IActionResult AddPrice(int id)
         {
+            if (!ServiceExists(id))
+                ErrorHandling(nameof(AddPrice), "The Service Dose Not Exists !!!");
+
             ViewData["ServiceId"] = id;
             return View();
         }
@@ -515,6 +542,9 @@ namespace BookingServices.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPrice(int id, [Bind("ServiceId,PriceDate,Price")] ServicePrice servicePrice)
         {
+            if (!ServiceExists(id))
+                ErrorHandling(nameof(AddPrice), "The Service Not Exists !!!");
+
             if (ModelState.IsValid)
             {
                 servicePrice.ServiceId = id;
@@ -547,7 +577,7 @@ namespace BookingServices.Controllers
         }
 
         // Helper Method: Populate SelectLists
-        private async Task AddSelectLists(Service? service = null)
+        private async Task AddSelectLists(ServiceModel? service = null)
         {
             // Generate hours dictionary using a single line LINQ statement
             var hours = Enumerable.Range(0, 24)

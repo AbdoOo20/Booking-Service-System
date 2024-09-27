@@ -1,4 +1,4 @@
-﻿@model BookingServices.Data.Service
+﻿@model BookingServices.Models.ServiceModel
 
 @{
     ViewData["Title"] = "Edit Service";
@@ -11,12 +11,10 @@
 <div class="container">
     <div class="card shadow p-4">
         <h4 class="mb-4 text-primary">Service Details</h4>
-        <form asp-action="Edit" enctype="multipart/form-data">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <input type="hidden" asp-for="ServiceId" />
-
-            <!-- Name, Location, and Details -->
+            <!-- Name and Location -->
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="Name" class="form-label"></label>
@@ -35,27 +33,31 @@
             <!-- Start Time, End Time, and Quantity -->
             <div class="row">
                 <div class="col-md-4 form-group mb-3">
-                    <label asp-for="StartTime" class="form-label">Start Time</label>
-                    <input asp-for="StartTime" type="time" class="form-control" />
+                    <label asp-for="StartTime" class="form-label"></label>
+                    <select asp-for="StartTime" asp-items="ViewBag.StartTime" class="form-control" id="StartTime">
+                        <option value="">-- Select Start Time --</option>
+                    </select>
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 form-group mb-3">
-                    <label asp-for="EndTime" class="form-label">End Time</label>
-                    <input asp-for="EndTime" type="time" class="form-control" />
+                    <label asp-for="EndTime" class="form-label"></label>
+                    <select asp-for="EndTime" asp-items="ViewBag.EndTime" class="form-control" id="EndTime" disabled>
+                        <option value="">-- Select End Time --</option>
+                    </select>
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 form-group mb-3">
-                    <label asp-for="Quantity" class="form-label">Quantity</label>
-                    <input asp-for="Quantity" class="form-control" />
+                    <label asp-for="Quantity" class="form-label"></label>
+                    <input asp-for="Quantity" class="form-control" type="number" min="0" placeholder="0" value="0" />
                     <span asp-validation-for="Quantity" class="text-danger"></span>
                 </div>
             </div>
 
-            <!-- Financial Information -->
+            <!-- Payment, Price -->
             <h4 class="mb-4 text-primary">Financial Information</h4>
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
-                    <label asp-for="InitialPaymentPercentage" class="form-label">Initial Payment Percentage</label>
+                    <label asp-for="InitialPaymentPercentage" class="form-label"></label>
                     <input asp-for="InitialPaymentPercentage" class="form-control" type="number" min="0" placeholder="0" />
                     <span asp-validation-for="InitialPaymentPercentage" class="text-danger"></span>
                 </div>
@@ -65,50 +67,43 @@
             <h4 class="mb-4 text-primary">Contract and Category Information</h4>
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
-                    <label asp-for="CategoryId" class="form-label">Category</label>
-                    <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
-                        <option value="">-- Select Category --</option>
+                    <label asp-for="AdminContractId" class="form-label"></label>
+                    <select asp-for="AdminContractId" asp-items="ViewBag.AdminContractId" class="form-control">
+                        <option value="">-- Select Admin Contract --</option>
                     </select>
-                    <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 form-group mb-3">
-                    <label asp-for="BaseServiceId" class="form-label">Base Service</label>
-                    <select asp-for="BaseServiceId" class="form-control" asp-items="ViewBag.BaseServiceId">
-                        <option value="">-- Select Base Service --</option>
+                    <label asp-for="CategoryId" class="form-label"></label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.CategoryId" class="form-control">
+                        <option value="">-- Select Category --</option>
                     </select>
-                    <span asp-validation-for="BaseServiceId" class="text-danger"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
-                    <label asp-for="ProviderContractId" class="form-label">Provider Contract</label>
-                    <select asp-for="ProviderContractId" class="form-control" asp-items="ViewBag.ProviderContractId">
-                        <option value="">-- Select Provider Contrac --</option>
+                    <label asp-for="ProviderContractId" class="form-label"></label>
+                    <select asp-for="ProviderContractId" asp-items="ViewBag.ProviderContractId" class="form-control">
+                        <option value="">-- Select Provider Contract --</option>
                     </select>
-                    <span asp-validation-for="ProviderContractId" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 form-group mb-3">
-                    <label asp-for="AdminContractId" class="form-label">Admin Contract</label>
-                    <select asp-for="AdminContractId" class="form-control" asp-items="ViewBag.AdminContractId">
-                        <option value="">-- Select Admin Contract --</option>
+                    <label asp-for="BaseServiceId" class="form-label">Base Service</label>
+                    <select asp-for="BaseServiceId" asp-items="ViewBag.BaseServiceId" class="form-control">
+                        <option value="">-- Select Base Service --</option>
                     </select>
-                    <span asp-validation-for="AdminContractId" class="text-danger"></span>
                 </div>
             </div>
 
             <!-- Images and Service Details -->
-            <h4 class="mb-4 text-primary">Media and Additional Details</h4>
+            <h4 class="mb-4 text-primary">Additional Details</h4>
             <div class="row">
-                <div class="col-md-6 form-group mb-3">
-                    <label for="Images" class="form-label">Upload New Images</label>
-                    <input type="file" name="Images" class="form-control" multiple />
-                </div>
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="Details" class="form-label">Service Details</label>
                     <textarea asp-for="Details" class="form-control" placeholder="Provide additional information about the service"></textarea>
                     <span asp-validation-for="Details" class="text-danger"></span>
                 </div>
             </div>
+
             <!-- Action Buttons -->
             <div class="d-flex justify-content-between mt-4">
                 <input type="submit" value="Save" class="btn btn-outline-success btn-lg" />
@@ -119,6 +114,29 @@
 </div>
 
 @section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const startTimeSelect = document.getElementById('StartTime');
+            const endTimeSelect = document.getElementById('EndTime');
+            const endTimeOptions = Array.from(endTimeSelect.options);
+
+            startTimeSelect.addEventListener('change', function () {
+                const selectedStartTime = parseInt(this.value);
+
+                // Clear current end time options
+                endTimeSelect.innerHTML = '<option value="">-- Select End Time --</option>';
+
+                // Re-populate end time options with values greater than selected start time
+                endTimeOptions.forEach(option => {
+                    const optionValue = parseInt(option.value);
+                    if (optionValue > selectedStartTime) {
+                        endTimeSelect.appendChild(option.cloneNode(true));
+                    }
+                });
+                endTimeSelect.disabled = false;
+            });
+        });
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
