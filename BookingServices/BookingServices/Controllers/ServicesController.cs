@@ -6,10 +6,13 @@ using Newtonsoft.Json;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using BookingServices.ViewModel;
+using Microsoft.DotNet.Scaffolding.Shared;
 
 namespace BookingServices.Controllers
 {
-    [Authorize("PROVIDER")]
+    [Authorize("Provider")]
+    [Authorize("Admin")]
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -44,17 +47,27 @@ namespace BookingServices.Controllers
 
             return View("Error", errorViewModel);
         }
-        
+
+
         // GET: Services
         public async Task<IActionResult> Index()
         {
             try
             {
+                List<ServiceModel> servicesIndexModel = new List<ServiceModel>();
+                // Fetch User ID
                 UserID = await GetCurrentUserID();
+                IdentityUser? user = await _userManager.FindByIdAsync(UserID);
 
-                var servicesIndexModel = await _context.Services
-                    .Where(s => s.ProviderId == UserID)
+                // If the user is not found, check if the UserID is in the Provider role
+                bool isProvider = user != null && await _userManager.IsInRoleAsync(user, "Provider");
+                ViewBag.isProvider = isProvider;
+
+                if (await _userManager.IsInRoleAsync(user,"Admin"))
+                {
+                    servicesIndexModel = await _context.Services
                     .Include(s => s.Category)
+                    .Include(s => s.ServiceProvider)
                     .Select(service => new ServiceModel
                     {
                         ServiceId = service.ServiceId,
@@ -66,9 +79,50 @@ namespace BookingServices.Controllers
                         InitialPaymentPercentage = service.InitialPaymentPercentage,
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
                         IsRequestedOrNot = service.IsRequestedOrNot,
-                        CategoryName =service.Category.Name ?? "Not Exists"
+                        CategoryName = service.Category.Name ?? "Not Exists",
+                       ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists" 
                     })
                     .ToListAsync();
+                }
+                else
+                { // Fetch services for the current provider
+                    servicesIndexModel = await _context.Services
+                        .Where(s => s.ProviderId == UserID)
+                        .Include(s => s.Category)
+                        .Select(service => new ServiceModel
+                        {
+                            ServiceId = service.ServiceId,
+                            Name = service.Name,
+                            Location = service.Location ?? "Not Exists",
+                            StartTime = service.StartTime.Hours,
+                            EndTime = service.EndTime.Hours,
+                            Quantity = service.Quantity,
+                            InitialPaymentPercentage = service.InitialPaymentPercentage,
+                            IsOnlineOrOffline = service.IsOnlineOrOffline,
+                            IsRequestedOrNot = service.IsRequestedOrNot,
+                            CategoryName = service.Category.Name ?? "Not Exists"
+                        })
+                        .ToListAsync();
+                }
+
+               
+
+                // Fetch Regions data from external API for locations
+                var response = await _client.GetAsync(SaudiArabiaRegionsCitiesAndDistricts);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+                    var regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
+                    ViewBag.Locations = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
+                }
+
+                // Get all category names and pass to ViewBag
+                var categories = await _context.Categories
+                    .Select(c => c.Name.Trim())
+                    .Distinct()
+                    .ToListAsync();
+
+                ViewBag.Categories = categories;
 
                 return View(servicesIndexModel);
             }
@@ -78,6 +132,7 @@ namespace BookingServices.Controllers
                 return View(new List<ServiceModel>());
             }
         }
+
 
         /// <summary>
         /// Get Details of Each Service 
@@ -363,7 +418,6 @@ namespace BookingServices.Controllers
                 Quantity = service.Quantity,
                 InitialPaymentPercentage = service.InitialPaymentPercentage,
                 CategoryId = service.CategoryId,
-                CategoryName = service.Category.Name,
                 AdminContractId = service.AdminContractId,
                 BaseServiceId = service.BaseServiceId,
                 ProviderContractId = service.ProviderContractId,
@@ -375,7 +429,7 @@ namespace BookingServices.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ServiceModel serviceModel)
+        public async Task<IActionResult> Edit(ServiceModel serviceModel ,IFormFileCollection Images)
         {
             try
             {
@@ -401,6 +455,8 @@ namespace BookingServices.Controllers
                     
                     _context.Update(service);
                     await _context.SaveChangesAsync();
+
+                    await FileUpload(Images, service.ServiceId);
 
                     return RedirectToAction(nameof(Index));
                 }

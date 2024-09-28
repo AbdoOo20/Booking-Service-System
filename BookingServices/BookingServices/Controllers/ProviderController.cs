@@ -129,7 +129,7 @@ namespace BookingServices.Controllers
                     Status = model.Status, // allow null -- not in default pendding
                     Quantity = model.Quantity,
                     Price = model.Price, // just for view -- not in from the service price
-                    CashOrInstallment = model.CashOrInstallment, // or cash by hand
+                    CashOrCashByHandOrInstallment = model.CashOrCashByHandOrInstallment, // or cash by hand
                     BookDate = DateTime.Now, // -- not in default date.now
                     Type = model.Type, // allow null -- service
                     CustomerId = _context.Customers.FirstOrDefault(x => x.SSN == model.CustomerId).CustomerId, // allow null

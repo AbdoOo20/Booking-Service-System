@@ -86,20 +86,20 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label asp-for="Quantity" class="form-label">Quantity</label>
-                            <input asp-for="Quantity" class="form-control" placeholder="Available quantity: @ViewBag.AvailableQuantity" max="@ViewBag.AvailableQuantity" min="1" />
+                            <input asp-for="Quantity" class="form-control" placeholder="Available quantity: @ViewBag.AvailableQuantity" max="@ViewBag.AvailableQuantity" min="0" />
                             <span asp-validation-for="Quantity" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label asp-for="CashOrInstallment" class="form-label">Payment Type</label>
-                            <select asp-for="CashOrInstallment" class="form-select" id="paymentType">
+                            <label asp-for="CashOrCashByHandOrInstallment" class="form-label">Payment Type</label>
+                            <select asp-for="CashOrCashByHandOrInstallment" class="form-select" id="paymentType">
                                 <option value="">-- Select Payment Type --</option>
-                                <option value="true">Cash By Hand</option>
-                                <option value="true">Cash</option>
+                                <option value="CashByHand">Cash By Hand</option>
+                                <option value="Cash">Cash</option>
 @*                                 <option value="false">Installment</option>
  *@                            </select>
-                            <span asp-validation-for="CashOrInstallment" class="text-danger"></span>
+                            <span asp-validation-for="CashOrCashByHandOrInstallment" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -135,13 +135,25 @@
     <script>
         document.getElementById('paymentType').addEventListener('change', function () {
             var paymentMethod = document.getElementById('paymentMethod');
+            var existingOption = document.querySelector("#paymentMethod option[value='CashByHand']");
+
             if (this.value === 'CashByHand') {
-                //paymentMethod.selectedIndex = 1;
+                if (!existingOption) {  // Check if the option doesn't already exist
+                    var newOption = document.createElement("option");
+                    newOption.value = "CashByHand";
+                    newOption.text = "Cash By Hand";
+                    paymentMethod.insertBefore(newOption, paymentMethod.firstChild);
+                }
+                paymentMethod.value = 'CashByHand';
                 paymentMethod.disabled = true;
             } else {
+                if (existingOption) {
+                    paymentMethod.removeChild(existingOption);  // Remove the 'CashByHand' option
+                }
                 paymentMethod.disabled = false;
             }
         });
+
 
         document.getElementById('fetchCustomer').addEventListener('click', function () {
             var ssn = document.getElementById('CustomerId').value;
