@@ -19,18 +19,17 @@
             <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
         @{
             int i = 0;
-            @foreach (var item in Model) 
+            foreach (var item in Model)
             {
                 i++;
                 <tr>
                     <td>@i</td>
-                    <td>@Html.DisplayFor(modelItem => item.PriceDate)</td>
+                    <td>@item.PriceDate.ToString("yyyy-MM-dd")</td>
                     <th>@Html.DisplayFor(modelItem => item.Price)</th>
                 </tr>
             }

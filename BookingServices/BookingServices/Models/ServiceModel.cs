@@ -46,9 +46,9 @@ namespace BookingServices.Models
         public decimal ServicePrice { get; set; } = 0;
 
         [Display(Name = "Online / Offline")]
-        public bool IsOnlineOrOffline { get; set; }
+        public bool IsOnlineOrOffline { get; set; } = false;
 
-        public bool IsRequestedOrNot { get; set; }
+        public bool IsRequestedOrNot { get; set; } = false;
 
         [Display(Name = "Category Name")]
         public int? CategoryId { get; set; }
@@ -64,6 +64,6 @@ namespace BookingServices.Models
         public int? AdminContractId { get; set; }
 
         [Display(Name = "Service Provider")]
-        public int? ServiceProviderId { get; set; }
+        public string? ServiceProviderId { get; set; }
     }
 }
