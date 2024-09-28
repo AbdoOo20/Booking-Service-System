@@ -34,10 +34,13 @@
             </dl>
 
             <form asp-action="Delete">
-                <input type="hidden" asp-for="ServiceId" />
-                <input type="submit" value="Delete" class="btn btn-outline-danger" />
-                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                <div class="d-flex justify-content-between mt-4">
+                    <input type="hidden" asp-for="ServiceId" />
+                    <input type="submit" value="Delete" class="btn btn-outline-danger" />
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                </div>
             </form>
+
         </div>
 
     }

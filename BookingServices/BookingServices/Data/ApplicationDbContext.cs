@@ -13,38 +13,53 @@ namespace BookingServices.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Composite primary key for BookingConsultation
             modelBuilder.Entity<BookingConsultation>()
                 .HasKey(bc => new { bc.BookingId, bc.ConsultationId });
-                  
+
+            // Composite primary key for BookingService
             modelBuilder.Entity<BookingService>()
-                .HasKey(bc => new { bc.BookingId, bc.ServiceId });
-                  
+                .HasKey(bs => new { bs.BookingId, bs.ServiceId });
+
+            // Composite primary key for BookingPackage
             modelBuilder.Entity<BookingPackage>()
-                .HasKey(bc => new { bc.BookingId, bc.PackageId });
+                .HasKey(bp => new { bp.BookingId, bp.PackageId });
 
+            // Composite primary key for PackageService
             modelBuilder.Entity<PackageService>()
-                .HasKey(bc => new { bc.PackageId, bc.ServiceId });
-            
+                .HasKey(ps => new { ps.PackageId, ps.ServiceId });
+
+            // Composite primary key for Review
             modelBuilder.Entity<Review>()
-                .HasKey(bc => new { bc.BookingId, bc.CustomerId });
-                        
+                .HasKey(r => new { r.BookingId, r.CustomerId });
+
+            // Composite primary key for ServicePrice
             modelBuilder.Entity<ServicePrice>()
-                .HasKey(bc => new { bc.ServiceId, bc.PriceDate });
-                                    
+                .HasKey(sp => new { sp.ServiceId, sp.PriceDate });
+
+            // Composite primary key for WishList
             modelBuilder.Entity<WishList>()
-                .HasKey(bc => new { bc.ServiceId, bc.CustomerId });
-                                    
+                .HasKey(wl => new { wl.ServiceId, wl.CustomerId });
+
+            // Composite primary key for Link
             modelBuilder.Entity<Link>()
-                .HasKey(bc => new { bc.ProviderId, bc.SocialAccount });
+                .HasKey(l => new { l.ProviderId, l.SocialAccount });
 
+            // Composite primary key for ServiceImage
             modelBuilder.Entity<ServiceImage>()
-                .HasKey(bc => new { bc.ServiceId, bc.URL });
+                .HasKey(si => new { si.ServiceId, si.URL });
 
+            // Unique constraint on ProviderPhoneNumber
             modelBuilder.Entity<ProviderRegister>()
-                .HasIndex(p => new { p.ProviderPhoneNumber }).IsUnique();
+                .HasIndex(p => p.ProviderPhoneNumber)
+                .IsUnique();
+
+            // Unique constraint on Customer's AlternativePhone
+            modelBuilder.Entity<Customer>()
+                .HasIndex(c => c.AlternativePhone)
+                .IsUnique();
 
             base.OnModelCreating(modelBuilder);
-
         }
         public virtual DbSet<AdminContract> AdminContracts { get; set; }
 

@@ -40,11 +40,15 @@ namespace BookingServices
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("ADMIN", policy =>
+                options.AddPolicy("Admin", policy =>
                 {
                     policy.RequireAuthenticatedUser();
                 });                
-                options.AddPolicy("PROVIDER", policy =>
+                options.AddPolicy("Provider", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });
+                options.AddPolicy("Customer", policy =>
                 {
                     policy.RequireAuthenticatedUser();
                 });
