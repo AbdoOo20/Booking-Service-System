@@ -6,8 +6,6 @@ using Newtonsoft.Json;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using BookingServices.ViewModel;
-using Microsoft.DotNet.Scaffolding.Shared;
 
 namespace BookingServices.Controllers
 {
@@ -47,7 +45,6 @@ namespace BookingServices.Controllers
 
             return View("Error", errorViewModel);
         }
-
 
         // GET: Services
         public async Task<IActionResult> Index()
@@ -140,6 +137,7 @@ namespace BookingServices.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         // GET: Services/Details/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -311,6 +309,7 @@ namespace BookingServices.Controllers
 
 
         [HttpPost]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProviderReply(string customerId, string providerReply, int BookID)
         {
@@ -340,6 +339,7 @@ namespace BookingServices.Controllers
         }
 
         [HttpGet]
+        [Authorize("Provider")]
         public async Task<IActionResult> Create()
         {
             await AddSelectLists();
@@ -348,6 +348,7 @@ namespace BookingServices.Controllers
 
         // POST: Services/Create
         [HttpPost]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ServiceModel service, IFormFileCollection Images)
         {
@@ -394,6 +395,7 @@ namespace BookingServices.Controllers
         }
 
         // GET: Services/Edit/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -428,6 +430,7 @@ namespace BookingServices.Controllers
         }
 
         [HttpPost]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ServiceModel serviceModel ,IFormFileCollection Images)
         {
@@ -474,6 +477,7 @@ namespace BookingServices.Controllers
         }
 
         // GET: Services/Delete/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -488,6 +492,7 @@ namespace BookingServices.Controllers
 
         // POST: Services/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -516,6 +521,7 @@ namespace BookingServices.Controllers
         }
 
         //GET: Services/Images/5
+        [Authorize("Provider")]
         public async Task<IActionResult> GetImages(int id)
         {
             if (!ServiceExists(id))
@@ -570,6 +576,7 @@ namespace BookingServices.Controllers
         }
 
         // GET: Prices/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Prices(int id)
         {
             if (!ServiceExists(id)) 
