@@ -1,11 +1,13 @@
 ﻿using BookingServices.Data;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BookingServices.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PaymentReportsController : Controller
     {
         ApplicationDbContext _context;
