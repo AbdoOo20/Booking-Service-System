@@ -9,7 +9,8 @@ namespace BookingServices.Models
         public decimal Balance { get; set; }
 
         public decimal ReservedBalance { get; set; }
-
+        
+        public int NumberOfServices { get; set; } 
         public string? ServiceDetails { get; set; }
 
         public decimal Rate { get; set; }
