@@ -54,10 +54,12 @@ namespace BookingServices.Data
                 .HasIndex(p => p.ProviderPhoneNumber)
                 .IsUnique();
 
-            // Unique constraint on Customer's AlternativePhone
+            modelBuilder.Entity<PaymentIncome>()
+               .HasIndex(c => c.Name).IsUnique();
+
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.AlternativePhone)
-                .IsUnique();
+                .IsUnique()
 
             base.OnModelCreating(modelBuilder);
         }
@@ -68,9 +70,9 @@ namespace BookingServices.Data
         public virtual DbSet<BookingConsultation> BookingConsultations { get; set; }
 
         public virtual DbSet<BookingPackage> BookingPackages { get; set; }
-        
+
         public virtual DbSet<BookingService> BookingServices { get; set; }
-        
+
         public virtual DbSet<Category> Categories { get; set; }
 
         public virtual DbSet<Consultation> Consultations { get; set; }
@@ -84,7 +86,7 @@ namespace BookingServices.Data
         public virtual DbSet<Package> Packages { get; set; }
 
         public virtual DbSet<PackageService> PackageService { get; set; }
-        
+
         public virtual DbSet<Payment> Payments { get; set; }
 
         public virtual DbSet<PaymentIncome> PaymentIncomes { get; set; }
