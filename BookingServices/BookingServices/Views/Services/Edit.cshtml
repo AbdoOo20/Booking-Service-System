@@ -11,8 +11,9 @@
 <div class="container">
     <div class="card shadow p-4">
         <h4 class="mb-4 text-primary">Service Details</h4>
-        <form asp-action="Create">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input asp-for="ServiceId" type="hidden" />
 
             <!-- Name and Location -->
             <div class="row">
@@ -73,7 +74,7 @@
                     </select>
                 </div>
                 <div class="col-md-6 form-group mb-3">
-                    <label asp-for="CategoryId" class="form-label"></label>
+                    <label asp-for="CategoryName" class="form-label"></label>
                     <select asp-for="CategoryId" asp-items="ViewBag.CategoryId" class="form-control">
                         <option value="">-- Select Category --</option>
                     </select>
@@ -97,6 +98,10 @@
             <!-- Images and Service Details -->
             <h4 class="mb-4 text-primary">Additional Details</h4>
             <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label for="Images" class="form-label">Upload Images</label>
+                    <input type="file" name="Images" class="form-control" multiple />
+                </div>
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="Details" class="form-label">Service Details</label>
                     <textarea asp-for="Details" class="form-control" placeholder="Provide additional information about the service"></textarea>

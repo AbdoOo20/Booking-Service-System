@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BookingServices.Controllers
 {
-    [Authorize(Roles = "Provider")]
+    [Authorize("Provider")]
+    [Authorize("Admin")]
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -44,17 +45,26 @@ namespace BookingServices.Controllers
 
             return View("Error", errorViewModel);
         }
-        
+
         // GET: Services
         public async Task<IActionResult> Index()
         {
             try
             {
+                List<ServiceModel> servicesIndexModel = new List<ServiceModel>();
+                // Fetch User ID
                 UserID = await GetCurrentUserID();
+                IdentityUser? user = await _userManager.FindByIdAsync(UserID);
 
-                var servicesIndexModel = await _context.Services
-                    .Where(s => s.ProviderId == UserID)
+                // If the user is not found, check if the UserID is in the Provider role
+                bool isProvider = user != null && await _userManager.IsInRoleAsync(user, "Provider");
+                ViewBag.isProvider = isProvider;
+
+                if (await _userManager.IsInRoleAsync(user,"Admin"))
+                {
+                    servicesIndexModel = await _context.Services
                     .Include(s => s.Category)
+                    .Include(s => s.ServiceProvider)
                     .Select(service => new ServiceModel
                     {
                         ServiceId = service.ServiceId,
@@ -66,9 +76,50 @@ namespace BookingServices.Controllers
                         InitialPaymentPercentage = service.InitialPaymentPercentage,
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
                         IsRequestedOrNot = service.IsRequestedOrNot,
-                        CategoryName =service.Category.Name ?? "Not Exists"
+                        CategoryName = service.Category.Name ?? "Not Exists",
+                       ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists" 
                     })
                     .ToListAsync();
+                }
+                else
+                { // Fetch services for the current provider
+                    servicesIndexModel = await _context.Services
+                        .Where(s => s.ProviderId == UserID)
+                        .Include(s => s.Category)
+                        .Select(service => new ServiceModel
+                        {
+                            ServiceId = service.ServiceId,
+                            Name = service.Name,
+                            Location = service.Location ?? "Not Exists",
+                            StartTime = service.StartTime.Hours,
+                            EndTime = service.EndTime.Hours,
+                            Quantity = service.Quantity,
+                            InitialPaymentPercentage = service.InitialPaymentPercentage,
+                            IsOnlineOrOffline = service.IsOnlineOrOffline,
+                            IsRequestedOrNot = service.IsRequestedOrNot,
+                            CategoryName = service.Category.Name ?? "Not Exists"
+                        })
+                        .ToListAsync();
+                }
+
+               
+
+                // Fetch Regions data from external API for locations
+                var response = await _client.GetAsync(SaudiArabiaRegionsCitiesAndDistricts);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+                    var regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
+                    ViewBag.Locations = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
+                }
+
+                // Get all category names and pass to ViewBag
+                var categories = await _context.Categories
+                    .Select(c => c.Name.Trim())
+                    .Distinct()
+                    .ToListAsync();
+
+                ViewBag.Categories = categories;
 
                 return View(servicesIndexModel);
             }
@@ -79,12 +130,14 @@ namespace BookingServices.Controllers
             }
         }
 
+
         /// <summary>
         /// Get Details of Each Service 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         // GET: Services/Details/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -256,6 +309,7 @@ namespace BookingServices.Controllers
 
 
         [HttpPost]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProviderReply(string customerId, string providerReply, int BookID)
         {
@@ -285,6 +339,7 @@ namespace BookingServices.Controllers
         }
 
         [HttpGet]
+        [Authorize("Provider")]
         public async Task<IActionResult> Create()
         {
             await AddSelectLists();
@@ -293,6 +348,7 @@ namespace BookingServices.Controllers
 
         // POST: Services/Create
         [HttpPost]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ServiceModel service, IFormFileCollection Images)
         {
@@ -339,6 +395,7 @@ namespace BookingServices.Controllers
         }
 
         // GET: Services/Edit/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -363,7 +420,6 @@ namespace BookingServices.Controllers
                 Quantity = service.Quantity,
                 InitialPaymentPercentage = service.InitialPaymentPercentage,
                 CategoryId = service.CategoryId,
-                CategoryName = service.Category.Name,
                 AdminContractId = service.AdminContractId,
                 BaseServiceId = service.BaseServiceId,
                 ProviderContractId = service.ProviderContractId,
@@ -374,8 +430,9 @@ namespace BookingServices.Controllers
         }
 
         [HttpPost]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ServiceModel serviceModel)
+        public async Task<IActionResult> Edit(ServiceModel serviceModel ,IFormFileCollection Images)
         {
             try
             {
@@ -402,6 +459,8 @@ namespace BookingServices.Controllers
                     _context.Update(service);
                     await _context.SaveChangesAsync();
 
+                    await FileUpload(Images, service.ServiceId);
+
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -418,6 +477,7 @@ namespace BookingServices.Controllers
         }
 
         // GET: Services/Delete/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -432,6 +492,7 @@ namespace BookingServices.Controllers
 
         // POST: Services/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize("Provider")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -460,6 +521,7 @@ namespace BookingServices.Controllers
         }
 
         //GET: Services/Images/5
+        [Authorize("Provider")]
         public async Task<IActionResult> GetImages(int id)
         {
             if (!ServiceExists(id))
@@ -514,6 +576,7 @@ namespace BookingServices.Controllers
         }
 
         // GET: Prices/5
+        [Authorize("Provider")]
         public async Task<IActionResult> Prices(int id)
         {
             if (!ServiceExists(id)) 

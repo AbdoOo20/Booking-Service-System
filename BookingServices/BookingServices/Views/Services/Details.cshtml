@@ -115,7 +115,7 @@
 
                             <!-- Updated spacing for quantity input and Add to Cart button -->
                             <!-- Custom button with flex-grow to make it bigger -->
-                            <a asp-controller="Provider" asp-action="Booking" asp-route-id="@Model.ServiceId" class="btn btn-primary">Book Now</a>
+                            <a asp-controller="Provider" asp-action="Booking" asp-route-id="@Model.ServiceId" class="btn btn-outline-primary mt-1">Book Now</a>
 
                         </div>
 
@@ -283,8 +283,8 @@
 
 
 
-    <div>
-        <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+    <div class="d-flex">
+        <a asp-action="Index" class="btn btn-outline-secondary ms-auto">Back to List</a>
     </div>
 
 </body>
