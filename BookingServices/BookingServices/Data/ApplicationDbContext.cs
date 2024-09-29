@@ -15,25 +15,25 @@ namespace BookingServices.Data
         {
             modelBuilder.Entity<BookingConsultation>()
                 .HasKey(bc => new { bc.BookingId, bc.ConsultationId });
-                  
+
             modelBuilder.Entity<BookingService>()
                 .HasKey(bc => new { bc.BookingId, bc.ServiceId });
-                  
+
             modelBuilder.Entity<BookingPackage>()
                 .HasKey(bc => new { bc.BookingId, bc.PackageId });
 
             modelBuilder.Entity<PackageService>()
                 .HasKey(bc => new { bc.PackageId, bc.ServiceId });
-            
+
             modelBuilder.Entity<Review>()
                 .HasKey(bc => new { bc.BookingId, bc.CustomerId });
-                        
+
             modelBuilder.Entity<ServicePrice>()
                 .HasKey(bc => new { bc.ServiceId, bc.PriceDate });
-                                    
+
             modelBuilder.Entity<WishList>()
                 .HasKey(bc => new { bc.ServiceId, bc.CustomerId });
-                                    
+
             modelBuilder.Entity<Link>()
                 .HasKey(bc => new { bc.ProviderId, bc.SocialAccount });
 
@@ -42,6 +42,9 @@ namespace BookingServices.Data
 
             modelBuilder.Entity<ProviderRegister>()
                 .HasIndex(p => new { p.ProviderPhoneNumber }).IsUnique();
+
+            modelBuilder.Entity<PaymentIncome>()
+               .HasIndex(c => c.Name).IsUnique();
 
             base.OnModelCreating(modelBuilder);
 
@@ -53,9 +56,9 @@ namespace BookingServices.Data
         public virtual DbSet<BookingConsultation> BookingConsultations { get; set; }
 
         public virtual DbSet<BookingPackage> BookingPackages { get; set; }
-        
+
         public virtual DbSet<BookingService> BookingServices { get; set; }
-        
+
         public virtual DbSet<Category> Categories { get; set; }
 
         public virtual DbSet<Consultation> Consultations { get; set; }
@@ -69,7 +72,7 @@ namespace BookingServices.Data
         public virtual DbSet<Package> Packages { get; set; }
 
         public virtual DbSet<PackageService> PackageService { get; set; }
-        
+
         public virtual DbSet<Payment> Payments { get; set; }
 
         public virtual DbSet<PaymentIncome> PaymentIncomes { get; set; }
