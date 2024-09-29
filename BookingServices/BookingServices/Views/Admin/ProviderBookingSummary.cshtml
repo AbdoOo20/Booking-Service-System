@@ -1,0 +1,23 @@
+﻿@model IEnumerable<dynamic>
+<div class="container mt-5">
+    <h2 class="text-center">Provider Booking Summary</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Provider Name</th>
+                <th>Total Booked Services</th>
+                <th>Total Amount (Accepted Bookings)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var provider in Model)
+            {
+                <tr>
+                    <td>@provider.ProviderName</td>
+                    <td>@provider.TotalBookings</td>
+                    <td>@provider.TotalAmount.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
