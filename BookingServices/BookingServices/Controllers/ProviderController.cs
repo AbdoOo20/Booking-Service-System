@@ -81,7 +81,7 @@ namespace BookingServices.Controllers
         }
 
 
-        // Provider/Booking?serviceId=1
+        // Provider/Booking?id=1
         private static int SharedserviceId;
         [HttpGet]
         public IActionResult Booking(int id)
@@ -218,16 +218,16 @@ namespace BookingServices.Controllers
             return allTimes.Except(allTimesBookedInOneDay).ToList();
         }
 
-        //private int GetAllquantity(int serviceId, DateTime eventDate)
-        //{
-        //    var result = (from b in _context.Bookings
-        //                  join bs in _context.BookingServices on b.BookingId equals bs.BookingId
-        //                  where bs.ServiceId == serviceId && b.EventDate == eventDate
-        //                  select b.Quantity).ToList();
+        private int GetAllquantity(int serviceId, DateTime eventDate)
+        {
+            var result = (from b in _context.Bookings
+                          join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+                          where bs.ServiceId == serviceId && b.EventDate == eventDate
+                          select b.Quantity).ToList();
 
-        //    int bookingQuantity = 0;
-        //    foreach (var book in result) bookingQuantity += book;
-        //    return bookingQuantity;
-        //}
+            int bookingQuantity = 0;
+            foreach (var book in result) bookingQuantity += book;
+            return bookingQuantity;
+        }
     }
 }
