@@ -25,7 +25,8 @@ namespace BookingServices.Data
         [Range(1.0, double.MaxValue)]
         public decimal Price { get; set; }
 
-        public bool CashOrInstallment { get; set; }
+        [Required]
+        public required string CashOrCashByHandOrInstallment { get; set; }
 
         public DateTime BookDate { get; set; } = DateTime.Now;
 

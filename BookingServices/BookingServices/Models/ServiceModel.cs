@@ -51,8 +51,9 @@ namespace BookingServices.Models
         public bool IsRequestedOrNot { get; set; } = false;
 
         [Display(Name = "Category Name")]
-        public int? CategoryId { get; set; }
         public string? CategoryName { get; set; }
+
+        public int? CategoryId { get; set; }
 
         [Display(Name = "Base Service")]
         public int? BaseServiceId { get; set; }
@@ -64,6 +65,8 @@ namespace BookingServices.Models
         public int? AdminContractId { get; set; }
 
         [Display(Name = "Service Provider")]
+        public string? ServiceProviderName { get; set; }
+
         public string? ServiceProviderId { get; set; }
     }
 }

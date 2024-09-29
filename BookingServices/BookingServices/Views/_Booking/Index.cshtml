@@ -53,7 +53,7 @@
                                 <td>@booking.BookDate.ToShortDateString()</td>
                                 <td>@booking.Type</td>
                                 <td>@booking.Status</td>
-                                <td>@(booking.CashOrInstallment ? "Installment" : "Cash")</td>
+                                <td>@booking.CashOrCashByHandOrInstallment</td>
                                 <td>@booking.Customer.Name</td>
                             </tr>
                         }

@@ -76,5 +76,26 @@ namespace BookingServices.Controllers
             _appcontext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+
+
+
+        public IActionResult ProviderBookingSummary()
+        {
+            var providerSummary = _appcontext.ServiceProviders
+                .Select(provider => new
+                {
+                    ProviderName = provider.Name,
+                    TotalBookings = provider.Services
+                                        .SelectMany(s => s.BookingServices)
+                                        .Count(bs => bs.Booking.Status == "Accepted"),
+                    TotalAmount = provider.Services
+                                        .SelectMany(s => s.BookingServices)
+                                        .Where(bs => bs.Booking.Status == "Accepted")
+                                        .Sum(bs => bs.Booking.Price)
+                })
+                .ToList();
+
+            return View(providerSummary);
+        }
     }
 }

@@ -15,10 +15,15 @@ namespace BookingServices.Models
 
         public decimal Rate { get; set; }
 
+        [Required]
+        [MinLength(3, ErrorMessage = "Name must be at least 3 character")]
         public string? Name { get; set; }
 
         public string? Email { get; set; }
 
+        [Required]
+        [RegularExpression(@"^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$",
+        ErrorMessage = "Please enter a valid Saudi phone number.")]
         public string? Phone { get; set; }
     }
 }

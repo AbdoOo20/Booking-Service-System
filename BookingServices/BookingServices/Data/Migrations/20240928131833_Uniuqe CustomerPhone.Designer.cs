@@ -4,6 +4,7 @@ using BookingServices.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingServices.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240928131833_Uniuqe CustomerPhone")]
+    partial class UniuqeCustomerPhone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,9 +62,8 @@ namespace BookingServices.Data.Migrations
                     b.Property<DateTime>("BookDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CashOrCashByHandOrInstallment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("CashOrInstallment")
+                        .HasColumnType("bit");
 
                     b.Property<string>("CustomerId")
                         .HasColumnType("nvarchar(450)");
@@ -371,9 +373,6 @@ namespace BookingServices.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PaymentIncomeId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("PaymentIncomes");
                 });
