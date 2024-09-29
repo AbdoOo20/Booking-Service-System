@@ -1,20 +1,6 @@
-﻿@model IEnumerable<BookingServices.Models.ProviderDataVM>
+﻿@model IEnumerable<ProviderDataVM>
 
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-}
-
-<div class="container mt-5">
-    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
-    <form id="searchForm" class="d-flex" onsubmit="return false;">
-        <input id="searchInput" class="form-control me-sm-2" type="search" placeholder="Search" oninput="filterProviders()">
-        <button id="searchButton" class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-    </form>
-    <br />
-</div>
-
-<table class="table table-striped table-hover shadow-sm" id="providerTable">
+<table class="table table-striped table-hover shadow-sm">
     <thead class="thead-dark">
         <tr>
             <th>@Html.DisplayNameFor(model => model.First().Name)</th>
@@ -53,29 +39,4 @@
         }
     </tbody>
 </table>
-
-<script>
-    function filterProviders() {
-        const searchInput = document.getElementById("searchInput").value.toLowerCase();
-        const providerTable = document.getElementById("providerTable");
-        const rows = providerTable.getElementsByTagName("tr");
-
-        for (let i = 1; i < rows.length; i++) {  // Start from 1 to skip header row
-            const cells = rows[i].getElementsByTagName("td");
-            let found = false;
-
-            // Check each cell in the row for the search term
-            for (let j = 0; j < cells.length; j++) {
-                const cellText = cells[j].textContent.toLowerCase();
-                if (cellText.includes(searchInput)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            // Show or hide the row based on the search term
-            rows[i].style.display = found ? "" : "none";  // Show if found, hide otherwise
-        }
-    }
-</script>
 
