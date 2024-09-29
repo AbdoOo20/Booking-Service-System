@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BookingServices.Controllers
 {
-    [Authorize("PROVIDER")]
+    [Authorize(Roles = "Provider")]
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;

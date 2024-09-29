@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingServices.Controllers
 {
-    [Authorize("PROVIDER")]
+    [Authorize(Roles = "Provider")]
     public class ProfileProviderController : Controller
     {
         ApplicationDbContext context;

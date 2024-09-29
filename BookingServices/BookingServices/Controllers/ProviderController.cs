@@ -1,11 +1,13 @@
 ﻿using BookingServices.Data;
 using BookingServices.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingServices.Controllers
 {
+    [Authorize(Roles = "Provider")]
     public class ProviderController : Controller
     {
         private ApplicationDbContext _context;
