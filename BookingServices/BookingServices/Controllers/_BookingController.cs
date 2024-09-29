@@ -1,5 +1,6 @@
 ﻿using BookingServices.Data;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using System.Security.Claims;
 
 namespace BookingServices.Controllers
 {
+    [Authorize(Roles = "Provider")]
     public class _BookingController : Controller
     {
         private readonly ApplicationDbContext _context;

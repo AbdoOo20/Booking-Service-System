@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using BookingServices.Data;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingServices.Controllers
 {
+    [Authorize(Roles = "Provider")]
     public class ProviderContractsController : Controller
     {
         private readonly ApplicationDbContext _context;

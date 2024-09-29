@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using BookingServices.ViewModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace BookingServices.Controllers
 {
+    [Authorize(Roles = "Provider")]
     public class ProviderHomeController : Controller
     {
         ApplicationDbContext context;

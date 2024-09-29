@@ -124,9 +124,9 @@ namespace BookingServices.Areas.Identity.Pages.Account
                     {
                         return RedirectToAction("Index", "ProviderHome"); // Redirect to Admin page
                     }
-                    else if (await _userManager.IsInRoleAsync(user, "User"))
+                    else if (await _userManager.IsInRoleAsync(user, "Admin"))
                     {
-                        return RedirectToAction("Index", "Home"); // Redirect to User page
+                        return RedirectToAction("Index", "AdminHome"); // Redirect to User page
                     }
 
                     // Redirect to homepage if no specific role found
