@@ -2,8 +2,8 @@
 
 @{
 	ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-
 <h1 class="mt-3">Customers</h1>
 
 <form method="get" id="searchForm" class="mb-3" onsubmit="return false;">
@@ -22,9 +22,9 @@
 </form>
 
 
-<div id="customerListContainer">
-	@Html.Partial("CustomerList", Model)
-</div>
+ <div id="customerListContainer">
+     @Html.Partial("CustomerList", Model) 
+</div> 
 
 <script>
     function performSearch() {
@@ -42,5 +42,6 @@
             }
         });
     }
-</script>
+</script> 
+
 

@@ -2,7 +2,14 @@
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutProvider.cshtml";
+    if (ViewBag.isProvider == true)
+    {
+        Layout = "~/Views/Shared/_LayoutProvider.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
 }
 
 <h1>Services</h1>

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingServices.Controllers
 {
-    [Authorize("ADMIN")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private ApplicationDbContext _appcontext;

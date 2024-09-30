@@ -173,9 +173,7 @@
                 <li class="nav-item dropdown pe-3">
                     <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage" class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
                         <span class="d-md-block dropdown-toggle ps-2">@User.Identity?.Name</span>
-                    </a>
-              
-
+                    </a>          
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                           <h6>@User.Identity?.Name</h6>
@@ -232,10 +230,15 @@
                 </a>
                 <ul id="Services-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a asp-controller="" asp-action="">
-                            <i class="fa-solid fa-circle"></i><span>All Services</span>
+                        <a asp-controller="Services" asp-action="Index">
+                            <i class="fa-solid fa-circle"></i><span>Services</span>
                         </a>
                     </li>
+                        <li>
+                            <a asp-controller="Admin" asp-action="Index">
+                                <i class="fa-solid fa-circle"></i><span>Requested Services</span>
+                            </a>
+                        </li>
                 </ul>
             </li><!-- End Services Nav -->
 
@@ -270,13 +273,13 @@
                 <ul id="Offline-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
                             <a asp-controller="AdminServiceProvider" asp-action="Index">
-                                <i class="fa-solid fa-circle"></i><span>Show All Providers</span>
+                                <i class="fa-solid fa-circle"></i><span>Providers</span>
                             </a>
                         </li>
                     <li>
-                            <a asp-controller="ProviderRegister" asp-action="Index">
+                        <a asp-controller="ProviderRegister" asp-action="Index">
                                 <i class="fa-solid fa-circle"></i><span>
-                                    Provider Waiting List
+                                    Waiting List
                                 </span>
                         </a>
                     </li>
@@ -290,47 +293,42 @@
                     </a>
                     <ul id="Customer-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
-                            <a asp-controller="" asp-action="">
-                                <i class="fa-solid fa-circle"></i><span>Show All Customers</span>
+                            <a asp-controller="Customer" asp-action="Index">
+                                <i class="fa-solid fa-circle"></i><span>Customers</span>
                             </a>
                         </li>
                     </ul>
                 </li><!-- End Customer Users Nav -->
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#Booking-nav" data-bs-toggle="collapse" href="#">
-                    <i class="fa-solid fa-border-top-left"></i><span>Bookings</span><i class="fa-solid fa-chevron-right ms-auto"></i>
-                </a>
-                <ul id="Booking-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                            <a asp-controller="" asp-action="">
-                            <i class="fa-solid fa-circle"></i><span>Show All Booking Service</span>
-                        </a>
-                        <a href="">
-                            <i class="fa-solid fa-circle"></i><span>Show All Booking Package</span>
-                        </a>
-                    </li>
-                </ul>
-            </li><!-- End Booking Users Nav -->
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#Contract-nav" data-bs-toggle="collapse" href="#">
                     <i class="fa-solid fa-file-contract"></i><span>Contracts</span><i class="fa-solid fa-chevron-right ms-auto"></i>
                 </a>
                 <ul id="Contract-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a asp-controller="" asp-action="">
-                            <i class="fa-solid fa-circle"></i><span>Show All Contracts</span>
+                        <a asp-controller="AdminContract" asp-action="Index">
+                            <i class="fa-solid fa-circle"></i><span>Contracts</span>
                         </a>
-                        <a asp-controller="" asp-action="">
-                            <i class="fa-solid fa-circle"></i><span>Show All Provider's Contracts</span>
-                        </a>
-                        <a asp-controller="" asp-action="">
+                        <a asp-controller="AdminContract" asp-action="Create">
                             <i class="fa-solid fa-circle"></i><span>Add Contract</span>
                         </a>
                     </li>
-
                 </ul>
             </li><!-- End Contract Users Nav -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#Category-nav" data-bs-toggle="collapse" href="#">
+                        <i class="fa-solid fa-layer-group"></i><span>Categories</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                    </a>
+                    <ul id="Category-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a asp-controller="Category" asp-action="Index">
+                                <i class="fa-solid fa-circle"></i><span>Categories</span>
+                            </a>
+                            <a asp-controller="Category" asp-action="Create">
+                                <i class="fa-solid fa-circle"></i><span>Add Categorie</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li><!-- End Category Users Nav -->
            @*  <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#Payment-nav" data-bs-toggle="collapse" href="#">
                     <i class="fa-solid fa-money-bill-wave"></i><span>Payments</span><i class="fa-solid fa-chevron-right ms-auto"></i>
@@ -366,18 +364,32 @@
                 </a>
                     <ul id="PaymentIncome-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li>
-                        <a href="">
-                                <i class="fa-solid fa-circle"></i><span>Show Payment Incomes</span>
+                        <a asp-controller="PaymentIncomes" asp-action="Index">
+                            <i class="fa-solid fa-circle"></i><span>Payment Incomes</span>
                         </a>
                     </li>
                     <li>
-                        <a href="">
+                        <a asp-controller="PaymentIncomes" asp-action="Create">
                             <i class="fa-solid fa-circle"></i><span>Add Payment Income</span>
                         </a>
                     </li>
-
                 </ul>
             </li><!-- End Reviews Users Nav -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#Booking-nav" data-bs-toggle="collapse" href="#">
+                        <i class="fa-solid fa-border-top-left"></i><span>Report</span><i class="fa-solid fa-chevron-right ms-auto"></i>
+                    </a>
+                    <ul id="Booking-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a asp-controller="Admin" asp-action="ProviderBookingSummary">
+                                <i class="fa-solid fa-circle"></i><span>Provider Booking</span>
+                            </a>
+                            <a asp-controller="PaymentReports" asp-action="Index">
+                                <i class="fa-solid fa-circle"></i><span>Payment Method</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li><!-- End Booking Users Nav -->
         </ul>
 
     </aside><!-- End Sidebar-->

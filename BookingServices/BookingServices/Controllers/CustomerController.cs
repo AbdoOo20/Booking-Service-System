@@ -1,6 +1,7 @@
 ﻿using BookingServices.Data;
 using BookingServices.Data.Migrations;
 using BookingServices.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Options;
@@ -9,6 +10,7 @@ using System.Buffers;
 
 namespace BookingServices.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CustomerController : Controller
     {
         ApplicationDbContext context;

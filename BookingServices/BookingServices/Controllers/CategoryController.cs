@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingServices.Controllers
 {
-    [Authorize("ADMIN")]
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         ApplicationDbContext context;
