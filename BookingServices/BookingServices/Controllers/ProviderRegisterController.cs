@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingServices.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class ProviderRegisterController : Controller
     {
         ApplicationDbContext _context;
@@ -61,21 +62,21 @@ namespace BookingServices.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id) 
+        public async Task <IActionResult> Delete(int id) 
         {
             if(id == 0)
             {
                 return BadRequest("ID should send!");
             }
 
-            ProviderRegister providerRegister = _context.ProviderRegisters.Find(id);
+            ProviderRegister providerRegister =  await _context.ProviderRegisters.FindAsync(id);
             if(providerRegister == null)
             {
                 return NotFound();
             }
 
             _context.ProviderRegisters.Remove(providerRegister);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
         }

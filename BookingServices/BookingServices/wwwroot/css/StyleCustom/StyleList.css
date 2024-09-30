@@ -13,4 +13,19 @@ tr th {
 
 a i {
     text-align: center;
+    font-size: 25px
+}
+
+.customWidth {
+    max-width: 200px;
+}
+
+@media (max-width: 600px) {
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 600px;
+    }
 }
