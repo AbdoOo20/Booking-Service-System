@@ -27,9 +27,9 @@ namespace BookingServices.Controllers
           [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
+            // Fetch providers and services data
             var providers = await (from a in _context.Users
-                                   join sp in _context.ServiceProviders on
-                                   a.Id equals sp.ProviderId
+                                   join sp in _context.ServiceProviders on a.Id equals sp.ProviderId
                                    select new
                                    {
                                        providerID = sp.ProviderId,
@@ -38,17 +38,26 @@ namespace BookingServices.Controllers
                                        providerName = sp.Name,
                                        providerBalance = sp.Balance,
                                        providerRate = sp.Rate,
-                                       providerReservedBalance = sp.ReservedBalance
+                                       providerReservedBalance = sp.ReservedBalance,
+                                       Isblocked = sp.IsBlooked
                                    }).ToListAsync();
 
-            var numberOfServices = await (from sp in _context.ServiceProviders
-                                          join s in _context.Services on
-                                          sp.ProviderId equals s.ProviderId
-                                          select s.ServiceId
-                                           ).CountAsync();
+            var numberOfServicesPerProvider = await _context.ServiceProviders
+                .Select(sp => new
+                {
+                    ServiceProviderId = sp.ProviderId,
+                    NumberOfServices = sp.Services.Count()
+                })
+                .ToListAsync();
+
             List<ProviderDataVM> providerDataVMs = new List<ProviderDataVM>();
+
             foreach (var p in providers)
             {
+               
+                var numberOfServices = numberOfServicesPerProvider
+                    .FirstOrDefault(ns => ns.ServiceProviderId == p.providerID)?.NumberOfServices ?? 0;
+
                 var providerDataVM = new ProviderDataVM()
                 {
                     ProviderId = p.providerID,
@@ -58,10 +67,13 @@ namespace BookingServices.Controllers
                     Rate = p.providerRate,
                     Balance = p.providerBalance,
                     ReservedBalance = p.providerReservedBalance,
-                    NumberOfServices = numberOfServices
+                    NumberOfServices = numberOfServices ,
+                    Isblocked = p.Isblocked
                 };
+
                 providerDataVMs.Add(providerDataVM);
             }
+
 
             return View(providerDataVMs);
         }
@@ -227,27 +239,22 @@ namespace BookingServices.Controllers
             return PartialView("_ProviderTablePartial", providers);
         }
 
-
         [Authorize(Roles = "Admin")]
-        // GET: AdminServiceProvider/Delete/5
-        public ActionResult Delete(int id)
+        [HttpPost]
+        public async Task<IActionResult> ToggleBlock(string id)
         {
-            return View();
+            var provider = await _context.ServiceProviders.FindAsync(id);
+            if (provider == null)
+            {
+                return Json(new { success = false, message = "Provider not found" });
+            }
+
+            provider.IsBlooked = !provider.IsBlooked;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, isBlocked = provider.IsBlooked });
         }
 
-        // POST: AdminServiceProvider/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+
     }
 }

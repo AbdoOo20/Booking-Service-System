@@ -112,9 +112,8 @@ namespace BookingServices.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                
+                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByEmailAsync(Input.Email);
@@ -122,14 +121,13 @@ namespace BookingServices.Areas.Identity.Pages.Account
                     // Check the user's role
                     if (await _userManager.IsInRoleAsync(user, "Provider"))
                     {
-                        return RedirectToAction("Index", "ProviderHome"); // Redirect to Admin page
+                        return RedirectToAction("Index", "ProviderHome");
                     }
                     else if (await _userManager.IsInRoleAsync(user, "Admin"))
                     {
-                        return RedirectToAction("Index", "AdminHome"); // Redirect to User page
+                        return RedirectToAction("Index", "AdminHome");
                     }
 
-                    // Redirect to homepage if no specific role found
                     return RedirectToAction("Index", "Home");
                 }
                 if (result.RequiresTwoFactor)
@@ -148,8 +146,8 @@ namespace BookingServices.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
+
     }
 }
