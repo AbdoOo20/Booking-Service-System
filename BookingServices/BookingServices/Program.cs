@@ -7,6 +7,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using Microsoft.AspNetCore.Http.Features;
+using BookingServices.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 namespace BookingServices
@@ -59,7 +61,7 @@ namespace BookingServices
                 });
             });
 
-
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
