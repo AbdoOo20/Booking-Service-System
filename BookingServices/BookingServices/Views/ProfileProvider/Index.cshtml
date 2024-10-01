@@ -57,6 +57,25 @@
             <h5>Phone</h5>
             <input class="form-control" name="Phone" value="@Model.Phone" />
         </div>
+
+        @* Reset Password *@
+        <h3>Reset Password</h3>
+        <div class="form-group my-2">
+            <label asp-for="CurrentPassword">Current Password</label>
+            <input asp-for="CurrentPassword" class="form-control" type="password" />
+            @Html.ValidationMessageFor(model => model.CurrentPassword, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group my-2">
+            <label asp-for="NewPassword">New Password</label>
+            <input asp-for="NewPassword" class="form-control" type="password" />
+            @Html.ValidationMessageFor(model => model.NewPassword, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group my-2">
+            <label asp-for="ConfirmNewPassword">Confirm New Password</label>
+            <input asp-for="ConfirmNewPassword" class="form-control" type="password" />
+            @Html.ValidationMessageFor(model => model.ConfirmNewPassword, "", new { @class = "text-danger" })
+        </div>
+
         <button type="submit" class="btn btn-primary btn-lg w-100">Edit</button>
     </form>
     @* <div class="col-12 my-2">
@@ -80,4 +99,5 @@
             </div>
         </div>
     </div> *@
+
 </div>

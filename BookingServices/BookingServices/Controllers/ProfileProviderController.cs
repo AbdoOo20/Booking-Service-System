@@ -16,11 +16,13 @@ namespace BookingServices.Controllers
         string UserID = "6BA8DE65-9B57-466B-87EE-3D3279CED4C6";
         private readonly UserManager<IdentityUser> _userManager;
         ProviderDataVM providerDataVM = new ProviderDataVM();
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager)
+        public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager , SignInManager<IdentityUser> signInManager)
         {
             context = _context;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<ActionResult> Index()
@@ -41,38 +43,69 @@ namespace BookingServices.Controllers
             };
             return View(providerDataVM);
         }
-
         [HttpPost, Route("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProviderDataVM providerDataVM)
         {
             var user = await _userManager.GetUserAsync(User);
-            string useridfrommanager = user?.Id ?? "";
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (ModelState.IsValid)
             {
-                user.PhoneNumber = providerDataVM.Phone;
-                var model = context.ServiceProviders.Find(providerDataVM.ProviderId);
-                if (model == null) 
+                // Check if the user is trying to change the password
+                if (!string.IsNullOrEmpty(providerDataVM.CurrentPassword) && !string.IsNullOrEmpty(providerDataVM.NewPassword))
                 {
-                    errorViewModel = new ErrorViewModel { Message = "No Provider With This Data", Controller = "ProfileProvider", Action = "Index" };
-                    return View("Error", errorViewModel);
+                    var passwordCheck = await _userManager.CheckPasswordAsync(user, providerDataVM.CurrentPassword);
+                    if (!passwordCheck)
+                    {
+                        ModelState.AddModelError(string.Empty, "Current password is incorrect.");
+                        return View(providerDataVM);
+                    }
+
+                    if (providerDataVM.NewPassword != providerDataVM.ConfirmNewPassword)
+                    {
+                        ModelState.AddModelError(string.Empty, "The new password and confirmation password do not match.");
+                        return View(providerDataVM);
+                    }
+
+                    var result = await _userManager.ChangePasswordAsync(user, providerDataVM.CurrentPassword, providerDataVM.NewPassword);
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return View(providerDataVM);
+                    }
+
+                    // Optionally re-sign in the user after a successful password change
+                    await _signInManager.RefreshSignInAsync(user);
+                    TempData["SuccessMessage"] = "Password changed successfully.";
                 }
-                model.ServiceDetails = providerDataVM.ServiceDetails;
-                model.Name = providerDataVM.Name;
-                try
+
+                // Update the provider's profile information
+                var provider = await context.ServiceProviders.FindAsync(providerDataVM.ProviderId);
+                if (provider != null)
                 {
-                    context.ServiceProviders.Update(model);
-                    var result = await _userManager.UpdateAsync(user);
-                    context.SaveChanges();
-                    return RedirectToAction("Index");
+                    provider.Name = providerDataVM.Name;
+                    provider.ServiceDetails = providerDataVM.ServiceDetails;
+
+                    // Update the Phone number in IdentityUser
+                    user.PhoneNumber = providerDataVM.Phone;
+
+                    context.ServiceProviders.Update(provider);
+                    await _userManager.UpdateAsync(user);
+                    await context.SaveChangesAsync();
                 }
-                catch (Exception e)
-                {
-                    errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "ProfileProvider", Action = "Index" };
-                    return View("Error", errorViewModel);
-                }
+
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction("Index");
+
+            return View(providerDataVM);
         }
+
     }
 }

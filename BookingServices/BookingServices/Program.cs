@@ -24,10 +24,15 @@ namespace BookingServices
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+            })
+                    .AddRoles<IdentityRole>()
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultTokenProviders();
 
             builder.Services.AddControllersWithViews();
 
@@ -35,7 +40,7 @@ namespace BookingServices
             {
                 options.MultipartBodyLengthLimit = 10485760; // 10 MB limit
             });
-
+         
             builder.Services.AddHttpClient();
 
             builder.Services.AddAuthorization(options =>
