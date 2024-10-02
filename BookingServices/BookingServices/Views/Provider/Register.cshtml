@@ -31,10 +31,17 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="City" class="form-label">City</label>
-                            <input asp-for="City" class="form-control" />
+                            <select id="City" class="form-select">
+                                <option value="">All Cities</option>
+                                @foreach (var location in ViewBag.Locations as List<string>)
+                                {
+                                    <option value="@location">@location</option>
+                                }
+                            </select>
                             <span asp-validation-for="City" class="text-danger"></span>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="row">

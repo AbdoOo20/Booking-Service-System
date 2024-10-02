@@ -9,11 +9,13 @@ namespace BookingServices.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BookingId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Event date is required.")]
         public DateTime EventDate { get; set; }
 
+        [Required(ErrorMessage = "Start Time is required.")]
         public TimeOnly StartTime { get; set; }
 
+        [Required(ErrorMessage = "End Time is required.")]
         public TimeOnly EndTime { get; set; }
 
         [StringLength(20)]
@@ -22,10 +24,10 @@ namespace BookingServices.Data
         [Range(0, int.MaxValue)]
         public int Quantity { get; set; }
 
-        [Range(1.0, double.MaxValue)]
+        [Range(1.0, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
         public decimal Price { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Payment method is required.")]
         public required string CashOrCashByHandOrInstallment { get; set; }
 
         public DateTime BookDate { get; set; } = DateTime.Now;
