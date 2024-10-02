@@ -1,10 +1,41 @@
 ﻿@page
 @model AccessDeniedModel
-@{
-    ViewData["Title"] = "Access denied";
-}
 
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource.</p>
-</header>
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "";
+}
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+
+        .error-image {
+            width: 50%;
+            margin-bottom: 20px;
+            object-fit: fill;
+        }
+    </style>
+</head>
+<body>
+    <div class="">
+        <div class="text-center">
+            <img src="~/images/1.jpg" alt="Access Denied" class="error-image"><br>
+            <button class="btn btn-danger mt-3"  onclick="history.back()">Back</button>
+        </div>
+    </div>
+</body>
+
+

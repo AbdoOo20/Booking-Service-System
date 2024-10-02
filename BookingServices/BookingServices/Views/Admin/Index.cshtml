@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<ServicesVM>
-
+@{
+    ViewData["Title"] = "Requested Services";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
 <div class="container mt-5">
-    <h2 class="text-center">Requested Products</h2>
+    <h2 class="text-center">Requested Services</h2>
     <table class="table">
         <thead>
             <tr>

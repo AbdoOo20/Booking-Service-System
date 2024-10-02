@@ -59,7 +59,7 @@ namespace BookingServices.Data
 
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.AlternativePhone)
-                .IsUnique()
+                .IsUnique();
 
             base.OnModelCreating(modelBuilder);
         }

@@ -1,0 +1,66 @@
+﻿@model EditProviderViewModel
+
+@{
+    ViewData["Title"] = "Edit Service Provider";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">Edit Service Provider Details</h4>
+                    <hr />
+
+                    <form asp-action="Edit" method="post">
+                        <input asp-for="ProviderId" type="hidden" />
+
+                        <!-- Email Input Section -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input asp-for="Email" class="form-control" placeholder="Enter provider email" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Password Input Section -->
+                        <div class="form-group mb-3">
+                            <label asp-for="NewPassword" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input asp-for="NewPassword" class="form-control" type="password" placeholder="Enter new password" />
+                            </div>
+                            <span asp-validation-for="NewPassword" class="text-danger"></span>
+                        </div>
+
+                        <!-- Confirm Password Input Section -->
+                        <div class="form-group mb-3">
+                            <label asp-for="ConfirmNewPassword" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input asp-for="ConfirmNewPassword" class="form-control" type="password" placeholder="Confirm new password" />
+                            </div>
+                            <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between flex-wrap">
+                            <button type="submit" class="btn btn-success mb-2 mb-md-0">Save Changes</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary mb-2 mb-md-0">Back to List</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

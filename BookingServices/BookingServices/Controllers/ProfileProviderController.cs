@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace BookingServices.Controllers
 {
@@ -16,16 +17,18 @@ namespace BookingServices.Controllers
         string UserID = "6BA8DE65-9B57-466B-87EE-3D3279CED4C6";
         private readonly UserManager<IdentityUser> _userManager;
         ProviderDataVM providerDataVM = new ProviderDataVM();
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager)
+        public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             context = _context;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<ActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User); 
+            var user = await _userManager.GetUserAsync(User);
             string userIdFromManager = user?.Id ?? "";
             var provider = context.ServiceProviders.Include(p => p.IdentityUser).FirstOrDefault(p => p.ProviderId == userIdFromManager);
             providerDataVM = new ProviderDataVM()
@@ -41,38 +44,82 @@ namespace BookingServices.Controllers
             };
             return View(providerDataVM);
         }
-
         [HttpPost, Route("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProviderDataVM providerDataVM)
         {
             var user = await _userManager.GetUserAsync(User);
-            string useridfrommanager = user?.Id ?? "";
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (ModelState.IsValid)
             {
-                user.PhoneNumber = providerDataVM.Phone;
-                var model = context.ServiceProviders.Find(providerDataVM.ProviderId);
-                if (model == null) 
+                var provider = await context.ServiceProviders.FindAsync(providerDataVM.ProviderId);
+                if (provider != null)
                 {
-                    errorViewModel = new ErrorViewModel { Message = "No Provider With This Data", Controller = "ProfileProvider", Action = "Index" };
-                    return View("Error", errorViewModel);
+                    provider.Name = providerDataVM.Name;
+                    provider.ServiceDetails = providerDataVM.ServiceDetails;
+                    user.PhoneNumber = providerDataVM.Phone;
+
+                    context.ServiceProviders.Update(provider);
+                    await _userManager.UpdateAsync(user);
+                    await context.SaveChangesAsync();
                 }
-                model.ServiceDetails = providerDataVM.ServiceDetails;
-                model.Name = providerDataVM.Name;
-                try
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(providerDataVM);
+        }
+
+
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View("ProviderResetPassword");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(Provider_ResetPassowrd model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var passwordCheck = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+                if (!passwordCheck)
                 {
-                    context.ServiceProviders.Update(model);
-                    var result = await _userManager.UpdateAsync(user);
-                    context.SaveChanges();
-                    return RedirectToAction("Index");
+                    ModelState.AddModelError(string.Empty, "Current password is incorrect.");
+                    return View(model);
                 }
-                catch (Exception e)
+
+                if (model.NewPassword != model.ConfirmNewPassword)
                 {
-                    errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "ProfileProvider", Action = "Index" };
-                    return View("Error", errorViewModel);
+                    ModelState.AddModelError(string.Empty, "The new password and confirmation password do not match.");
+                    return View(model);
+                }
+
+                var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    TempData["SuccessMessage"] = "Password changed successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-            return RedirectToAction("Index");
+
+            return View(model);
         }
     }
 }

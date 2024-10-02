@@ -2,7 +2,14 @@
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutProvider.cshtml";
+    if (ViewBag.isProvider == true)
+    {
+        Layout = "~/Views/Shared/_LayoutProvider.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
 }
 
 <h1>Services</h1>
@@ -54,7 +61,7 @@
     </div>
 </div>
 
-<table class="table table-hover text-center">
+<table class="table table-hover text-center" id="myTable">
     <thead>
         <tr>
             <th>@Html.DisplayNameFor(model => model.Name)</th>
@@ -142,3 +149,4 @@
 </table>
 
 <script src="~/js/servicesfilter.js"></script>
+<script src="~/js/datatablesjs.js"></script>

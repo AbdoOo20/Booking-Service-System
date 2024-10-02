@@ -1,0 +1,53 @@
+﻿@model BookingServices.Models.ProviderDataVM
+
+@{
+    ViewData["Title"] = "Provider Details";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+}
+
+<div class="container mt-5" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Service Provider Information</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <div class="col-12 py-2 border-bottom">
+                    <dt class="col-sm-4"> @Html.DisplayNameFor(model => model.Name) </dt>
+                    <dd class="col-sm-8"> @Html.DisplayFor(model => model.Name) </dd>
+                </div>
+                <div class="col-12 py-2 border-bottom">
+                    <dt class="col-sm-4"> @Html.DisplayNameFor(model => model.Email) </dt>
+                    <dd class="col-sm-8"> @Html.DisplayFor(model => model.Email) </dd>
+                </div>
+                <div class="col-12 py-2 border-bottom">
+                    <dt class="col-sm-4"> @Html.DisplayNameFor(model => model.Phone) </dt>
+                    <dd class="col-sm-8"> @Html.DisplayFor(model => model.Phone) </dd>
+                </div>
+                <div class="col-12 py-2 border-bottom">
+                    <dt class="col-sm-4"> @Html.DisplayNameFor(model => model.Balance) </dt>
+                    <dd class="col-sm-8"> @Html.DisplayFor(model => model.Balance) </dd>
+                </div>
+                <div class="col-12 py-2 border-bottom">
+                    <dt class="col-sm-4"> @Html.DisplayNameFor(model => model.ReservedBalance) </dt>
+                    <dd class="col-sm-8"> @Html.DisplayFor(model => model.ReservedBalance) </dd>
+                </div>
+                <div class="col-12 py-2 border-bottom">
+                    <dt class="col-sm-4"> @Html.DisplayNameFor(model => model.NumberOfServices) </dt>
+                    <dd class="col-sm-8"> @Html.DisplayFor(model => model.NumberOfServices) </dd>
+                </div>
+                <div class="col-12 py-2 border-bottom">
+                    <dt class="col-sm-4"> @Html.DisplayNameFor(model => model.Rate) </dt>
+                    <dd class="col-sm-8"> @Html.DisplayFor(model => model.Rate) </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@Model?.ProviderId" class="btn btn-warning mr-2">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>

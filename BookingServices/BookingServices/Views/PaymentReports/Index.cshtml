@@ -1,0 +1,72 @@
+﻿@model IEnumerable<BookingServices.Models.PaymentReportViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<form id="searchForm">
+    <div class="input-group">
+        <input name="SearchText" id="SearchText" type="text" class="form-control" placeholder="Search">
+    </div>
+    <div class="input-group mt-3">
+        <label class="me-3 fw-bold text-center align-self-center" for="FromDate">From:</label>
+        <input name="FromDate" id="FromDate" type="date" class="form-control">
+
+        <label class="ms-3 me-3 fw-bold text-center align-self-center" for="ToDate">To:</label>
+        <input name="ToDate" id="ToDate" type="date" class="form-control">       
+    </div>
+    <div id="dateError" class="alert alert-danger mt-2" role="alert" style="display:none;"></div>
+</form>
+
+<table id="resultsTable" class="table mt-5">
+    <thead>
+        <tr>
+            <th>
+                Payment Name
+            </th>
+            <th>
+                Payment Count
+            </th>
+            <th>
+                Total Benefit
+            </th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalBenefit)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-Id="@item.PaymentIncomeId">
+                <i class="fa-solid fa-angles-right"
+                    style="color:green;font-size:30px">
+                </i>
+                </a>
+               
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<script>
+    var ajaxUrl = '@Url.Action("Index", "PaymentReports")';
+</script>
+<script src="~/js/CustomJS/customJS.js"></script>
+
+
+

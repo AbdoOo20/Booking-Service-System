@@ -5,53 +5,110 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Providers</h1>
 
-<div class="container">
 
-    <h3>Providers</h3>
+    <form id="searchForm" class="d-flex flex-wrap justify-content-center" onsubmit="return false;">
+        <input id="searchInput" class="form-control me-sm-2 mb-3 w-100 w-md-auto" type="search" placeholder="Search Providers" oninput="filterProviders()" />
+    </form>
+    <br />
+</div>
 
-    <table class="table mt-5">
-        <thead>
+
+<div class="table-responsive">
+
+    <table class="table table-striped table-hover shadow-sm text-center" id="myTable">
+        <thead class="thead-dark">
             <tr>
-                <th>
-                    Provider Name
-                </th>
-                <th>
-                    Phone Number
-                </th>
-                <th>
-                    Email
-                </th>          
-                <th>
-                    Service Details
-                </th>
-                <th>
-                    Rate
-                </th>
-           
+                <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Phone)</th>
+                <th>@Html.DisplayNameFor(model => model.First().NumberOfServices)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Rate)</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
-        @foreach (var item in Model) {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Phone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ServiceDetails)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rate)
-                </td>
-            </tr>
-    }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                    <td>@Html.DisplayFor(modelItem => item.NumberOfServices)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Rate)</td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.ProviderId" class="btn btn-sm btn-info mx-1">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button id="blockButton-@item.ProviderId" class="btn btn-sm btn-danger mx-1" onclick="toggleBlock('@item.ProviderId')">
+                            <i class="fas fa-trash-alt"></i> @(item.Isblocked ? "Unblock" : "Block")
+                        </button>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
+
+@Html.AntiForgeryToken()
+
+<script src="~/js/datatablesjs.js"></script>
+<script>
+    // Function to filter the table based on search input
+   /* function filterProviders() {
+        const searchInput = document.getElementById("searchInput").value.toLowerCase();
+        const providerTable = document.getElementById("providerTable");
+        const rows = providerTable.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) {  
+            const cells = rows[i].getElementsByTagName("td");
+            let found = false;
+
+           
+            for (let j = 0; j < cells.length; j++) {
+                const cellText = cells[j].textContent.toLowerCase();
+                if (cellText.includes(searchInput)) {
+                    found = true;
+                    break;
+                }
+            }
+            rows[i].style.display = found ? "" : "none";  
+        }
+    }*/
+
+    // Function to retrieve the Anti-Forgery token from the page
+    function getAntiForgeryToken() {
+        return $('input[name="__RequestVerificationToken"]').val();
+    }
+
+    // Function to toggle the block status of a provider
+    function toggleBlock(providerId) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("ToggleBlock", "AdminServiceProvider")',
+            data: {
+                id: providerId,
+                __RequestVerificationToken: getAntiForgeryToken()  
+            },
+            success: function (response) {
+                if (response.success) {
+                    var button = $("#blockButton-" + providerId);
+                    if (response.isBlocked) {
+                        button.html('<i class="fas fa-trash-alt"></i> Unblock');
+                        button.removeClass('btn-danger').addClass('btn-success');
+                    } else {
+                        button.html('<i class="fas fa-trash-alt"></i> Block');
+                        button.removeClass('btn-success').addClass('btn-danger');
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("An error occurred while processing your request.");
+            }
+        });
+    }
+</script>

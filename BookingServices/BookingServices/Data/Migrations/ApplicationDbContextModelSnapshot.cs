@@ -283,6 +283,9 @@ namespace BookingServices.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsBlooked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PackageName")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -362,6 +365,9 @@ namespace BookingServices.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentIncomeId"));
 
+                    b.Property<bool>("IsBlooked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -371,6 +377,9 @@ namespace BookingServices.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PaymentIncomeId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("PaymentIncomes");
                 });
@@ -493,6 +502,9 @@ namespace BookingServices.Data.Migrations
                     b.Property<decimal>("InitialPaymentPercentage")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("IsBlooked")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsOnlineOrOffline")
                         .HasColumnType("bit");
 
@@ -574,6 +586,9 @@ namespace BookingServices.Data.Migrations
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsBlooked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

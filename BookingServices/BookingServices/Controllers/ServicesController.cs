@@ -77,7 +77,7 @@ namespace BookingServices.Controllers
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
                         IsRequestedOrNot = service.IsRequestedOrNot,
                         CategoryName = service.Category.Name ?? "Not Exists",
-                       ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists" 
+                        ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists" 
                     })
                     .ToListAsync();
                 }
