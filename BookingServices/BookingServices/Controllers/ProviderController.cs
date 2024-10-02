@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+//using System.Drawing;
+using BookingServices.Models;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace BookingServices.Controllers
 {
@@ -12,15 +16,28 @@ namespace BookingServices.Controllers
     {
         private ApplicationDbContext _context;
         private UserManager<IdentityUser> _userManager;
-        public ProviderController([FromServices] ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        private string SaudiArabiaRegionsCitiesAndDistricts;
+        private readonly HttpClient _client;
+        ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
+        public ProviderController([FromServices] ApplicationDbContext context, HttpClient client, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
+            SaudiArabiaRegionsCitiesAndDistricts = "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
+            _client = client;
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            // Fetch Regions data from external API for locations
+            var response = await _client.GetAsync(SaudiArabiaRegionsCitiesAndDistricts);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                var regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
+                ViewBag.Locations = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
+            }
             return View();
         }
 
@@ -30,7 +47,7 @@ namespace BookingServices.Controllers
         {
             if (ModelState.IsValid)
             {
-                var findcustomer = await _context.Customers.FirstOrDefaultAsync(x => x.SSN == model.SSN);
+                var findcustomer = await _context.Customers.FirstOrDefaultAsync(x => x.SSN == model.SSN && x.IsOnlineOrOfflineUser == false);
                 if (findcustomer != null)
                 {
                     TempData["Message"] = "Customer with this SSN already exists!";
@@ -52,7 +69,7 @@ namespace BookingServices.Controllers
                     AccessFailedCount = 0
                 };
 
-                var result = await _userManager.CreateAsync(user, _TempUserNameAndPassword + "a@");
+                var result = await _userManager.CreateAsync(user, "EslamWaheed358@gmail.com");
                 if (result.Succeeded)
                 {
                     _context.Customers.Add(
@@ -86,23 +103,29 @@ namespace BookingServices.Controllers
         [HttpGet]
         public IActionResult Booking(int id)
         {
-            SharedserviceId = id;
-            ViewBag.AvailableQuantity = _context.Services
-                .Where(s => s.ServiceId == id)
-                .Select(s => s.Quantity).FirstOrDefault();
+            try
+            {
+                var today = DateTime.Now.Date;
+                Tuple<int, decimal> result = GetPriceAndQuantity(id, today);
+                SharedserviceId = id;
+                ViewBag.AvailableQuantity = result.Item1;
 
-            ViewBag.ServiceName = _context.Services
-                .Where(s => s.ServiceId == id)
-                .Select(s => s.Name).FirstOrDefault().ToString();
+                ViewBag.ServiceName = _context.Services
+                    .Where(s => s.ServiceId == id)
+                    .Select(s => s.Name).FirstOrDefault().ToString();
 
-            ViewBag.paymentMethod = _context.PaymentIncomes.ToList();
-            
-            var today = DateTime.Now.Date;
-            ViewBag.priceOfCurrentDay = _context.ServicePrices
-                .Where(x => x.ServiceId == id && x.PriceDate.Date == today)
-                .Select(x => x.Price).FirstOrDefault();
-            ViewBag.ServiceId = id;
-            return View();
+                ViewBag.paymentMethod = _context.PaymentIncomes.ToList();
+
+                ViewBag.priceOfCurrentDay = result.Item2;
+                ViewBag.ServiceId = id;
+                return View();
+            }
+            catch (Exception e)
+            {
+                errorViewModel = new ErrorViewModel { Message = "An unexpected error occurred. Please try again later.", Controller = " Admin", Action = "Index" };
+                return View("Error", errorViewModel);
+            }
+
         }
 
         private string sharedSSN = "";
@@ -110,50 +133,57 @@ namespace BookingServices.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Booking(Booking model)
         {
-            model.Status = "pendding";
-            model.Type = "Service";
-            //SharedserviceId = 1;
-            if (ModelState.IsValid)
+            try
             {
-                var customer = _context.Customers.FirstOrDefault(x => x.SSN == model.CustomerId);
-                if (customer == null)
+                model.Status = "pendding";
+                model.Type = "Service";
+                if (ModelState.IsValid)
                 {
-                    TempData["Message"] = "Customer not found.";
-                    TempData["MessageType"] = "error";
+                    var customer = _context.Customers.FirstOrDefault(x => x.SSN == model.CustomerId);
+                    if (customer == null)
+                    {
+                        TempData["Message"] = "Customer not found.";
+                        TempData["MessageType"] = "error";
+                        return RedirectToAction("Booking", new { serviceId = SharedserviceId });
+                    }
+
+                    var bookingEntity = new Booking
+                    {
+                        EventDate = model.EventDate,
+                        StartTime = model.StartTime,
+                        EndTime = model.EndTime,
+                        Status = model.Status, // allow null -- not in default pendding
+                        Quantity = model.Quantity,
+                        Price = model.Price, // just for view -- not in from the service price
+                        CashOrCashByHandOrInstallment = model.CashOrCashByHandOrInstallment, // or cash by hand
+                        BookDate = DateTime.Now, // -- not in default date.now
+                        Type = model.Type, // allow null -- service
+                        CustomerId = _context.Customers.FirstOrDefault(x => x.SSN == model.CustomerId).CustomerId, // allow null
+                        PaymentIncomeId = model.PaymentIncomeId,
+                    };
+
+                    _context.Bookings.Add(bookingEntity);
+                    _context.SaveChanges();
+
+                    _context.BookingServices.Add(new BookingService() { BookingId = bookingEntity.BookingId, ServiceId = SharedserviceId });
+
+                    _context.SaveChanges();
+
+                    // from this point i will go to pay
+                    //return Content("All is will bro, Booking");
+                    TempData["Message"] = "Booking successful!";
+                    TempData["MessageType"] = "success";
                     return RedirectToAction("Booking", new { serviceId = SharedserviceId });
                 }
-
-                var bookingEntity = new Booking
-                {
-                    EventDate = model.EventDate,
-                    StartTime = model.StartTime,
-                    EndTime = model.EndTime,
-                    Status = model.Status, // allow null -- not in default pendding
-                    Quantity = model.Quantity,
-                    Price = model.Price, // just for view -- not in from the service price
-                    CashOrCashByHandOrInstallment = model.CashOrCashByHandOrInstallment, // or cash by hand
-                    BookDate = DateTime.Now, // -- not in default date.now
-                    Type = model.Type, // allow null -- service
-                    CustomerId = _context.Customers.FirstOrDefault(x => x.SSN == model.CustomerId).CustomerId, // allow null
-                    PaymentIncomeId = model.PaymentIncomeId,
-                };
-
-                _context.Bookings.Add(bookingEntity);
-                _context.SaveChanges();
-
-                _context.BookingServices.Add(new BookingService() { BookingId = bookingEntity.BookingId, ServiceId = SharedserviceId });
-                
-                _context.SaveChanges();
-
-                // from this point i will go to pay
-                //return Content("All is will bro, Booking");
-                TempData["Message"] = "Booking successful!";
-                TempData["MessageType"] = "success";
-                return RedirectToAction("Booking", new { serviceId = SharedserviceId });
+                TempData["Message"] = "Booking failed. Please try again.";
+                TempData["MessageType"] = "error";
+                return View(model);
             }
-            TempData["Message"] = "Booking failed. Please try again.";
-            TempData["MessageType"] = "error";
-            return View(model);
+            catch (Exception e)
+            {
+                errorViewModel = new ErrorViewModel { Message = "An unexpected error occurred. Please try again later.", Controller = " Admin", Action = "Index" };
+                return View("Error", errorViewModel);
+            }
         }
 
 
@@ -201,9 +231,9 @@ namespace BookingServices.Controllers
             }
 
             var result = (from b in _context.Bookings
-                                 join bs in _context.BookingServices on b.BookingId equals bs.BookingId
-                                 where bs.ServiceId == serviceId && b.EventDate == eventDate
-                                 select new { b.StartTime, b.EndTime }).ToList();
+                          join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+                          where bs.ServiceId == serviceId && b.EventDate == eventDate
+                          select new { b.StartTime, b.EndTime }).ToList();
 
             var alltimebooked = result.Select(r => (r.StartTime, r.EndTime)).ToList();
             var allTimesBookedInOneDay = new List<string>();
@@ -229,5 +259,37 @@ namespace BookingServices.Controllers
             foreach (var book in result) bookingQuantity += book;
             return bookingQuantity;
         }
+
+        private Tuple<int, decimal> GetPriceAndQuantity(int serviceId, DateTime eventDate)
+        {
+            var quantityAvailable = _context.Services
+                .Where(s => s.ServiceId == serviceId)
+                .Select(s => s.Quantity).FirstOrDefault() - GetAllquantity(serviceId, eventDate);
+
+            var price = _context.ServicePrices
+                .Where(x => x.ServiceId == serviceId && x.PriceDate.Date == eventDate.Date)
+                .Select(x => x.Price).FirstOrDefault();
+
+            return new Tuple<int, decimal>(quantityAvailable, price);
+        }
+
+        private Tuple<int, decimal> GetPriceAndQuantityint(int serviceId, DateTime eventDate)
+        {
+            return GetPriceAndQuantity(serviceId, eventDate);
+        }
+
+        [HttpGet]
+        public IActionResult GetPriceAndQuantityout(int serviceId, DateTime eventDate)
+        {
+            var result = GetPriceAndQuantity(serviceId, eventDate);
+            return Json(new
+            {
+                success = true,
+                quantity = result.Item1,
+                price = result.Item2
+            });
+        }
     }
 }
+
+

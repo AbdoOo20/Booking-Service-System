@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<BookingServices.Data.PaymentIncome>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Payment Getways";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Payment Getways</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
@@ -33,7 +33,6 @@
             </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.PaymentIncomeId" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i></a> |
-                    <a asp-action="Details" asp-route-id="@item.PaymentIncomeId" class="btn btn-outline-success"><i class="fa-solid fa-circle-info"></i></a> |
                     <a asp-action="Delete" asp-route-id="@item.PaymentIncomeId" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></a>
                 </td>
         </tr>

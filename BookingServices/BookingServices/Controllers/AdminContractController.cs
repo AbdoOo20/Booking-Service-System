@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingServices.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class AdminContractController : Controller
     {
         ApplicationDbContext context;
@@ -20,6 +20,22 @@ namespace BookingServices.Controllers
         {
             return View(context.AdminContracts.ToList());
         }
+
+
+        // Action to return the Admin Contract details view
+        [HttpGet]
+        public async Task<IActionResult> GetAdminContractDetails(int id)
+        {
+            var contract = await context.AdminContracts.FindAsync(id);
+
+            if (contract == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_AdminContractDetailsPartial", contract);
+        }
+
 
         public ActionResult Create()
         {

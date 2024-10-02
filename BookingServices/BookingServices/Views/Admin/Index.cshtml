@@ -8,6 +8,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th>Service Provider</th>
                 <th>Service Name</th>
                 <th>Location</th>
                 <th>Details</th>
@@ -18,14 +19,11 @@
             @foreach (var service in Model)
             {
                 <tr>
+                    <td>@service.ProviderName</td>
                     <td>@service.ServiceName</td>
                     <td>@service.Location</td>
                     <td>@service.Details</td>
-                    <td>
-                        @* <a class="btn btn-primary btn-sm" asp-action="Accept" asp-route-id="@service.Id">Accept</a> |
-                        <a class="btn btn-danger btn-sm" asp-action="Reject" asp-route-id="@service.Id">Reject</a> |*@
-                        <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@service.Id">Details</a>
-                    </td>
+                    <td> <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@service.Id">Details</a> </td>
                 </tr>
             }
         </tbody>

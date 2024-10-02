@@ -29,8 +29,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Price" class="form-label">Price</label>
-                            <input asp-for="Price" type="number" step="0.01" class="form-control" readonly value="@ViewBag.priceOfCurrentDay" />
-                            <span asp-validation-for="Price" class="text-danger"></span>
+                            <input id="PriceId" asp-for="Price" type="number" step="0.01" class="form-control" readonly value="@ViewBag.priceOfCurrentDay" />
+                            <span id="PriceError" asp-validation-for="Price" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
@@ -86,8 +86,8 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label asp-for="Quantity" class="form-label">Quantity</label>
-                            <input asp-for="Quantity" class="form-control" placeholder="Available quantity: @ViewBag.AvailableQuantity" max="@ViewBag.AvailableQuantity" min="0" />
-                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                            <input id="QuantityId" asp-for="Quantity" class="form-control" placeholder="Available quantity: @ViewBag.AvailableQuantity" max="@ViewBag.AvailableQuantity" min="0" />
+                            <span id="QuantityError" asp-validation-for="Quantity" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -97,14 +97,13 @@
                                 <option value="">-- Select Payment Type --</option>
                                 <option value="CashByHand">Cash By Hand</option>
                                 <option value="Cash">Cash</option>
-@*                                 <option value="false">Installment</option>
- *@                            </select>
+                            </select>
                             <span asp-validation-for="CashOrCashByHandOrInstallment" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label asp-for="PaymentIncomeId" class="form-label">Payment Method</label>
+                            <label asp-for="PaymentIncomeId" class="form-label" id="paymentMethodLabel">Payment Method</label>
                             <select asp-for="PaymentIncomeId" class="form-select" id="paymentMethod">
                                 <option value="">-- Select Payment Method --</option>
                                 @foreach (var item in ViewBag.paymentMethod)
@@ -143,6 +142,9 @@
                     newOption.value = "CashByHand";
                     newOption.text = "Cash By Hand";
                     paymentMethod.insertBefore(newOption, paymentMethod.firstChild);
+
+                    paymentMethod.style.display = 'none';
+                    document.getElementById('paymentMethodLabel').style.display = 'none';
                 }
                 paymentMethod.value = 'CashByHand';
                 paymentMethod.disabled = true;
@@ -150,6 +152,9 @@
                 if (existingOption) {
                     paymentMethod.removeChild(existingOption);  // Remove the 'CashByHand' option
                 }
+                paymentMethod.style.display = 'block';
+                document.getElementById('paymentMethodLabel').style.display = 'block';
+
                 paymentMethod.disabled = false;
             }
         });
@@ -176,6 +181,7 @@
         document.getElementById('eventDate').addEventListener('change', function () {
             var serviceId = @ViewBag.ServiceId;
             var eventDate = this.value;
+
             fetch(`/Provider/GetAvailableTimes?serviceId=${serviceId}&eventDate=${eventDate}`)
                 .then(response => response.json())
                 .then(data => {
@@ -200,6 +206,30 @@
                     });
 
                     startTimeDropdown.disabled = false;
+                });
+
+            fetch(`/Provider/GetPriceAndQuantityout?serviceId=${serviceId}&eventDate=${eventDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        //console.log("success " + data);
+                        // Assigning values from the API response
+                        document.getElementById('PriceId').value = data.price;
+                        document.getElementById('QuantityId').placeholder = "Available quantity: " + data.quantity;
+                        document.getElementById('PriceError').textContent = '';
+                        document.getElementById('QuantityError').textContent = '';
+                    } else {
+                        //console.log("faild " + data);
+
+                        document.getElementById('PriceId').value = '';
+                        document.getElementById('QuantityId').placeholder = "Available quantity: 0";
+                        document.getElementById('QuantityId').Disabled;
+                        document.getElementById('PriceError').textContent = 'Not found Price for the selected date';
+                        document.getElementById('QuantityError').textContent = 'There is no longer any quantity available.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                 });
         });
 
@@ -234,8 +264,7 @@
                 });
         });
 
-    </script>
-    <script>
+    
             window.setTimeout(function() {
                 var alertMessage = document.getElementById('alertMessage');
             if (alertMessage) {

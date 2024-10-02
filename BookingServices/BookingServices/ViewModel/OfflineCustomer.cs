@@ -23,7 +23,7 @@ namespace BookingServices.ViewModel
         ErrorMessage = "Please enter a valid Saudi phone number.")]
         public string? AlternativePhone { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select a City.")]
         public string City { get; set; }
     }
 }
