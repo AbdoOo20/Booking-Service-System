@@ -1,24 +1,49 @@
-﻿@model BookingServices.Data.ServicePrice
+﻿@model BookingServices.Models.ServicePriceModel
 
 @{
     ViewData["Title"] = "Add Price";
     Layout = "~/Views/Shared/_LayoutProvider.cshtml";
-
 }
 
 <h1>Add New Price</h1>
 
 <form asp-action="AddPrice" method="post">
-    <div class="form-group">
+    <div class="form-group mb-4">
+        <span class="me-4 btn btn-outline-primary">
+            <label class="control-label" for="single">Single Value</label>
+            <input type="radio" name="priceType" id="single" checked />
+        </span>
+        <span class="btn btn-outline-primary">
+            <label class="control-label" for="range">Range Of Values</label>
+            <input type="radio" name="priceType" id="range" />
+        </span>
+    </div>
+
+    <div class="form-group" id="SinglePrice">
         <label asp-for="PriceDate" class="control-label"></label>
-        <input asp-for="PriceDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+        <input asp-for="PriceDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
         <span asp-validation-for="PriceDate" class="text-danger"></span>
     </div>
+
+    <div class="form-group d-none" id="RangeOfPrices">
+        <div class="form-group">
+            <label asp-for="StartDate" class="control-label">From Date</label>
+            <input asp-for="StartDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="EndDate" class="control-label">To Date</label>
+            <input asp-for="EndDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
+    </div>
+
     <div class="form-group">
         <label asp-for="Price" class="control-label"></label>
         <input asp-for="Price" class="form-control" />
         <span asp-validation-for="Price" class="text-danger"></span>
     </div>
+
     <input type="hidden" asp-for="ServiceId" value="@ViewData["ServiceId"]" />
 
     <div class="form-group pt-4 d-flex">
@@ -26,3 +51,32 @@
         <a asp-action="Prices" asp-route-id="@ViewData["ServiceId"]" class="btn btn-outline-secondary ms-auto">Back to List</a>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const singleRadio = document.getElementById('single');
+            const rangeRadio = document.getElementById('range');
+            const singlePriceDiv = document.getElementById('SinglePrice');
+            const rangePriceDiv = document.getElementById('RangeOfPrices');
+
+            // Toggle visibility based on selected radio button
+            function togglePriceType() {
+                if (singleRadio.checked) {
+                    singlePriceDiv.classList.remove('d-none');
+                    rangePriceDiv.classList.add('d-none');
+                } else if (rangeRadio.checked) {
+                    rangePriceDiv.classList.remove('d-none');
+                    singlePriceDiv.classList.add('d-none');
+                }
+            }
+
+            // Initialize the form based on the selected radio button
+            togglePriceType();
+
+            // Add event listeners to toggle the visibility
+            singleRadio.addEventListener('change', togglePriceType);
+            rangeRadio.addEventListener('change', togglePriceType);
+        });
+    </script>
+}

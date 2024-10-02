@@ -19,6 +19,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +32,11 @@
                     <td>@i</td>
                     <td>@item.PriceDate.ToString("yyyy-MM-dd")</td>
                     <th>@Html.DisplayFor(modelItem => item.Price)</th>
+                    <th>
+                        <a asp-action="EditPrice" asp-route-id="@item.ServiceId" asp-route-date="@item.PriceDate" class="btn btn-outline-success me-2 mb-2 d-sm-inline">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                    </th>
                 </tr>
             }
         }

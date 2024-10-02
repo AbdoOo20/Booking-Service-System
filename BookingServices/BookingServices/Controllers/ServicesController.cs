@@ -102,7 +102,14 @@ namespace BookingServices.Controllers
                         .ToListAsync();
                 }
 
-               
+                foreach (var service in servicesIndexModel)
+                {
+                    service.ServicePrice = await _context.ServicePrices
+                        .Where(s => s.ServiceId == service.ServiceId)
+                        .Where(s => s.PriceDate == DateTime.Now)
+                        .Select(s => s.Price)
+                        .FirstOrDefaultAsync();
+                }
 
                 // Fetch Regions data from external API for locations
                 var response = await _client.GetAsync(SaudiArabiaRegionsCitiesAndDistricts);
@@ -603,18 +610,119 @@ namespace BookingServices.Controllers
         // POST: AddPrice
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddPrice(int id, [Bind("ServiceId,PriceDate,Price")] ServicePrice servicePrice)
+        public async Task<IActionResult> AddPrice(int id, [Bind("ServiceId,PriceDate,StartDate,EndDate,Price")] ServicePriceModel servicePriceModel)
         {
             if (!ServiceExists(id))
-                ErrorHandling(nameof(AddPrice), "The Service Not Exists !!!");
+            {
+                ErrorHandling(nameof(AddPrice), "The Service does not exist!");
+                return NotFound();
+            }
 
             if (ModelState.IsValid)
             {
-                servicePrice.ServiceId = id;
-                _context.ServicePrices.Add(servicePrice);
+                if (servicePriceModel.EndDate.Date != DateTime.Now.Date) // Compare only date part
+                {
+                    DateTime currentDate = servicePriceModel.StartDate;
+                    while (currentDate <= servicePriceModel.EndDate)
+                    {
+                        var servicePrice = new ServicePrice
+                        {
+                            ServiceId = servicePriceModel.ServiceId,
+                            Price = servicePriceModel.Price,
+                            PriceDate = currentDate
+                        };
+                        _context.ServicePrices.Add(servicePrice);
+                        currentDate = currentDate.AddDays(1); // Increment the date by 1 day
+                    }
+                }
+                else
+                {
+                    var servicePrice = new ServicePrice
+                    {
+                        ServiceId = servicePriceModel.ServiceId,
+                        Price = servicePriceModel.Price,
+                        PriceDate = servicePriceModel.PriceDate
+                    };
+                    _context.ServicePrices.Add(servicePrice);
+                }
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Prices), new { id = id });
             }
+
+            return View(servicePriceModel);
+        }
+        public async Task<IActionResult> EditPrice(int id,[FromQuery] DateTime date)
+        {
+            if (!ServiceExists(id))
+            {
+                ErrorHandling(nameof(EditPrice), "The Service Does Not Exist!");
+                return NotFound();
+            }
+
+            var servicePrice = await _context.ServicePrices
+                .Where(sp => sp.ServiceId == id && sp.PriceDate == date)
+                .FirstOrDefaultAsync();
+
+            if (servicePrice == null)
+            {
+                ErrorHandling(nameof(EditPrice), "The Service Price does not exist for the given date!");
+                return NotFound();
+            }
+
+            ViewData["ServiceId"] = id;
+            return View(servicePrice);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPrice(int id, [Bind("ServiceId,PriceDate,Price")] ServicePrice servicePrice)
+        {
+            if (!ServiceExists(id))
+            {
+                ErrorHandling(nameof(EditPrice), "The Service does not exist!");
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Retrieve the existing service price from the database
+                    var existingServicePrice = await _context.ServicePrices
+                        .Where(sp => sp.ServiceId == id && sp.PriceDate == servicePrice.PriceDate)
+                        .FirstOrDefaultAsync();
+
+                    if (existingServicePrice == null)
+                    {
+                        ErrorHandling(nameof(EditPrice), "The Service Price does not exist for the given date!");
+                        return NotFound();
+                    }
+
+                    // Update the properties of the existing service price
+                    existingServicePrice.Price = servicePrice.Price;
+
+                    // Mark the entity as modified
+                    _context.ServicePrices.Update(existingServicePrice);
+                    await _context.SaveChangesAsync();
+
+                    // Redirect to a relevant page (for example, the details page of the service)
+                    return RedirectToAction(nameof(Prices), new { id = id });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // Handle concurrency issues
+                    ErrorHandling(nameof(EditPrice), "The service price could not be updated due to concurrency issues.");
+                    return StatusCode(500);
+                }
+                catch (Exception ex)
+                {
+                    // Handle other possible exceptions
+                    ErrorHandling(nameof(EditPrice), $"An error occurred while updating the service price: {ex.Message}");
+                    return StatusCode(500);
+                }
+            }
+
+            // If we got this far, something failed, redisplay the form
             return View(servicePrice);
         }
 
