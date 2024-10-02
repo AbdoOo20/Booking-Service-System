@@ -9,13 +9,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/font-awesome/css/all.min.css" rel="stylesheet" />
-@*     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> 
+@*  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> 
     <link rel="stylesheet" href="~/BookingServices.styles.css" asp-append-version="true" /> *@
     <link rel="stylesheet" href="~/css/HomeStyle.css" asp-append-version="true" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <link rel="icon" href="images/icon.png" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.dataTables.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
+    <link rel="icon" href="images/icon.png" />
     </head>
 <body>
     <!-- ======= Header ======= -->
@@ -35,12 +41,12 @@
         <nav class="header-nav ms-auto">
             <ul class="d-flex align-items-center">
                 <!-- Start Notification Icon -->
-                <li class="nav-item">
+                @* <li class="nav-item">
                     <a class="nav-link nav-icon" href="#">
                         <i class="fa-regular fa-bell"></i>
                         <span class="badge bg-primary badge-number">4</span>
                     </a>
-                    @* <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                     <li class="dropdown-header">
                     You have 4 new notifications
                     <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
@@ -105,15 +111,17 @@
                     </li>
 
                     </ul><!-- End Notification Dropdown Items -->
-                    *@
-                </li><!-- End Notification Nav -->
+                    
+                 </li><!-- End Notification Nav -->
+                 *@
                 <!-- Start Message Icon-->
+                @*
                 <li class="nav-item">
                     <a class="nav-link nav-icon" href="#">
                         <i class="fa-regular fa-envelope"></i>
                         <span class="badge bg-success badge-number">3</span>
                     </a>
-                    @*
+                    
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                     <li class="dropdown-header">
                     You have 3 new messages
@@ -166,8 +174,8 @@
                     <a href="#">Show all messages</a>
                     </li>
 
-                    </ul><!-- End Messages Dropdown Items --> *@
-                </li>
+                    </ul><!-- End Messages Dropdown Items -->
+                </li> *@
                 <!-- End Messages Nav -->
                 <!-- Start Profile Nav -->
                 <li class="nav-item dropdown pe-3">
@@ -192,7 +200,7 @@
                     <hr class="dropdown-divider">
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="#">
-                            <i class="bi bi-box-arrow-right"></i>
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
                             <span style="width: 100%;">
                                 <form class="form-inline w-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                                     <button type="submit" class="nav-link btn btn-link text-dark w-100 text-start" style="display: block;">

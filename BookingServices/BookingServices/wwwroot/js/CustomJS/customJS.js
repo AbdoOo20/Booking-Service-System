@@ -33,7 +33,6 @@
                 toDate: toDate
             },
             success: function (data) {
-                console.log("AJAX Response:", data);
                 updateResults(data);
             },
             error: function () {
@@ -53,6 +52,11 @@
                     "<td>" + item.name + "</td>" +
                     "<td>" + item.paymentCount + "</td>" +
                     "<td>" + item.totalBenefit + "</td>" +
+                    "<td>" +
+                    "<a href='/Controller/Details?paymentIncomeId=" + item.paymentIncomeId + "'>" +
+                    "<i class='fa-solid fa-angles-right' style='color:green;font-size:30px'></i>" +
+                    "</a>" +
+                    "</td>" +
                     "</tr>";
                 resultsTable.append(row);
             });

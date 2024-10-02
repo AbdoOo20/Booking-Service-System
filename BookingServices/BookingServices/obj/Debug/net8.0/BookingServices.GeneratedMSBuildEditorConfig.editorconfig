@@ -17,63 +17,259 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = BookingServices
 build_property.RootNamespace = BookingServices
-build_property.ProjectDir = D:\ITI\Projects\Graduation Project\Booking-Service-System\BookingServices\BookingServices\
+build_property.ProjectDir = E:\GraduationProjectITI\Booking-Service-System\BookingServices\BookingServices\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\ITI\Projects\Graduation Project\Booking-Service-System\BookingServices\BookingServices
+build_property.MSBuildProjectDirectory = E:\GraduationProjectITI\Booking-Service-System\BookingServices\BookingServices
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/_ViewStart.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/Account/Logout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxMb2dvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/Account/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcQWNjb3VudFxfVmlld0ltcG9ydHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZhbGlkYXRpb25TY3JpcHRzUGFydGlhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Areas/Identity/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/AdminContract/Create.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminContract/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Db250cmFjdFxDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/AdminContract/Edit.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminContract/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Db250cmFjdFxFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/AdminContract/Index.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminContract/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Db250cmFjdFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/Home/Index.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminHome/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Ib21lXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminServiceProvider/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5TZXJ2aWNlUHJvdmlkZXJcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminServiceProvider/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5TZXJ2aWNlUHJvdmlkZXJcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminServiceProvider/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5TZXJ2aWNlUHJvdmlkZXJcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/AdminServiceProvider/SearchProviders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5TZXJ2aWNlUHJvdmlkZXJcU2VhcmNoUHJvdmlkZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Admin/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Admin/ProviderBookingSummary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUHJvdmlkZXJCb29raW5nU3VtbWFyeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Category/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Category/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Category/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Customer/CustomerList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJcQ3VzdG9tZXJMaXN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Customer/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/Home/Privacy.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/ProfileProvider/Index.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/PaymentIncomes/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudEluY29tZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/PaymentIncomes/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudEluY29tZXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/PaymentIncomes/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudEluY29tZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/PaymentIncomes/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudEluY29tZXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/PaymentIncomes/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudEluY29tZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/PaymentReports/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudFJlcG9ydHNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProfileProvider/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVByb3ZpZGVyXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/Shared/Error.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderContracts/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJDb250cmFjdHNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderContracts/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJDb250cmFjdHNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderContracts/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJDb250cmFjdHNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderContracts/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJDb250cmFjdHNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderContracts/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJDb250cmFjdHNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderHome/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJIb21lXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderRegister/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJSZWdpc3RlclxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/ProviderRegister/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJSZWdpc3RlclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Provider/Booking.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJcQm9va2luZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Provider/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJcUmVnaXN0ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Provider/Success.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvdmlkZXJcU3VjY2Vzcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/AddImage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcQWRkSW1hZ2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/AddPrice.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcQWRkUHJpY2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/GetImages.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcR2V0SW1hZ2VzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Services/Prices.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcUHJpY2VzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_LoginPartial.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_LoginPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpblBhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_ValidationScriptsPartial.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/_ViewImports.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/_Booking/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX0Jvb2tpbmdcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/_ViewStart.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ITI/Projects/Graduation Project/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_Layout.cshtml]
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-g71x4zi4ub
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_LayoutAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXRBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = b-gaml3dp77g
+
+[E:/GraduationProjectITI/Booking-Service-System/BookingServices/BookingServices/Views/Shared/_LayoutProvider.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXRQcm92aWRlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = b-adxqkrqayz

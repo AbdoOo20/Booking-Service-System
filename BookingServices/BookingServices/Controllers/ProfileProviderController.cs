@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace BookingServices.Controllers
 {
@@ -18,7 +19,7 @@ namespace BookingServices.Controllers
         ProviderDataVM providerDataVM = new ProviderDataVM();
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager , SignInManager<IdentityUser> signInManager)
+        public ProfileProviderController([FromServices] ApplicationDbContext _context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             context = _context;
             _userManager = userManager;
@@ -27,7 +28,7 @@ namespace BookingServices.Controllers
 
         public async Task<ActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User); 
+            var user = await _userManager.GetUserAsync(User);
             string userIdFromManager = user?.Id ?? "";
             var provider = context.ServiceProviders.Include(p => p.IdentityUser).FirstOrDefault(p => p.ProviderId == userIdFromManager);
             providerDataVM = new ProviderDataVM()
@@ -55,45 +56,11 @@ namespace BookingServices.Controllers
 
             if (ModelState.IsValid)
             {
-                // Check if the user is trying to change the password
-                if (!string.IsNullOrEmpty(providerDataVM.CurrentPassword) && !string.IsNullOrEmpty(providerDataVM.NewPassword))
-                {
-                    var passwordCheck = await _userManager.CheckPasswordAsync(user, providerDataVM.CurrentPassword);
-                    if (!passwordCheck)
-                    {
-                        ModelState.AddModelError(string.Empty, "Current password is incorrect.");
-                        return View(providerDataVM);
-                    }
-
-                    if (providerDataVM.NewPassword != providerDataVM.ConfirmNewPassword)
-                    {
-                        ModelState.AddModelError(string.Empty, "The new password and confirmation password do not match.");
-                        return View(providerDataVM);
-                    }
-
-                    var result = await _userManager.ChangePasswordAsync(user, providerDataVM.CurrentPassword, providerDataVM.NewPassword);
-                    if (!result.Succeeded)
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
-                        return View(providerDataVM);
-                    }
-
-                    // Optionally re-sign in the user after a successful password change
-                    await _signInManager.RefreshSignInAsync(user);
-                    TempData["SuccessMessage"] = "Password changed successfully.";
-                }
-
-                // Update the provider's profile information
                 var provider = await context.ServiceProviders.FindAsync(providerDataVM.ProviderId);
                 if (provider != null)
                 {
                     provider.Name = providerDataVM.Name;
                     provider.ServiceDetails = providerDataVM.ServiceDetails;
-
-                    // Update the Phone number in IdentityUser
                     user.PhoneNumber = providerDataVM.Phone;
 
                     context.ServiceProviders.Update(provider);
@@ -107,5 +74,52 @@ namespace BookingServices.Controllers
             return View(providerDataVM);
         }
 
+
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View("ProviderResetPassword");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(Provider_ResetPassowrd model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var passwordCheck = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+                if (!passwordCheck)
+                {
+                    ModelState.AddModelError(string.Empty, "Current password is incorrect.");
+                    return View(model);
+                }
+
+                if (model.NewPassword != model.ConfirmNewPassword)
+                {
+                    ModelState.AddModelError(string.Empty, "The new password and confirmation password do not match.");
+                    return View(model);
+                }
+
+                var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    TempData["SuccessMessage"] = "Password changed successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            return View(model);
+        }
     }
 }

@@ -35,6 +35,7 @@
             <th>
                 Total Benefit
             </th>
+            <th>Details</th>
         </tr>
     </thead>
     <tbody>
@@ -48,6 +49,14 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.TotalBenefit)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-Id="@item.PaymentIncomeId">
+                <i class="fa-solid fa-angles-right"
+                    style="color:green;font-size:30px">
+                </i>
+                </a>
+               
             </td>
         </tr>
 }

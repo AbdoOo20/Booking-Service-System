@@ -217,7 +217,7 @@ namespace BookingServices.Controllers
             // Return the view with the current model if the state is invalid
             return View(model);
         }
-        [Authorize(Roles = "Admin")]
+       /* [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> SearchProviders(string search)
         {
@@ -237,7 +237,7 @@ namespace BookingServices.Controllers
                                    }).ToListAsync();
 
             return PartialView("_ProviderTablePartial", providers);
-        }
+        }*/
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
