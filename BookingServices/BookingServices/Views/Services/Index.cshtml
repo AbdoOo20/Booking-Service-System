@@ -21,7 +21,7 @@
     </p>
 }
 
-<div class="mb-3">
+<div class="mb-3 d-none">
     <input type="text" id="searchInput" placeholder="Search by service name" class="form-control" />
 </div>
 
@@ -60,7 +60,7 @@
         <input type="range" id="maxQuantityRange" class="form-range" min="0" max="100" step="1" value="100" oninput="updateQuantityLabel()" />
     </div>
 </div>
-
+<div class="table-responsive">
 <table class="table table-hover text-center" id="myTable">
     <thead>
         <tr>
@@ -70,19 +70,24 @@
             <th>@Html.DisplayNameFor(model => model.EndTime)</th>
             <th>@Html.DisplayNameFor(model => model.Quantity)</th>
             <th>@Html.DisplayNameFor(model => model.InitialPaymentPercentage)</th>
-            <th>
-                @if (ViewBag.isProvider)
-                {
-                    @Html.DisplayNameFor(model => model.IsOnlineOrOffline)
-                }
-            </th>
+            @if (ViewBag.isProvider)
+            {
+                <th>@Html.DisplayNameFor(model => model.IsOnlineOrOffline)</th>
+            }
+            else
+            {
+                <th></th> <!-- Empty header to maintain column count -->
+            }
             <th>@Html.DisplayNameFor(model => model.CategoryName)</th>
-            <th>
-                @if (!ViewBag.isProvider)
-                {
-                    @Html.DisplayNameFor(model => model.ServiceProviderName)
-                }
-            </th>
+            <th>@Html.DisplayNameFor(model => model.ServicePrice)</th>
+            @if (!ViewBag.isProvider)
+            {
+                <th>@Html.DisplayNameFor(model => model.ServiceProviderName)</th>
+            }
+            else
+            {
+                <th></th> <!-- Empty header to maintain column count -->
+            }
             <th></th>
         </tr>
     </thead>
@@ -96,9 +101,9 @@
                 <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
                 <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
                 <td>@Html.DisplayFor(modelItem => item.InitialPaymentPercentage) %</td>
-                <td>
-                    @if (ViewBag.isProvider)
-                    {
+                @if (ViewBag.isProvider)
+                {
+                    <td>
                         @if (!item.IsOnlineOrOffline && !item.IsRequestedOrNot)
                         {
                             <a asp-action="RequestToMakeServiceOnline" asp-route-id="@item.ServiceId" class="btn btn-outline-secondary ps-3 pe-3">Offline</a>
@@ -111,15 +116,16 @@
                         {
                             <div class="alert alert-success text-center m-auto pt-1 pb-1">Online</div>
                         }
-                    }
-                </td>
+                    </td>
+                }
+                else
+                {<td></td> }
                 <td>@Html.DisplayFor(modelItem => item.CategoryName)</td>
-                <th>
-                    @if (!ViewBag.isProvider)
-                    {
-                    @Html.DisplayFor(modelItem => item.ServiceProviderName)
-                    }
-                </th>
+                <td>@Html.DisplayFor(modelItem => item.ServicePrice)</td>
+                @if (!ViewBag.isProvider)
+                {<td>@Html.DisplayFor(modelItem => item.ServiceProviderName)</td>}
+                else
+                {<td></td>}
                 @if (ViewBag.isProvider)
                 {
                     <td>
@@ -142,11 +148,33 @@
                         </div>
                     </td>
                 }
-                <td></td>
+                else
+                {<td></td>}
             </tr>
         }
     </tbody>
 </table>
-
+</div>
 <script src="~/js/servicesfilter.js"></script>
-<script src="~/js/datatablesjs.js"></script>
+<script>
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        var isProvider = '@ViewBag.isProvider' === 'True'; // Retrieve the isProvider value from ViewBag
+
+        js('#myTable').DataTable({
+            columns: [
+                { title: 'Name' }, // Column 1: Name
+                { title: 'Location' }, // Column 2: Location
+                { title: 'Start Time' }, // Column 3: Start Time
+                { title: 'End Time' }, // Column 4: End Time
+                { title: 'Quantity' }, // Column 5: Quantity
+                { title: 'Initial Payment %' }, // Column 6: Initial Payment Percentage
+                { title: 'Status', visible: isProvider }, // Column 7: IsOnlineOrOffline (visible if isProvider)
+                { title: 'Category' }, // Column 8: Category Name
+                { title: 'Price' }, // Column 9: Service Price
+                { title: 'Service Provider', visible: !isProvider }, // Column 10: ServiceProviderName (visible if not isProvider)
+                { title: 'Actions' } // Column 11: Actions (Edit/Delete buttons)
+            ]
+        });
+    });
+</script>
