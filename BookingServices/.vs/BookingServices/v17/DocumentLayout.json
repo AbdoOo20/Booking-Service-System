@@ -1,0 +1,58 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{874FB288-7DC5-47FC-B81B-823A76364AE1}|BookingServices\\BookingServices.csproj|e:\\graduationprojectiti\\booking-service-system\\bookingservices\\bookingservices\\controllers\\adminserviceprovidercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{874FB288-7DC5-47FC-B81B-823A76364AE1}|BookingServices\\BookingServices.csproj|solutionrelative:bookingservices\\controllers\\adminserviceprovidercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{874FB288-7DC5-47FC-B81B-823A76364AE1}|BookingServices\\BookingServices.csproj|e:\\graduationprojectiti\\booking-service-system\\bookingservices\\bookingservices\\views\\adminserviceprovider\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{874FB288-7DC5-47FC-B81B-823A76364AE1}|BookingServices\\BookingServices.csproj|solutionrelative:bookingservices\\views\\adminserviceprovider\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\Views\\AdminServiceProvider\\Index.cshtml",
+              "RelativeDocumentMoniker": "BookingServices\\Views\\AdminServiceProvider\\Index.cshtml",
+              "ToolTip": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\Views\\AdminServiceProvider\\Index.cshtml",
+              "RelativeToolTip": "BookingServices\\Views\\AdminServiceProvider\\Index.cshtml",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAADoAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-01T22:21:40.327Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AdminServiceProviderController.cs",
+              "DocumentMoniker": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\Controllers\\AdminServiceProviderController.cs",
+              "RelativeDocumentMoniker": "BookingServices\\Controllers\\AdminServiceProviderController.cs",
+              "ToolTip": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\Controllers\\AdminServiceProviderController.cs",
+              "RelativeToolTip": "BookingServices\\Controllers\\AdminServiceProviderController.cs",
+              "ViewState": "AgIAANcAAAAAAAAAAAAAAO8AAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T22:20:00.514Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {}
+    "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {}
   },
   "projects": {
-    "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {
+    "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
+        "projectUniqueName": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
         "projectName": "BookingServices",
-        "projectPath": "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
-        "packagesPath": "C:\\Users\\AbdoE\\.nuget\\packages\\",
-        "outputPath": "D:\\ITI\\Projects\\Graduation Project\\Booking-Service-System\\BookingServices\\BookingServices\\obj\\",
+        "projectPath": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\BookingServices.csproj",
+        "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
+        "outputPath": "E:\\GraduationProjectITI\\Booking-Service-System\\BookingServices\\BookingServices\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\AbdoE\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.1.config",
+          "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\DevExpress 24.1\\Components\\System\\Components\\Packages": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
