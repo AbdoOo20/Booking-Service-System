@@ -18,7 +18,7 @@ namespace BookingServices.Controllers
             _context = context;
         }
 
-        public ActionResult Index(string? searchText, DateTime? fromDate, DateTime? toDate)
+        public IActionResult Index(string? searchText, DateTime? fromDate, DateTime? toDate)
         {
             try
             {
@@ -26,9 +26,10 @@ namespace BookingServices.Controllers
                             join P in _context.PaymentIncomes
                             on B.PaymentIncomeId equals P.PaymentIncomeId
                             where B.Status == "Confirmed"
-                            group B by new { P.Name, P.Percentage } into PaymentBooking
+                            group B by new { P.PaymentIncomeId,P.Name, P.Percentage } into PaymentBooking
                             select new PaymentReportViewModel
                             {
+                                PaymentIncomeId = PaymentBooking.Key.PaymentIncomeId,
                                 Name = PaymentBooking.Key.Name,
                                 PaymentCount = PaymentBooking.Count(),
                                 TotalBenefit = PaymentBooking.Sum(pb => pb.Price * (pb.PaymentIncome.Percentage / 100)),
@@ -75,6 +76,52 @@ namespace BookingServices.Controllers
 
                 return View("Error", e);
             }
+        }
+
+        public IActionResult Details(int id)
+        {
+            if(id == 0)
+            {
+                return BadRequest("Not found !");
+            }
+
+            var paymentDetails = _context.Bookings
+               .Join(_context.PaymentIncomes,
+                   booking => booking.PaymentIncomeId,
+                   paymentIncome => paymentIncome.PaymentIncomeId,
+                   (booking, paymentIncome) => new { booking, paymentIncome })
+               .Where(x => x.paymentIncome.PaymentIncomeId == id)
+               .Join(_context.BookingServices,
+                   x => x.booking.BookingId,
+                   bookingService => bookingService.BookingId,
+                   (x, bookingService) => new { x.booking, x.paymentIncome, bookingService })
+               .Join(_context.Services,
+                   x => x.bookingService.ServiceId,
+                   service => service.ServiceId,
+                   (x, service) => new { x.booking, x.paymentIncome, x.bookingService, service })
+               .Join(_context.ServiceProviders,
+                   x => x.service.ProviderId,
+                   provider => provider.ProviderId,
+                   (x, provider) => new { x.booking, x.paymentIncome, x.service, provider })
+               .Join(_context.Payments,
+                   x => x.booking.BookingId,
+                   payment => payment.BookingId,
+                   (x, payment) => new { x.booking, x.paymentIncome, x.service, x.provider, payment })
+               .Join(_context.Customers,
+                   x => x.payment.CustomerId,
+                   customer => customer.CustomerId,
+                   (x, customer) => new PaymentReportDetailsViewModel
+                   {
+                       CustomerName = customer.Name,
+                       ProviderName = x.provider.Name,
+                       ServiceName = x.service.Name,
+                       BookingData = x.booking.BookDate,
+                       BookingPrice = x.booking.Price,
+                       PaymentMethod = x.paymentIncome.Name
+                   })
+               .ToList();
+
+            return View(paymentDetails);
         }
     }
 }
