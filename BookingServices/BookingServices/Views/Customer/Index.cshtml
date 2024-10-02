@@ -6,42 +6,8 @@
 }
 <h1 class="mt-3">Customers</h1>
 
-<form method="get" id="searchForm" class="mb-3" onsubmit="return false;">
-    <div class="row d-flex">
-        <div class="col-3">
-            <select id="searchType" name="searchType" class="form-select">
-                <option value="Name">Name</option>
-                <option value="SSN">SSN</option>
-                <option value="Phone">Phone</option>
-            </select>
-        </div>
-        <div class="col-6">
-            <input onkeyup="performSearch()" type="text" id="searchInput" name="searchValue" class="form-control" placeholder="Search...">
-        </div>
-    </div>
-</form>
-
-
  <div id="customerListContainer">
      @Html.Partial("CustomerList", Model) 
 </div> 
-
-<script>
-    function performSearch() {
-        var searchType = $('#searchType').val();
-        var searchValue = $('#searchInput').val();
-        $.ajax({
-            url: '@Url.Action("Search", "Customer")',
-            type: 'GET',
-            data: { searchType: searchType, searchValue: searchValue },
-            success: function (result) {
-                $('#customerListContainer').html(result);
-            },
-            error: function (xhr, status, error) {
-                console.error("Error occurred while searching: ", error);
-            }
-        });
-    }
-</script> 
 
 
