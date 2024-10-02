@@ -80,48 +80,61 @@ namespace BookingServices.Controllers
 
         public IActionResult Details(int id)
         {
-            if(id == 0)
+            try
             {
-                return BadRequest("Not found !");
+                if (id == 0)
+                {
+                    return BadRequest("Invalid ID provided.");
+                }
+
+                var paymentDetails = _context.Bookings
+                   .Join(_context.PaymentIncomes,
+                       booking => booking.PaymentIncomeId,
+                       paymentIncome => paymentIncome.PaymentIncomeId,
+                       (booking, paymentIncome) => new { booking, paymentIncome })
+                   .Where(x => x.paymentIncome.PaymentIncomeId == id)
+                   .Join(_context.BookingServices,
+                       x => x.booking.BookingId,
+                       bookingService => bookingService.BookingId,
+                       (x, bookingService) => new { x.booking, x.paymentIncome, bookingService })
+                   .Join(_context.Services,
+                       x => x.bookingService.ServiceId,
+                       service => service.ServiceId,
+                       (x, service) => new { x.booking, x.paymentIncome, x.bookingService, service })
+                   .Join(_context.ServiceProviders,
+                       x => x.service.ProviderId,
+                       provider => provider.ProviderId,
+                       (x, provider) => new { x.booking, x.paymentIncome, x.service, provider })
+                   .Join(_context.Customers,
+                       x => x.booking.CustomerId,
+                       customer => customer.CustomerId,
+                       (x, customer) => new PaymentReportDetailsViewModel
+                       {
+                           CustomerName = customer.Name,
+                           ProviderName = x.provider.Name,
+                           ServiceName = x.service.Name,
+                           BookingData = x.booking.BookDate,
+                           BookingPrice = x.booking.Price,
+                           PaymentMethod = x.paymentIncome.Name
+                       })
+                   .ToList();
+
+                if (paymentDetails == null || !paymentDetails.Any())
+                {
+                    return NotFound("No payment details found.");
+                }
+
+                return View(paymentDetails);
             }
-
-            var paymentDetails = _context.Bookings
-               .Join(_context.PaymentIncomes,
-                   booking => booking.PaymentIncomeId,
-                   paymentIncome => paymentIncome.PaymentIncomeId,
-                   (booking, paymentIncome) => new { booking, paymentIncome })
-               .Where(x => x.paymentIncome.PaymentIncomeId == id)
-               .Join(_context.BookingServices,
-                   x => x.booking.BookingId,
-                   bookingService => bookingService.BookingId,
-                   (x, bookingService) => new { x.booking, x.paymentIncome, bookingService })
-               .Join(_context.Services,
-                   x => x.bookingService.ServiceId,
-                   service => service.ServiceId,
-                   (x, service) => new { x.booking, x.paymentIncome, x.bookingService, service })
-               .Join(_context.ServiceProviders,
-                   x => x.service.ProviderId,
-                   provider => provider.ProviderId,
-                   (x, provider) => new { x.booking, x.paymentIncome, x.service, provider })
-               .Join(_context.Payments,
-                   x => x.booking.BookingId,
-                   payment => payment.BookingId,
-                   (x, payment) => new { x.booking, x.paymentIncome, x.service, x.provider, payment })
-               .Join(_context.Customers,
-                   x => x.payment.CustomerId,
-                   customer => customer.CustomerId,
-                   (x, customer) => new PaymentReportDetailsViewModel
-                   {
-                       CustomerName = customer.Name,
-                       ProviderName = x.provider.Name,
-                       ServiceName = x.service.Name,
-                       BookingData = x.booking.BookDate,
-                       BookingPrice = x.booking.Price,
-                       PaymentMethod = x.paymentIncome.Name
-                   })
-               .ToList();
-
-            return View(paymentDetails);
+            catch (InvalidOperationException ex)
+            { 
+                return BadRequest($"Database operation failed: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An internal server error occurred: {ex.Message}");
+            }
         }
+
     }
 }
