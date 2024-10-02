@@ -78,7 +78,7 @@ namespace BookingServices.Controllers
         [HttpGet]
         public IActionResult ResetPassword()
         {
-            return View(new Provider_ResetPassowrd());
+            return View("ProviderResetPassword");
         }
 
         [HttpPost]
