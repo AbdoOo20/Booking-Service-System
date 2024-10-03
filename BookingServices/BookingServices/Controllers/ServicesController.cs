@@ -105,8 +105,8 @@ namespace BookingServices.Controllers
                 foreach (var service in servicesIndexModel)
                 {
                     service.ServicePrice = await _context.ServicePrices
-                        .Where(s => s.ServiceId == service.ServiceId)
-                        .Where(s => s.PriceDate == DateTime.Now)
+                        .Where(s => s.ServiceId == service.ServiceId 
+                        && s.PriceDate.Date == DateTime.Now.Date)
                         .Select(s => s.Price)
                         .FirstOrDefaultAsync();
                 }
@@ -726,6 +726,7 @@ namespace BookingServices.Controllers
             return View(servicePrice);
         }
 
+        [HttpPost]
         public async Task<IActionResult> RequestToMakeServiceOnline(int id)
         {
             if (ServiceExists(id))
@@ -736,10 +737,12 @@ namespace BookingServices.Controllers
                     service.IsRequestedOrNot = true;
                     _context.Entry(service).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
+                    return Json(new { success = true, message = "Request to make service online is submitted." });
                 }
             }
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = false, message = "Service not found." });
         }
+
 
         // Helper Method: Check if a service exists
         private bool ServiceExists(int id)
@@ -828,7 +831,7 @@ namespace BookingServices.Controllers
                 var servicePrice = new ServicePrice
                 {
                     ServiceId = serviceId,
-                    PriceDate = DateTime.Now,
+                    PriceDate = DateTime.Now.Date,
                     Price = price
                 };
                 _context.ServicePrices.Add(servicePrice);
