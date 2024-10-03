@@ -14,7 +14,6 @@ namespace BookingServices.Controllers
     {
         ApplicationDbContext context;
         ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
-        string UserID = "6BA8DE65-9B57-466B-87EE-3D3279CED4C6";
         private readonly UserManager<IdentityUser> _userManager;
         ProviderDataVM providerDataVM = new ProviderDataVM();
         private readonly SignInManager<IdentityUser> _signInManager;

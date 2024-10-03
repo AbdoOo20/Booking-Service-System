@@ -10,7 +10,7 @@ using System.Buffers;
 
 namespace BookingServices.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class CustomerController : Controller
     {
         ApplicationDbContext context;
@@ -43,72 +43,72 @@ namespace BookingServices.Controllers
             return View(customers);
         }
 
-        public ActionResult Search(string searchType, string searchValue)
-        {
-            List<CustomerData> customers = new List<CustomerData>();
-            List<Customer> AllCustomers;
+        //public ActionResult Search(string searchType, string searchValue)
+        //{
+        //    List<CustomerData> customers = new List<CustomerData>();
+        //    List<Customer> AllCustomers;
 
-            if (!string.IsNullOrEmpty(searchValue))
-            {
-                switch (searchType)
-                {
-                    case "Name":
-                        AllCustomers = context.Customers
-                            .Where(c => c.Name.ToLower().Contains(searchValue.ToLower()))
-                            .Include(p => p.IdentityUser)
-                            .ToList();
-                        break;
-                    case "SSN":
-                        AllCustomers = context.Customers
-                            .Where(c => c.SSN.Contains(searchValue))
-                            .Include(p => p.IdentityUser)
-                            .ToList();
-                        break;
-                    case "Phone":
-                        AllCustomers = context.Customers
-                            .Include(p => p.IdentityUser)
-                            .Where(c => c.AlternativePhone.Contains(searchValue) || c.IdentityUser.PhoneNumber.Contains(searchValue))
-                            .ToList();
-                        break;
-                    default:
-                        AllCustomers = new List<Customer>();
-                        break;
-                }
+        //    if (!string.IsNullOrEmpty(searchValue))
+        //    {
+        //        switch (searchType)
+        //        {
+        //            case "Name":
+        //                AllCustomers = context.Customers
+        //                    .Where(c => c.Name.ToLower().Contains(searchValue.ToLower()))
+        //                    .Include(p => p.IdentityUser)
+        //                    .ToList();
+        //                break;
+        //            case "SSN":
+        //                AllCustomers = context.Customers
+        //                    .Where(c => c.SSN.Contains(searchValue))
+        //                    .Include(p => p.IdentityUser)
+        //                    .ToList();
+        //                break;
+        //            case "Phone":
+        //                AllCustomers = context.Customers
+        //                    .Include(p => p.IdentityUser)
+        //                    .Where(c => c.AlternativePhone.Contains(searchValue) || c.IdentityUser.PhoneNumber.Contains(searchValue))
+        //                    .ToList();
+        //                break;
+        //            default:
+        //                AllCustomers = new List<Customer>();
+        //                break;
+        //        }
 
-                foreach (var item in AllCustomers)
-                {
-                    CustomerData customerData = new CustomerData()
-                    {
-                        Name = item.Name,
-                        City = item.City,
-                        SSN = item.SSN,
-                        AlternativePhone = item.AlternativePhone,
-                        CustomerId = item.CustomerId,
-                        IsOnlineOrOfflineUser = item.IsOnlineOrOfflineUser,
-                        Phone = item.IdentityUser.PhoneNumber,
-                    };
-                    customers.Add(customerData);
-                }
-            }
-            else 
-            {
-                AllCustomers = context.Customers.Include(p => p.IdentityUser).ToList();
-                foreach (var item in AllCustomers)
-                {
-                    CustomerData customerData = new CustomerData()
-                    {
-                        Name = item.Name,
-                        City = item.City,
-                        SSN = item.SSN,
-                        AlternativePhone = item.AlternativePhone,
-                        CustomerId = item.CustomerId,
-                        IsOnlineOrOfflineUser = item.IsOnlineOrOfflineUser,
-                        Phone = item.IdentityUser.PhoneNumber,
-                    };
-                    customers.Add(customerData);
-                }
-            }
-            return PartialView("CustomerList", customers);
-        }
+        //        foreach (var item in AllCustomers)
+        //        {
+        //            CustomerData customerData = new CustomerData()
+        //            {
+        //                Name = item.Name,
+        //                City = item.City,
+        //                SSN = item.SSN,
+        //                AlternativePhone = item.AlternativePhone,
+        //                CustomerId = item.CustomerId,
+        //                IsOnlineOrOfflineUser = item.IsOnlineOrOfflineUser,
+        //                Phone = item.IdentityUser.PhoneNumber,
+        //            };
+        //            customers.Add(customerData);
+        //        }
+        //    }
+        //    else 
+        //    {
+        //        AllCustomers = context.Customers.Include(p => p.IdentityUser).ToList();
+        //        foreach (var item in AllCustomers)
+        //        {
+        //            CustomerData customerData = new CustomerData()
+        //            {
+        //                Name = item.Name,
+        //                City = item.City,
+        //                SSN = item.SSN,
+        //                AlternativePhone = item.AlternativePhone,
+        //                CustomerId = item.CustomerId,
+        //                IsOnlineOrOfflineUser = item.IsOnlineOrOfflineUser,
+        //                Phone = item.IdentityUser.PhoneNumber,
+        //            };
+        //            customers.Add(customerData);
+        //        }
+        //    }
+        //    return PartialView("CustomerList", customers);
+        //}
     }
 }

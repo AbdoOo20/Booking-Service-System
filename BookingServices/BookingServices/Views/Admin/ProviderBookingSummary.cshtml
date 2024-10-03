@@ -3,9 +3,9 @@
     ViewData["Title"] = "Provider Booking Summary";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<div class="container mt-5">
+<div class="table-responsive">
     <h2 class="text-center">Provider Booking Summary</h2>
-    <table class="table">
+    <table class="table" id="myTable">
         <thead>
             <tr>
                 <th>Provider Name</th>
@@ -25,3 +25,4 @@
         </tbody>
     </table>
 </div>
+<script src="~/js/datatablesjs.js"></script>

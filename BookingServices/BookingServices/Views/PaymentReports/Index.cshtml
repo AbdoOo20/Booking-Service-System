@@ -22,8 +22,8 @@
     </div>
     <div id="dateError" class="alert alert-danger mt-2" role="alert" style="display:none;"></div>
 </form>
-
-<table id="resultsTable" class="table mt-5">
+<div class="table-responsive">
+    <table id="resultsTable" class="table mt-5">
     <thead>
         <tr>
             <th>
@@ -62,7 +62,7 @@
 }
     </tbody>
 </table>
-
+</div>
 <script>
     var ajaxUrl = '@Url.Action("Index", "PaymentReports")';
 </script>

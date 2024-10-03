@@ -11,7 +11,8 @@ Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 <div class="table-container">
 <h5>Provider Waiting List</h5>
 
-<table class="table mt-5">
+<div class="table-responsive">
+<table class="table mt-5" id="myTable">
     <thead>
         <tr>
             <th>
@@ -64,6 +65,7 @@ Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
         }
     </tbody>
 </table>
+    </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -85,8 +87,7 @@ Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     </div>
 </div>
 
-
-
+<script src="~/js/datatablesjs.js"></script>
 <script>
     var deleteUrl = '';
 
