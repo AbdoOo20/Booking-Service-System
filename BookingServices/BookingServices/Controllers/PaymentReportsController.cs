@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace BookingServices.Controllers
 {
@@ -12,6 +13,7 @@ namespace BookingServices.Controllers
     {
         ApplicationDbContext _context;
         public List<PaymentReportViewModel> paymentIncomes;
+        ErrorViewModel errorViewModel = new ErrorViewModel();
 
         public PaymentReportsController(ApplicationDbContext context) 
         {
@@ -67,14 +69,11 @@ namespace BookingServices.Controllers
             }
             catch (Exception ex)
             {
-                ErrorViewModel e = new ErrorViewModel()
-                {
-                    Controller = nameof(PaymentReportsController),
-                    Action = "Index",
-                    Message = ex.Message
-                };
+                errorViewModel.Message = ex.Message;
+                errorViewModel.Controller = nameof(PaymentReportsController);
+                errorViewModel.Action = nameof(Index);
 
-                return View("Error", e);
+                return View("Error", errorViewModel);
             }
         }
 
@@ -84,7 +83,11 @@ namespace BookingServices.Controllers
             {
                 if (id == 0)
                 {
-                    return BadRequest("Invalid ID provided.");
+                    errorViewModel.Message = $"Invalid data provided!";
+                    errorViewModel.Controller = nameof(PaymentReportsController);
+                    errorViewModel.Action = nameof(Details);
+
+                    return View("Error", errorViewModel);
                 }
 
                 var paymentDetails = _context.Bookings
@@ -121,18 +124,30 @@ namespace BookingServices.Controllers
 
                 if (paymentDetails == null || !paymentDetails.Any())
                 {
-                    return NotFound("No payment details found.");
+                    errorViewModel.Message = $"No payment details found!";
+                    errorViewModel.Controller = nameof(PaymentReportsController);
+                    errorViewModel.Action = nameof(Index);
+
+                    return View("Error", errorViewModel);
                 }
 
                 return View(paymentDetails);
             }
             catch (InvalidOperationException ex)
-            { 
-                return BadRequest($"Database operation failed: {ex.Message}");
+            {
+                errorViewModel.Message = $"Database operation failed: {ex.Message}";
+                errorViewModel.Controller = nameof(PaymentReportsController);
+                errorViewModel.Action = nameof(Index);
+
+                return View("Error", errorViewModel);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An internal server error occurred: {ex.Message}");
+                errorViewModel.Message = $"An internal server error occurred: {ex.Message}";
+                errorViewModel.Controller = nameof(PaymentReportsController);
+                errorViewModel.Action = nameof(Index);
+
+                return View("Error", errorViewModel);
             }
         }
 

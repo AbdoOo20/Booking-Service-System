@@ -1,4 +1,5 @@
 ﻿using BookingServices.Data;
+using BookingServices.Models;
 using BookingServices.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ namespace BookingServices.Controllers
     public class ProviderRegisterController : Controller
     {
         ApplicationDbContext _context;
+        ErrorViewModel errorViewModel = new ErrorViewModel();
 
         public ProviderRegisterController(ApplicationDbContext context)
         {
@@ -65,13 +67,21 @@ namespace BookingServices.Controllers
         {
             if(id == 0)
             {
-                return BadRequest("ID should send!");
+                errorViewModel.Message = $"An error occurred!";
+                errorViewModel.Controller = nameof(ProviderRegisterController);
+                errorViewModel.Action = nameof(Index);
+
+                return View("Error", errorViewModel);
             }
 
             ProviderRegister providerRegister =  await _context.ProviderRegisters.FindAsync(id);
             if(providerRegister == null)
             {
-                return NotFound();
+                errorViewModel.Message = $"Not Found!";
+                errorViewModel.Controller = nameof(ProviderRegisterController);
+                errorViewModel.Action = nameof(Index);
+
+                return View("Error", errorViewModel);
             }
 
             _context.ProviderRegisters.Remove(providerRegister);
