@@ -70,7 +70,7 @@ namespace BookingServices.Controllers
             catch (Exception ex)
             {
                 errorViewModel.Message = ex.Message;
-                errorViewModel.Controller = nameof(PaymentReportsController);
+                errorViewModel.Controller = "PaymentReports";
                 errorViewModel.Action = nameof(Index);
 
                 return View("Error", errorViewModel);
@@ -84,7 +84,7 @@ namespace BookingServices.Controllers
                 if (id == 0)
                 {
                     errorViewModel.Message = $"Invalid data provided!";
-                    errorViewModel.Controller = nameof(PaymentReportsController);
+                    errorViewModel.Controller = "PaymentReports";
                     errorViewModel.Action = nameof(Details);
 
                     return View("Error", errorViewModel);
@@ -125,7 +125,7 @@ namespace BookingServices.Controllers
                 if (paymentDetails == null || !paymentDetails.Any())
                 {
                     errorViewModel.Message = $"No payment details found!";
-                    errorViewModel.Controller = nameof(PaymentReportsController);
+                    errorViewModel.Controller = "PaymentReports";
                     errorViewModel.Action = nameof(Index);
 
                     return View("Error", errorViewModel);
@@ -136,7 +136,7 @@ namespace BookingServices.Controllers
             catch (InvalidOperationException ex)
             {
                 errorViewModel.Message = $"Database operation failed: {ex.Message}";
-                errorViewModel.Controller = nameof(PaymentReportsController);
+                errorViewModel.Controller = "PaymentReports";
                 errorViewModel.Action = nameof(Index);
 
                 return View("Error", errorViewModel);
@@ -144,12 +144,11 @@ namespace BookingServices.Controllers
             catch (Exception ex)
             {
                 errorViewModel.Message = $"An internal server error occurred: {ex.Message}";
-                errorViewModel.Controller = nameof(PaymentReportsController);
+                errorViewModel.Controller = "PaymentReports";
                 errorViewModel.Action = nameof(Index);
 
                 return View("Error", errorViewModel);
             }
         }
-
     }
 }

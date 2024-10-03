@@ -68,7 +68,7 @@ namespace BookingServices.Controllers
             if(id == 0)
             {
                 errorViewModel.Message = $"An error occurred!";
-                errorViewModel.Controller = nameof(ProviderRegisterController);
+                errorViewModel.Controller = "ProviderRegister";
                 errorViewModel.Action = nameof(Index);
 
                 return View("Error", errorViewModel);
@@ -78,7 +78,7 @@ namespace BookingServices.Controllers
             if(providerRegister == null)
             {
                 errorViewModel.Message = $"Not Found!";
-                errorViewModel.Controller = nameof(ProviderRegisterController);
+                errorViewModel.Controller = "ProviderRegister";
                 errorViewModel.Action = nameof(Index);
 
                 return View("Error", errorViewModel);
