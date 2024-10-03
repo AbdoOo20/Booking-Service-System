@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingServices.Controllers
 {
-    [Authorize(Roles ="Admin")]
     public class ProviderRegisterController : Controller
     {
         ApplicationDbContext _context;

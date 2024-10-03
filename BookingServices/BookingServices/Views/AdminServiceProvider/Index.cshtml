@@ -17,7 +17,6 @@
 
 
 <div class="table-responsive">
-
     <table class="table table-striped table-hover shadow-sm text-center" id="myTable">
         <thead class="thead-dark">
             <tr>
@@ -40,10 +39,10 @@
                     <td>@Html.DisplayFor(modelItem => item.Rate)</td>
                     <td class="text-center">
                         <a asp-action="Edit" asp-route-id="@item.ProviderId" class="btn btn-sm btn-info mx-1">
-                            <i class="fas fa-edit"></i> Edit
+                            Edit
                         </a>
                         <button id="blockButton-@item.ProviderId" class="btn btn-sm btn-danger mx-1" onclick="toggleBlock('@item.ProviderId')">
-                            <i class="fas fa-trash-alt"></i> @(item.Isblocked ? "Unblock" : "Block")
+                             @(item.Isblocked ? "Unblock" : "Block")
                         </button>
                     </td>
                 </tr>

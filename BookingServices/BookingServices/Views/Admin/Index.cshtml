@@ -3,9 +3,9 @@
     ViewData["Title"] = "Requested Services";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<div class="container mt-5">
-    <h2 class="text-center">Requested Services</h2>
-    <table class="table">
+<h2 class="text-center">Requested Services</h2>
+<div class="table-responsive">
+        <table class="table" id="myTable">
         <thead>
             <tr>
                 <th>Service Provider</th>
@@ -29,3 +29,4 @@
         </tbody>
     </table>
 </div>
+<script src="~/js/datatablesjs.js"></script>

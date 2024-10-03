@@ -39,12 +39,9 @@ namespace BookingServices.Controllers
                 bookings = bookings.Where(b => b.EventDate >= startDate.Value && b.EventDate <= endDate.Value).Include(C => C.Customer);
             }
 
-
-
             var totalConfirmed = bookings
                 .Where(b => b.Status == "Confirmed" || b.Status == "paid")
                 .Sum(b => b.Price);
-
 
             var totalCanceled = bookings
                 .Where(b => b.Status == "Cancelled" || b.Status == "pus")
@@ -64,6 +61,5 @@ namespace BookingServices.Controllers
             return View(model);
         }
         //this is Booking controller 
-
     }
 }

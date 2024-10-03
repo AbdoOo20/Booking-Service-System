@@ -12,8 +12,12 @@
                     {
                         <img id="mainImage" style="max-width: 100%; height: 60vh; margin: auto;" class="rounded-4 fit" src="@Model.ImageUrl[0]" />
                     }
+                    else
+                    {
+                        <img src="~/images/noavaliable.png" style="max-width: 100%; height: 60vh; margin: auto;" class="rounded-4 fit" />
+                    }
                 </div>
-
+                
                 <div class="d-flex justify-content-center mb-3">
                     @foreach (var imageUrl in Model.ImageUrl)
                     {
@@ -63,6 +67,7 @@
         </div>
     </div>
 </section>
+<a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-lg">Back to List</a>
 
 <script>
     function changeImage(imageUrl) {

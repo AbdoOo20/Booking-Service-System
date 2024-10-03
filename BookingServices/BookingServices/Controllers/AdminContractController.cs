@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingServices.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin ,Provider")]
     public class AdminContractController : Controller
     {
         ApplicationDbContext context;
@@ -15,7 +15,7 @@ namespace BookingServices.Controllers
         {
             context = _context;
         }
-
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             return View(context.AdminContracts.ToList());
@@ -24,6 +24,7 @@ namespace BookingServices.Controllers
 
         // Action to return the Admin Contract details view
         [HttpGet]
+        [Authorize(Roles = "Admin ,Provider")]
         public async Task<IActionResult> GetAdminContractDetails(int id)
         {
             var contract = await context.AdminContracts.FindAsync(id);
@@ -36,7 +37,7 @@ namespace BookingServices.Controllers
             return PartialView("_AdminContractDetailsPartial", contract);
         }
 
-
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             return View();
@@ -44,6 +45,7 @@ namespace BookingServices.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Create(AdminContract adminContract)
         {
             if (ModelState.IsValid)
@@ -63,6 +65,7 @@ namespace BookingServices.Controllers
             return View(adminContract);
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int id)
         {
             var adminContract = context.AdminContracts.Find(id);
@@ -76,6 +79,7 @@ namespace BookingServices.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int id, AdminContract adminContract)
         {
             if (ModelState.IsValid)
@@ -95,6 +99,7 @@ namespace BookingServices.Controllers
             return View(adminContract);
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             var adminContract = context.AdminContracts.Find(id);

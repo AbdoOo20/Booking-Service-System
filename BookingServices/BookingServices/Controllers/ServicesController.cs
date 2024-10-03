@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BookingServices.Controllers
 {
-    [Authorize("Provider")]
-    [Authorize("Admin")]
+    [Authorize(Roles ="Admin,Provider")]
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -757,10 +756,7 @@ namespace BookingServices.Controllers
             var hours = Enumerable.Range(0, 24)
                                   .ToDictionary(i => i.ToString("D2") + " :00", i => i);
 
-            // Fetch UserID
             UserID = await GetCurrentUserID();
-
-            // Fetch Regions data from external API
             var response = await _client.GetAsync(SaudiArabiaRegionsCitiesAndDistricts);
             if (response.IsSuccessStatusCode)
             {
@@ -768,29 +764,18 @@ namespace BookingServices.Controllers
                 var regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
                 ViewData["Location"] = new SelectList(regions, "name_en", "name_en");
             }
-
-            // Categories select list
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", service?.CategoryId);
-
-            // BaseService select list based on whether the service is null or not
             var baseServicesQuery = _context.Services.Where(s => s.ProviderId == UserID);
             if (service != null)
             {
                 baseServicesQuery = baseServicesQuery.Where(s => s.ServiceId != service.ServiceId);
             }
             ViewData["BaseServiceId"] = new SelectList(baseServicesQuery, "ServiceId", "Name", service?.BaseServiceId);
-
-            // AdminContract select list
             ViewData["AdminContractId"] = new SelectList(_context.AdminContracts, "ContractId", "ContractName", service?.AdminContractId);
-
-            // ProviderContract select list
             ViewData["ProviderContractId"] = new SelectList(_context.ProviderContracts.Where(p => p.ProviderId == UserID), "ContractId", "ContractName", service?.ProviderContractId);
-
-            // Time select lists (StartTime and EndTime) using the hours dictionary
             ViewData["StartTime"] = new SelectList(hours, "Value", "Key");
             ViewData["EndTime"] = new SelectList(hours, "Value", "Key");
         }
-
 
         // Helper Method: Handle File Uploads
         private async Task FileUpload(IFormFileCollection Images, int serviceId)

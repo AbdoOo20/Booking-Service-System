@@ -24,7 +24,6 @@ namespace BookingServices.Controllers
             _context = context;
             _userManager = userManager; 
         }
-          [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             // Fetch providers and services data
@@ -77,7 +76,6 @@ namespace BookingServices.Controllers
 
             return View(providerDataVMs);
         }
-        [Authorize(Roles = "Admin")]
         // GET: AdminServiceProvider/Details/5
         public async Task<ActionResult> Details(string id)
 
@@ -133,7 +131,6 @@ namespace BookingServices.Controllers
          }*/
 
         // GET: AdminServiceProvider/Edit/5
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Edit(string id)
         {
             if (id == null)
@@ -168,7 +165,6 @@ namespace BookingServices.Controllers
 
 
         // POST: AdminServiceProvider/Edit/5
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(string id, EditProviderViewModel model)
@@ -239,7 +235,6 @@ namespace BookingServices.Controllers
             return PartialView("_ProviderTablePartial", providers);
         }*/
 
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> ToggleBlock(string id)
         {
