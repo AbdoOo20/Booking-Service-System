@@ -15,7 +15,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="adminContractModalLabel">Admin Contract Details</h5>
-                    <button type="button" class="btn btn-outline-danger ms-auto" data-bs-dismiss="modal" aria-label="Close">x</button>
+                    <button type="button" class="btn-close btn btn-outline-danger ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="adminContractDetailsContent">
                     <!-- Contract details will be loaded here via AJAX -->
@@ -99,9 +99,6 @@
                     </div>
                 </div>
 
-
-
-
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="CategoryName" class="form-label"></label>
                     <select asp-for="CategoryId" asp-items="ViewBag.CategoryId" class="form-control">
@@ -147,70 +144,6 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const contractSelect = document.getElementById('AdminContractId');
-            const viewContractBtn = document.getElementById('viewContractBtn');
-
-            // Enable or disable the view button based on the selection
-            contractSelect.addEventListener('change', function () {
-                viewContractBtn.disabled = this.value === "" ? true : false;
-            });
-
-            // Handle click event on the "View Contract" button
-            viewContractBtn.addEventListener('click', function () {
-                const selectedContractId = contractSelect.value;
-                if (selectedContractId) {
-                    // Show the modal
-                    $('#adminContractModal').modal('show');
-
-                    // Fetch contract details via AJAX
-                    fetch(`/AdminContract/GetAdminContractDetails/${selectedContractId}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Failed to load contract details.');
-                            }
-                            return response.text();
-                        })
-                        .then(data => {
-                            // Inject the contract details into the modal body
-                            document.getElementById('adminContractDetailsContent').innerHTML = data;
-                        })
-                        .catch(error => {
-                            // Handle errors and display a message in the modal body
-                            document.getElementById('adminContractDetailsContent').innerHTML = 'Error loading contract details.';
-                            console.error(error);
-                        });
-                }
-            });
-
-            // Log message when close button is clicked
-            document.querySelector('.btn-close').addEventListener('click', function () {
-                console.log("Close button clicked!");
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const startTimeSelect = document.getElementById('StartTime');
-            const endTimeSelect = document.getElementById('EndTime');
-            const endTimeOptions = Array.from(endTimeSelect.options);
-
-            startTimeSelect.addEventListener('change', function () {
-                const selectedStartTime = parseInt(this.value);
-
-                // Clear current end time options
-                endTimeSelect.innerHTML = '<option value="">-- Select End Time --</option>';
-
-                // Re-populate end time options with values greater than selected start time
-                endTimeOptions.forEach(option => {
-                    const optionValue = parseInt(option.value);
-                    if (optionValue > selectedStartTime) {
-                        endTimeSelect.appendChild(option.cloneNode(true));
-                    }
-                });
-            });
-        });
-    </script>
-    @Html.Partial("_ValidationScriptsPartial")
-}
+<script src="~/js/getadmincontractdetails.js"></script>
+<script src="~/js/timechecking.js"></script>
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
