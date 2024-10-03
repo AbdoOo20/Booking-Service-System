@@ -4,7 +4,8 @@
 	ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<h1 class="mt-3">Customers</h1>
+<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
+<h1 class="text-center head-color">Customers</h1>
 
  <div id="customerListContainer">
      @Html.Partial("CustomerList", Model) 

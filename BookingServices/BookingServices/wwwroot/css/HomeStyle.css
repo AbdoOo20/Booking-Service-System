@@ -798,3 +798,7 @@ h6 {
 .faq .basic p {
     color: #6980aa;
 }
+.head-color {
+    color: #012970;
+    font-weight:bold;
+}

@@ -3,7 +3,8 @@
     ViewData["Title"] = "Requested Services";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<h2 class="text-center">Requested Services</h2>
+<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
+<h1 class="text-center head-color">Requested Services</h1>
 <div class="table-responsive">
         <table class="table" id="myTable">
         <thead>
@@ -23,7 +24,7 @@
                     <td>@service.ServiceName</td>
                     <td>@service.Location</td>
                     <td>@service.Details</td>
-                    <td> <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@service.Id">Details</a> </td>
+                    <td> <a class="btn btn-outline-warning btn-sm" asp-action="Details" asp-route-id="@service.Id"><i class="fa-solid fa-circle-info"></i></a> </td>
                 </tr>
             }
         </tbody>

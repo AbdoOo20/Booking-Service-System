@@ -4,9 +4,9 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-
+<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Providers</h1>
+    <h1 class="text-center head-color">Providers</h1>
 
 
     <form id="searchForm" class="d-flex flex-wrap justify-content-center" onsubmit="return false;">
@@ -38,12 +38,24 @@
                     <td>@Html.DisplayFor(modelItem => item.NumberOfServices)</td>
                     <td>@Html.DisplayFor(modelItem => item.Rate)</td>
                     <td class="text-center">
-                        <a asp-action="Edit" asp-route-id="@item.ProviderId" class="btn btn-sm btn-info mx-1">
-                            Edit
+                        <a asp-action="Edit" asp-route-id="@item.ProviderId" class="btn btn-sm btn-outline-primary mx-1">
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                        <button id="blockButton-@item.ProviderId" class="btn btn-sm btn-danger mx-1" onclick="toggleBlock('@item.ProviderId')">
-                             @(item.Isblocked ? "Unblock" : "Block")
-                        </button>
+                        @{
+                            if (item.Isblocked)
+                            {
+                                <button id="blockButton-@item.ProviderId" class="btn btn-sm btn-outline-success mx-1" onclick="toggleBlock('@item.ProviderId')">
+                                    <i class="fa-regular fa-circle-check"></i> UnBlock
+                                </button>
+                            }
+                            else
+                            {   
+                                <button id="blockButton-@item.ProviderId" class="btn btn-sm btn-outline-danger mx-1" onclick="toggleBlock('@item.ProviderId')">
+                                    <i class="fas fa-trash-alt"></i> Block
+                                </button>
+                            }
+                        }
+                        
                     </td>
                 </tr>
             }
@@ -95,11 +107,11 @@
                 if (response.success) {
                     var button = $("#blockButton-" + providerId);
                     if (response.isBlocked) {
-                        button.html('<i class="fas fa-trash-alt"></i> Unblock');
-                        button.removeClass('btn-danger').addClass('btn-success');
+                        button.html('<i class="fa-regular fa-circle-check"></i> UnBlock');
+                        button.removeClass('btn-outline-danger').addClass('btn-outline-success');
                     } else {
                         button.html('<i class="fas fa-trash-alt"></i> Block');
-                        button.removeClass('btn-success').addClass('btn-danger');
+                        button.removeClass('btn-outline-success').addClass('btn-outline-danger');
                     }
                 } else {
                     alert(response.message);

@@ -2,19 +2,14 @@
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-
+<h1 class="text-center head-color">Add Provider</h1>
 <div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0">
-                <div class="card-header text-center bg-primary text-white">
-                    <h2>@ViewData["Title"]</h2>
-                </div>
-                <div class="card-body">
+    <div class="row">
+            <div class="card shadow-lg">
+                <div class="card-body p-3">
                     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                        <h4 class="text-center mb-4">Create a New Account</h4>
-                        <hr />
                         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
                         @if (User.IsInRole("Admin"))
@@ -57,14 +52,11 @@
 
                         <input type="hidden" asp-for="ProviderRegisterId" />
 
-                        <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                        <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-outline-success">Add</button>
                     </form>
                 </div>
-                <div class="card-footer text-center">
-                    <small class="text-muted">Already have an account? <a href="/Identity/Account/Login" class="text-primary">Login here</a></small>
-                </div>
+
             </div>
-        </div>
     </div>
 </div>
 

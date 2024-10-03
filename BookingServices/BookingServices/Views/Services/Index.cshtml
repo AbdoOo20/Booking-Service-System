@@ -4,8 +4,8 @@
     ViewData["Title"] = "Services";
     Layout = ViewBag.isProvider ? "~/Views/Shared/_LayoutProvider.cshtml" : "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-
-<h1>Services</h1>
+<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
+<h1 class="text-center head-color">Services</h1>
 
 @if (ViewBag.isProvider)
 {
@@ -163,7 +163,7 @@
                                 <a asp-action="Edit" asp-route-id="@item.ServiceId" class="btn btn-outline-primary me-2" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <a asp-action="Details" asp-route-id="@item.ServiceId" class="btn btn-outline-success me-2" title="Details">
+                                <a asp-action="Details" asp-route-id="@item.ServiceId" class="btn btn-outline-warning me-2" title="Details">
                                     <i class="fa-solid fa-circle-info"></i>
                                 </a>
                                 <a asp-action="GetImages" asp-route-id="@item.ServiceId" class="btn btn-outline-info me-2" title="View Images">

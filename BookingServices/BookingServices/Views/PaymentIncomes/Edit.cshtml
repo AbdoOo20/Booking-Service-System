@@ -5,21 +5,18 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>PaymentIncome</h4>
+<h1 class="text-center head-color">Edit Payment Income</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="PaymentIncomeId" />
-            <div class="form-group">
+            <div class="form-group m-2">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group m-2">
                 <label asp-for="Percentage" class="control-label"></label>
                 <input asp-for="Percentage" class="form-control" />
                 <span asp-validation-for="Percentage" class="text-danger"></span>
@@ -28,11 +25,10 @@
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
-    </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="mt-2">
+    <a class="btn btn-secondary" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

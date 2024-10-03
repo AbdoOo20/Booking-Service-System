@@ -2,14 +2,14 @@
 
 @{
 
-ViewData["Title"] = "Index";
+    ViewData["Title"] = "Provider Waiting List";
 Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <link rel="stylesheet" href="~/css/StyleCustom/StyleList.css"/>
 
+<h1 class="text-center head-color">Provider Waiting List</h1>
 <div class="table-container">
-<h5>Provider Waiting List</h5>
 
 <div class="table-responsive">
 <table class="table mt-5" id="myTable">
@@ -48,17 +48,17 @@ Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
                     @Html.DisplayFor(modelItem => item.ServiceDetails)
                 </td>
                 <td>
-                    <a asp-area="Identity" asp-page="/Account/Register"
+                    <a class="btn btn-outline-success" asp-area="Identity" asp-page="/Account/Register"
                         asp-route-ProviderRegisterId="@item.ProviderRegisterId" asp-route-email="@item.ProviderEmail">
-                        <i class="fa-solid fa-square-check" style="color:green"></i>
+                                <i class="fa-regular fa-circle-check"></i>
                     </a>
                 </td>
                 <td>
-                    <a href="javascript:void(0);"
+                    <a class="btn btn-outline-danger" href="javascript:void(0);"
                         data-bs-toggle="modal"
                         data-bs-target="#deleteConfirmationModal"
                         data-url="@Url.Action("Delete", new { id = item.ProviderRegisterId })">
-                    <i class="fa-solid fa-trash-can" style="color:crimson"></i>
+                    <i class="fa-solid fa-trash-can"></i>
                     </a>
                 </td>
             </tr>

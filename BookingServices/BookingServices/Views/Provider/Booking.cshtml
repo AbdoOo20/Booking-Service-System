@@ -3,12 +3,9 @@
     ViewData["Title"] = "Booking Form";
     Layout = "~/Views/Shared/_LayoutProvider.cshtml";
 }
-
+<h1 class="text-center head-color">Booking</h1>
 <div class="container mt-5">
     <div class="card shadow-lg">
-        <div class="card-header text-white bg-primary text-center">
-            <h2 class="text-white">Booking</h2>
-        </div>
         <div class="card-body mt-2">
             @if (TempData["Message"] != null)
             {
@@ -51,7 +48,7 @@
                         </div>
                     </div>
                     <div class="col-md-4 mt-2">
-                        <button type="button" id="fetchCustomer" class="btn btn-primary mt-4">Fetch Customer</button>
+                        <button type="button" id="fetchCustomer" class="btn btn-outline-primary mt-4">Fetch Customer</button>
                     </div>
                 </div>
 
@@ -120,7 +117,7 @@
                 <!-- Submit Booking Button on the left -->
                 <div class="row mb-3">
                     <div class="col-md-12 text-start">
-                        <button type="submit" class="btn btn-primary">Submit Booking</button>
+                        <button type="submit" class="btn btn-outline-primary">Submit Booking</button>
                     </div>
                 </div>
             </form>

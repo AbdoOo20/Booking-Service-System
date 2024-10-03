@@ -5,9 +5,9 @@
     Layout = "~/Views/Shared/_LayoutProvider.cshtml";
 
 }
+<link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
 
-<h1>Contracts</h1>
-
+<h1 class="text-center head-color">Contracts</h1>
 <p>
     <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
 </p>
@@ -35,7 +35,7 @@
             <td>
                 <div class="d-flex">
                             <a asp-action="Edit" asp-route-id="@item.ContractId" class="btn btn-outline-primary me-2"><i class="fa-solid fa-pen-to-square"></i></a> 
-                            <a asp-action="Details" asp-route-id="@item.ContractId" class="btn btn-outline-success me-2"><i class="fa-solid fa-circle-info"></i></a> 
+                            <a asp-action="Details" asp-route-id="@item.ContractId" class="btn btn-outline-warning me-2"><i class="fa-solid fa-circle-info"></i></a> 
                             <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger me-2"><i class="fa-solid fa-trash-can"></i></a>
                         </div>    
             </td>

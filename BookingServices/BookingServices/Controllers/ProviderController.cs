@@ -36,6 +36,7 @@ namespace BookingServices.Controllers
             {
                 var jsonData = await response.Content.ReadAsStringAsync();
                 var regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
+                //ViewBag.Locations = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
                 ViewBag.Locations = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
             }
             return View();

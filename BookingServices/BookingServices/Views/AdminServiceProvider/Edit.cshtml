@@ -4,18 +4,12 @@
     ViewData["Title"] = "Edit Service Provider";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-
+<h1 class="text-center head-color">Edit Service Provider Details</h1>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">@ViewData["Title"]</h3>
-                </div>
                 <div class="card-body">
-                    <h4 class="card-title">Edit Service Provider Details</h4>
-                    <hr />
-
                     <form asp-action="Edit" method="post">
                         <input asp-for="ProviderId" type="hidden" />
 
@@ -51,7 +45,7 @@
 
                         <!-- Action Buttons -->
                         <div class="d-flex justify-content-between flex-wrap">
-                            <button type="submit" class="btn btn-success mb-2 mb-md-0">Save Changes</button>
+                            <button type="submit" class="btn btn-outline-success mb-2 mb-md-0">Save Changes</button>
                             <a asp-action="Index" class="btn btn-outline-secondary mb-2 mb-md-0">Back to List</a>
                         </div>
                     </form>
