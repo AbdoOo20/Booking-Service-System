@@ -28,9 +28,9 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="City" class="form-label">City</label>
-                            <select id="City" class="form-select">
+                            <select asp-for="City" class="form-select">
                                 <option value="">All Cities</option>
-                                @foreach (var location in ViewBag.Locations as List<string>)
+                                @foreach (var location in TempData["Locations"] as List<string>)
                                 {
                                     <option value="@location">@location</option>
                                 }
