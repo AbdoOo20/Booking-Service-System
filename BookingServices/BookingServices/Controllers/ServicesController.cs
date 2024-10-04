@@ -585,13 +585,18 @@ namespace BookingServices.Controllers
         [Authorize("Provider")]
         public async Task<IActionResult> Prices(int id)
         {
-            if (!ServiceExists(id)) 
-                ErrorHandling(nameof(Prices), "The Service Dose Not Exists !!!");
+            if (!ServiceExists(id))
+            {
+                errorViewModel.Action = nameof(Index);
+                errorViewModel.Message = "Service Not Found!!!";
+
+                return View("Error", errorViewModel);
+            }
 
             var servicePrices = _context.ServicePrices.Where(s => s.ServiceId == id).Include(s => s.Service);
             var service = await _context.Services.FindAsync(id);
-            ViewData["ServiceName"] = service.Name;
-            ViewData["ServiceId"] = service.ServiceId;
+            ViewData["ServiceName"] = service?.Name ?? "";
+            ViewData["ServiceId"] = service?.ServiceId;
 
             return View(await servicePrices.ToListAsync());
         }
@@ -617,38 +622,49 @@ namespace BookingServices.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                if (servicePriceModel.EndDate.Date != DateTime.Now.Date) // Compare only date part
+                if (ModelState.IsValid)
                 {
-                    DateTime currentDate = servicePriceModel.StartDate;
-                    while (currentDate <= servicePriceModel.EndDate)
+                    if (servicePriceModel.EndDate.Date != DateTime.Now.Date) // Compare only date part
+                    {
+                        DateTime currentDate = servicePriceModel.StartDate;
+                        while (currentDate <= servicePriceModel.EndDate)
+                        {
+                            var servicePrice = new ServicePrice
+                            {
+                                ServiceId = servicePriceModel.ServiceId,
+                                Price = servicePriceModel.Price,
+                                PriceDate = currentDate
+                            };
+                            _context.ServicePrices.Add(servicePrice);
+                            currentDate = currentDate.AddDays(1); // Increment the date by 1 day
+                        }
+                    }
+                    else
                     {
                         var servicePrice = new ServicePrice
                         {
                             ServiceId = servicePriceModel.ServiceId,
                             Price = servicePriceModel.Price,
-                            PriceDate = currentDate
+                            PriceDate = servicePriceModel.PriceDate
                         };
                         _context.ServicePrices.Add(servicePrice);
-                        currentDate = currentDate.AddDays(1); // Increment the date by 1 day
                     }
-                }
-                else
-                {
-                    var servicePrice = new ServicePrice
-                    {
-                        ServiceId = servicePriceModel.ServiceId,
-                        Price = servicePriceModel.Price,
-                        PriceDate = servicePriceModel.PriceDate
-                    };
-                    _context.ServicePrices.Add(servicePrice);
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Prices), new { id = id });
                 }
 
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Prices), new { id = id });
             }
+            catch (Exception ex) 
+            {
+                errorViewModel.Controller = "Services";
+                errorViewModel.Action = nameof(Prices);
+                errorViewModel.Message = ex.Message;
 
+                return View("Error", errorViewModel);
+            }
             return View(servicePriceModel);
         }
         public async Task<IActionResult> EditPrice(int id,[FromQuery] DateTime date)
