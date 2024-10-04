@@ -25,6 +25,7 @@ namespace BookingServices.Controllers
             _signInManager = signInManager;
         }
 
+        [HttpGet]
         public async Task<ActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -43,7 +44,7 @@ namespace BookingServices.Controllers
             };
             return View(providerDataVM);
         }
-        [HttpPost, Route("Edit")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProviderDataVM providerDataVM)
         {
