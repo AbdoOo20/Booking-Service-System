@@ -37,7 +37,7 @@ namespace BookingServices.Controllers
                 var jsonData = await response.Content.ReadAsStringAsync();
                 var regions = JsonConvert.DeserializeObject<List<Region>>(jsonData);
                 //ViewBag.Locations = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
-                ViewBag.Locations = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
+                TempData["Locations"] = regions.Select(r => r.name_en.Trim()).Distinct().ToList(); // Ensure no duplicates
             }
             return View();
         }
@@ -70,7 +70,7 @@ namespace BookingServices.Controllers
                     AccessFailedCount = 0
                 };
 
-                var result = await _userManager.CreateAsync(user, "EslamWaheed358@gmail.com");
+                var result = await _userManager.CreateAsync(user, "EW358@gmail.com");
                 if (result.Succeeded)
                 {
                     _context.Customers.Add(
@@ -123,7 +123,7 @@ namespace BookingServices.Controllers
             }
             catch (Exception e)
             {
-                errorViewModel = new ErrorViewModel { Message = "An unexpected error occurred. Please try again later.", Controller = " Admin", Action = "Index" };
+                errorViewModel = new ErrorViewModel { Message = e.Message/*"An unexpected error occurred. Please try again later."*/, Controller = " Admin", Action = "Index" };
                 return View("Error", errorViewModel);
             }
 
