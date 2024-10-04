@@ -11,7 +11,8 @@
 <p>
     <a asp-action="AddPrice" asp-route-id="@ViewData["ServiceId"]" class="btn btn-outline-primary">Add Price</a>
 </p>
-<table class="table table-hover justify-content-center align-content-center">
+<div class="table-responsive">
+<table class="table table-hover justify-content-center align-content-center" id="myTable">
     <thead>
         <tr>
             <td>#</td>
@@ -42,6 +43,8 @@
         }
     </tbody>
 </table>
+</div>
 <div class="d-flex">
     <a asp-action="Index" class="btn btn-outline-secondary ms-auto">Back to List</a>
 </div>
+<script src="~/js/datatablesjs.js"></script>
