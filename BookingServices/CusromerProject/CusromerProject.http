@@ -1,0 +1,6 @@
+@CusromerProject_HostAddress = http://localhost:5285
+
+GET {{CusromerProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
