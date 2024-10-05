@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
 
 <div class="table-container">
-    <h5>The Booking of @Model.FirstOrDefault()?.PaymentMethod</h5>
+    <h5 class="text-center head-color">Bookings For @Model.FirstOrDefault()?.PaymentMethod Method</h5>
     <div class="table-responsive">
     <table class="table mt-5" id="myTable">
         <thead>
@@ -53,6 +53,6 @@
         </tbody>
     </table>
     </div>
-    <a class="btn btn-info" asp-action="Index">Back</a>
+    <a class="btn btn-outline-info" asp-action="Index">Back</a>
 </div>
 <script src="~/js/datatablesjs.js"></script>
