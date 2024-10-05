@@ -1,4 +1,6 @@
-﻿namespace BookingServices.ViewModel
+﻿using BookingServices.Data;
+
+namespace BookingServices.ViewModel
 {
     public class HomeInfoVM
     {
