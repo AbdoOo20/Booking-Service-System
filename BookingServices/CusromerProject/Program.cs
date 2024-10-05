@@ -1,5 +1,10 @@
 
+using BookingServices.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace CusromerProject
@@ -33,6 +38,32 @@ namespace CusromerProject
             {
                 options.AddPolicy("AllowAllOrigins",
                     builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JwtSettings:Audience"],
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                        builder.Configuration["JwtSettings:SecretKey"]))
+                };
             });
 
             var app = builder.Build();
