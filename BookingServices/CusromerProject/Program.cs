@@ -1,4 +1,3 @@
-
 using BookingServices.Data;
 using CusromerProject.DTO.Book;
 using CusromerProject.DTO.Services;
@@ -8,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using CusromerProject.DTO.Categories;
+using CusromerProject.DTO.Services;
+using CusromerProject.DTO.Review;
 
 namespace CusromerProject
 {
@@ -17,25 +19,36 @@ namespace CusromerProject
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+            // Configure Entity Framework Core
             builder.Services.AddDbContext<BookingServices.Data.ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            // Add services to the container.
+            // Add memory caching
+            builder.Services.AddMemoryCache(); // Register IMemoryCache
 
+            // Register your repositories
+            builder.Services.AddScoped<CategoryRepository>(); // Register CategoryRepository
+            builder.Services.AddScoped<ServiceRepository>(); // Register ServiceRepository
+            builder.Services.AddScoped<ReviewRepository>(); // Register ReviewRepository
+
+
+            // Add services to the container.
             builder.Services.AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-
             builder.Services.AddSwaggerGen();
 
+            // Configure JSON serialization options
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
+            // Configure CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
@@ -85,9 +98,9 @@ namespace CusromerProject
 
             app.UseAuthorization();
 
-            app.MapControllers();
-
             app.UseCors("AllowAllOrigins");
+
+            app.MapControllers();
 
             app.Run();
         }

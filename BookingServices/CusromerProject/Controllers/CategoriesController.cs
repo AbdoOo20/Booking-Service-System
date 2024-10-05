@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using CusromerProject.DTO.Categories;
 using BookingServices.Data;
-using NuGet.Versioning;
 
 namespace CusromerProject.Controllers
 {
@@ -14,36 +8,41 @@ namespace CusromerProject.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly CategoryRepository _categoryRepository;
+        private readonly ILogger<CategoriesController> _logger; // Add logger
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(CategoryRepository categoryRepository, ILogger<CategoriesController> logger)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
+            _logger = logger;
         }
 
-        // GET: api/Categories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<List<Category>>> GetCategories()
         {
-            return await _context.Categories.ToListAsync();
-        }
+            var result = await _categoryRepository.GetAll();
 
-        // GET: api/Categories/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
-        {
-            var category = await _context.Categories
-                .Include(c => c.Services)
-                .Where(c => c.CategoryId == id)
-                .FirstOrDefaultAsync();
-
-            if (category == null)
+            if (!result.IsSuccess)
             {
-                return NotFound();
+                _logger.LogWarning(result.Error);
+                return NoContent(); // Return 204 No Content if no categories are found
             }
 
-            return category;
+            return Ok(result.Value); // Return 200 OK with the list of categories
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CategoryDTO>> GetCategory(int id)
+        {
+            var result = await _categoryRepository.GetById(id);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning(result.Error);
+                return NotFound(result.Error); // Return 404 if category is not found
+            }
+
+            return Ok(result.Value); // Return 200 OK with the CategoryDTO
+        }
     }
 }
