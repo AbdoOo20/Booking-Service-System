@@ -10,8 +10,8 @@
 <div>
     <a asp-action="AddImage" asp-route-id="@ViewData["ServiceId"]" class="btn btn-outline-primary mb-3">Add Image</a>
 </div>
-
-<table class="table table-hover justify-content-center align-content-center">
+<div class="table-responsive">
+<table class="table table-hover justify-content-center align-content-center" id="myTable">
     <thead>
         <tr>
             <th>
@@ -44,6 +44,8 @@
         }
     </tbody>
 </table>
+</div>
 <div class="d-flex">
     <a asp-action="Index" class="btn btn-outline-secondary ms-auto">Back to List</a>
 </div>
+<script src="~/js/datatablesjs.js"></script>
