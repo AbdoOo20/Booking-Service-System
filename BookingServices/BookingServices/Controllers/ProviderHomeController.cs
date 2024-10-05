@@ -31,15 +31,22 @@ namespace BookingServices.Controllers
                 .Count();
             var packageCreatedCount = context.Packages.Where(p => p.ProviderId == userIdFromManager).Count();
             var TotalOfClicks = context.Links.Where(l => l.ProviderId == userIdFromManager).Sum(l => l.NumberOfClicks);
-            var TotalMoneyService = context.BookingServices.Where(bs => bs.Service.ProviderId == userIdFromManager).
-                Select(bs => bs.Booking).Sum(b => b.Price);
+            //var TotalMoneyService = context.BookingServices.Where(bs => bs.Service.ProviderId == userIdFromManager).
+            //Select(bs => bs.Booking);
+            var totalPaymentValue = context.BookingServices
+            .Where(bs => bs.Service.ProviderId == userIdFromManager)
+            .Join(context.Payments,
+                  bs => bs.BookingId,
+                  p => p.BookingId,
+                  (bs, p) => p.PaymentValue) 
+            .Sum();
             HomeInfoVM homeInfoVM = new HomeInfoVM();
             homeInfoVM.ServicesCount = services;
             homeInfoVM.ContaractCount = contracts;
             homeInfoVM.BookServiceCount = totalBookingsForServiceProvider;
             homeInfoVM.PackageCreateCount = packageCreatedCount;
             homeInfoVM.TotalOfClicks = TotalOfClicks;
-            homeInfoVM.TotalMoneyService = TotalMoneyService;
+            homeInfoVM.TotalMoneyService = totalPaymentValue;
             //Start Chart
             var salesData = new List<int> { services, contracts, totalBookingsForServiceProvider, packageCreatedCount };
             ViewBag.SalesData = salesData;
