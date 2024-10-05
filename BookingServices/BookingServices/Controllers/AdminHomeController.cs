@@ -26,7 +26,7 @@ namespace BookingServices.Controllers
             var services = context.Services.Count();
             var servicesOffLine = context.Services.Where(s => s.IsOnlineOrOffline == false).Count();
             var servicesOnLine = context.Services.Where(s => s.IsOnlineOrOffline == true).Count();
-            var totalMoneyService = context.BookingServices.Select(bs => bs.Booking).Sum(b => b.Price);
+            var totalMoneyService = context.Payments.Where(p=>p.Booking.Type == "Service").Sum(p=>p.PaymentValue);
             HomeAdminVM homeAdminVM = new HomeAdminVM();
             homeAdminVM.CustomerCount = customers;
             homeAdminVM.ProvidersCount = providers;

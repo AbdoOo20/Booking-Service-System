@@ -26,6 +26,7 @@ namespace BookingServices
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -62,6 +63,9 @@ namespace BookingServices
             });
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+            builder.Services.AddRazorPages();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -79,8 +83,32 @@ namespace BookingServices
             app.UseRouting();
 
             app.UseAuthentication();
+
             app.UseAuthorization();
-            
+
+            app.Use(async (context, next) =>
+            {
+                var path = context.Request.Path.Value;
+                if (path == "/" || path == "/Home/Index")
+                {
+                    if (context.User.Identity.IsAuthenticated)
+                    {
+                        if (context.User.IsInRole("Admin"))
+                        {
+                            context.Response.Redirect("/AdminHome");
+                            return;
+                        }
+                        else if (context.User.IsInRole("Provider"))
+                        {
+                            context.Response.Redirect("/ProviderHome");
+                            return;
+                        }
+                    }
+                }
+                await next();
+            });
+
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

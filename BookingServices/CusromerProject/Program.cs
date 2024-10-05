@@ -1,4 +1,6 @@
 using BookingServices.Data;
+using CusromerProject.DTO.Book;
+using CusromerProject.DTO.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -78,6 +80,12 @@ namespace CusromerProject
                         builder.Configuration["JwtSettings:SecretKey"]))
                 };
             });
+
+            builder.Services.AddMemoryCache();
+
+            builder.Services.AddScoped<ServiceRepository>();
+
+            builder.Services.AddScoped<BookRepository>();
 
             var app = builder.Build();
 
