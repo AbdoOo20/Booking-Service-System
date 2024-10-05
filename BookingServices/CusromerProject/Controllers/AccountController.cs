@@ -3,9 +3,11 @@ using CusromerProject.DTO.Account;
 using CusromerProject.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
@@ -18,12 +20,18 @@ namespace CusromerProject.Controllers
         UserManager<IdentityUser> _userManager;
         IConfiguration _configuration;
         ApplicationDbContext context;
+        IEmailSender _emailSender;
 
-        public AccountController(UserManager<IdentityUser> userManager, IConfiguration configuration , ApplicationDbContext _context)
+        public AccountController(
+            UserManager<IdentityUser> userManager, 
+            IConfiguration configuration , 
+            ApplicationDbContext _context,
+            IEmailSender emailSender)
         { 
             _userManager = userManager;
             _configuration = configuration;
             context = _context;
+            _emailSender = emailSender;
         }
 
         [HttpPost("Login")]
@@ -75,6 +83,7 @@ namespace CusromerProject.Controllers
 
             return BadRequest(ModelState);
         }
+
         [HttpPost("Register")]
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerDataDTO customerData)
         {
@@ -116,6 +125,69 @@ namespace CusromerProject.Controllers
             await context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                return Ok(new { Message = "If an account with that email exists, a reset link will be sent." });
+            }
+
+            // Generate the password reset token
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // Generate reset link (this would be sent to the user by email)
+            var callbackUrl = Url.Action(
+                "ResetPassword", "Account",
+                new { token, email = model.Email },
+                protocol: HttpContext.Request.Scheme);
+
+            // TODO: Send the URL via email using your email service provider
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password",
+                $"Please reset your password by clicking <a href='{callbackUrl}'>here</a>.");
+
+            return Ok(new { Message = "Password reset link sent to your email." });
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return BadRequest("Invalid request.");
+            }
+
+            var decodedToken = WebUtility.UrlDecode(model.Token);
+            // Reset the password
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+            if (result.Succeeded)
+            {
+                return Ok(new { Message = "Password has been reset successfully." });
+            }
+
+            // Handle errors
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return BadRequest(ModelState);
         }
     }
 }
