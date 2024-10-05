@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BookingServices.Data;
 using Microsoft.EntityFrameworkCore;
-using CusromerProject.Models;
+using CusromerProject.DTO.Book;
+using CusromerProject.DTO.Services;
 
 namespace CusromerProject.Controllers
 {
@@ -10,35 +11,27 @@ namespace CusromerProject.Controllers
     public class BookController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly BookRepository _bookRepository;
 
-        public BookController(ApplicationDbContext context)
+        public BookController(ApplicationDbContext context, BookRepository bookRepository)
         {
             _context = context;
+            _bookRepository = bookRepository;
         }
 
         [HttpGet]
-        public IActionResult GetBookings()
+        public async Task<IActionResult> GetBookings()
         {
             List<Book> books = new List<Book>();
-            foreach (var item in _context.Bookings.Include(b => b.Reviews).ToList())
-            {
-                Book newBook = new Book()
-                {
-                    BookId = item.BookingId,
-                    BookDate = item.BookDate,
-                    CashOrCashByHandOrInstallment = item.CashOrCashByHandOrInstallment,
-                    CustomerId = item.CustomerId,
-                    EndTime = item.EndTime,
-                    EventDate = item.EventDate,
-                    PaymentIncomeId = item.PaymentIncomeId,
-                    Price = item.Price,
-                    Quantity = item.Quantity,
-                    Type = item.Type,
-                    StartTime = item.StartTime,
-                    Status = item.Status,
-                };
-                books.Add(newBook);
-            }
+            books = await _bookRepository.GetBookings();
+            return Ok(books);
+        }
+
+        [HttpGet("GetBookingsForCustomer/{id}")]
+        public async Task<IActionResult> GetBookingsForCustomer(string id)
+        {
+            List<Book> books = new List<Book>();
+            books = await _bookRepository.GetBookingsForCustomer(id);
             return Ok(books);
         }
 

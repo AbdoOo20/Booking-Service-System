@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace CusromerProject.Models
+namespace CusromerProject.DTO.Book
 {
     public class Book
     {

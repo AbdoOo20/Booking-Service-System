@@ -1,4 +1,4 @@
-﻿namespace CusromerProject.Models
+﻿namespace CusromerProject.DTO.Book
 {
     public class BookService
     {
