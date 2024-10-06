@@ -17,7 +17,7 @@ namespace CusromerProject.DTO.Book
         [Required(ErrorMessage = "End Time is required.")]
         public TimeOnly EndTime { get; set; }
 
-        [StringLength(20), JsonIgnore]
+        [StringLength(20)]
         public string? Status { get; set; } // pending - paid - complete - canceled
 
         [Range(0, int.MaxValue)]

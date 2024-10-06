@@ -13,5 +13,7 @@ namespace BookingServices.Models
         public string? Phone { get; set; }
         public required string SSN { get; set; }
         public required string City { get; set; }
+
+        public bool? IsBlocked { get; set; }
     }
 }
