@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Features;
 using BookingServices.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using BookingServices.ViewModel;
 
 
 namespace BookingServices
@@ -16,6 +17,7 @@ namespace BookingServices
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -33,6 +35,10 @@ namespace BookingServices
                     .AddDefaultTokenProviders();
 
             builder.Services.AddControllersWithViews();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+            });
 
             builder.Services.Configure<FormOptions>(options =>
             {
@@ -99,15 +105,17 @@ namespace BookingServices
                             return;
                         }
                     }
+                    else 
+                    {
+                        context.Response.Redirect("/Identity/Account/Login");
+                    }
                 }
                 await next();
             });
 
-
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
             app.MapRazorPages();
 
             app.Run();
