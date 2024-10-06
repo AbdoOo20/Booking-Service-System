@@ -1,4 +1,5 @@
 ﻿using CusromerProject.DTO.Review;
+using CustomerProject.DTO.Review;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CusromerProject.Controllers
@@ -30,16 +31,16 @@ namespace CusromerProject.Controllers
 
         // POST: api/Reviews
         [HttpPost]
-        public async Task<ActionResult<bool>> PostReview(ReviewDTO reviewDTO)
+        public async Task<ActionResult<bool>> PostReview(PostedReviewDTO review)
         {
-            var result = await _reviewRepository.AddReviewAsync(reviewDTO);
+            var result = await _reviewRepository.AddReviewAsync(review);
 
             if (!result.IsSuccess)
             {
                 return BadRequest(result.Error);
             }
 
-            return Created();
+            return Ok("Created Success");
         }
     }
 }

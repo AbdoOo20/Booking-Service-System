@@ -1,9 +1,9 @@
 ﻿using BookingServices.Data;
 using CusromerProject.DTO.Categories;
+using CustomerProject.DTO.Review;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CusromerProject.DTO.Review
@@ -59,7 +59,7 @@ namespace CusromerProject.DTO.Review
         }
 
         // Method to add a review with validation and caching
-        public async Task<Result<bool>> AddReviewAsync(ReviewDTO reviewDTO)
+        public async Task<Result<bool>> AddReviewAsync(PostedReviewDTO reviewDTO)
         {
             if (reviewDTO == null)
             {
@@ -80,7 +80,7 @@ namespace CusromerProject.DTO.Review
                 BookingId = reviewDTO.BookingId,
                 Rating = reviewDTO.Rating,
                 CustomerComment = reviewDTO.CustomerComment,
-                CustomerCommentDate = reviewDTO.CustomerCommentDate,
+                CustomerCommentDate = DateTime.Now
             };
 
             _context.Reviews.Add(review);
