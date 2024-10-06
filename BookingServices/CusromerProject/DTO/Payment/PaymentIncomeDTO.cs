@@ -9,6 +9,6 @@ namespace CusromerProject.DTO.Payment
 
         [Range(0.0, 20.0)]
         public decimal Percentage { get; set; }
-        public bool IsBlooked { get; set; }
+        public bool? IsBlooked { get; set; }
     }
 }

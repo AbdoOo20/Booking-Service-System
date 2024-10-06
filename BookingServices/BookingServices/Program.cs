@@ -1,11 +1,6 @@
 using BookingServices.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using System.Globalization;
 using Microsoft.AspNetCore.Http.Features;
 using BookingServices.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -41,7 +36,7 @@ namespace BookingServices
 
             builder.Services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = 10485760; // 10 MB limit
+                options.MultipartBodyLengthLimit = 2097152; // 2 MB limit
             });
          
             builder.Services.AddHttpClient();

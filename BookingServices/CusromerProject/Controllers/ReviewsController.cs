@@ -1,5 +1,6 @@
 ﻿using CusromerProject.DTO.Review;
 using CustomerProject.DTO.Review;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CusromerProject.Controllers
@@ -17,6 +18,7 @@ namespace CusromerProject.Controllers
 
         // GET: api/Reviews/{customerId}/{bookingId}
         [HttpGet("{customerId}/{bookingId}")]
+        [Authorize]
         public async Task<ActionResult<ReviewDTO>> GetReview(string customerId, int bookingId)
         {
             var result = await _reviewRepository.GetReviewByIdAsync(customerId, bookingId);
