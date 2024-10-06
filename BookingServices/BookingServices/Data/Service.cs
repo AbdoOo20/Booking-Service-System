@@ -34,7 +34,7 @@ namespace BookingServices.Data
 
         public bool IsRequestedOrNot {  get; set; }
 
-        public bool IsBlooked { get; set; }
+        public bool IsBlocked { get; set; }
 
         [ForeignKey("Category")]
         public int? CategoryId { get; set; }

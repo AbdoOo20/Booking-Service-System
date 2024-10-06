@@ -26,7 +26,7 @@ namespace BookingServices.Models
         ErrorMessage = "Please enter a valid Saudi phone number.")]
         public string? Phone { get; set; }
 
-        public bool Isblocked { get; set; }
+        public bool? Isblocked { get; set; }
 
       /*  [DataType(DataType.Password)]
         [Display(Name = "Current Password")]
