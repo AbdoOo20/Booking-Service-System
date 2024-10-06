@@ -1,0 +1,21 @@
+﻿.btn-Custom-primary {
+    background-color: #3b71ca;
+    color: #fff;
+    box-shadow: 0 4px 9px -4px #386bc0;
+}
+.btn-Custom-primary:hover {
+    background-color: #386bc0;
+    color: #fff;
+}
+.btn-custom {
+    padding-top: 0.625rem;
+    padding-bottom: 0.5rem;
+    border-width: 0;
+    border-color: none;
+    border-radius: 0.25rem;
+}
+.custom-link {
+    text-decoration: none;
+    color: #273c75;
+    font-weight: bold;
+}

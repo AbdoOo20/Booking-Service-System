@@ -1,8 +1,11 @@
 using BookingServices.Data;
+using BookingServices.Services;
+using BookingServices.ViewModel;
 using CusromerProject.DTO.Book;
 using CusromerProject.DTO.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -56,7 +59,8 @@ namespace CusromerProject
             });
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -82,10 +86,10 @@ namespace CusromerProject
             });
 
             builder.Services.AddMemoryCache();
-
             builder.Services.AddScoped<ServiceRepository>();
 
             builder.Services.AddScoped<BookRepository>();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
