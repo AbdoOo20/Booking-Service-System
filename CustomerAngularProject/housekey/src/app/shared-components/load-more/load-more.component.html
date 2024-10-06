@@ -1,0 +1,17 @@
+<div id="load-more">
+    @if (settings.loadMore.complete) {
+        <mat-chip-listbox>
+            <mat-chip-option highlighted selectable="false" disableRipple="true" color="warn" class="uppercase ws-nowrap">
+                {{settings.loadMore.result}} results
+            </mat-chip-option> 
+        </mat-chip-listbox>
+    } @else {
+        <div>
+            @if (settings.loadMore.start) {
+                <mat-spinner></mat-spinner> 
+            } @else {
+                <button mat-raised-button color="primary" (click)="startLoad()" class="uppercase">Load More</button> 
+            } 
+        </div>
+    } 
+</div>
