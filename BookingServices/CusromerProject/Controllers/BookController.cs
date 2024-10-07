@@ -117,18 +117,13 @@ namespace CusromerProject.Controllers
         public IActionResult DeleteBook(int id)
         {
             var getBook = _context.Bookings.Find(id);
-            var getBookService = _context.BookingServices.Where(b => b.BookingId == id).FirstOrDefault();
             if (getBook == null)
                 return NotFound("No Book With This ID");
-            if (getBookService == null)
-                return NotFound("No Book For Service With This ID");
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.BookingServices.Remove(getBookService);
-                    _context.SaveChanges();
-                    _context.Bookings.Remove(getBook);
+                    getBook.Status = "Canceled";
                     _context.SaveChanges();
                     return Ok($"Deleted Successfully");
                 }

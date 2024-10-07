@@ -38,6 +38,9 @@ namespace BookingServices.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("IsBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
@@ -184,6 +187,9 @@ namespace BookingServices.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("IsBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -286,7 +292,7 @@ namespace BookingServices.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool?>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<string>("PackageName")
@@ -368,7 +374,7 @@ namespace BookingServices.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentIncomeId"));
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool?>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -402,6 +408,9 @@ namespace BookingServices.Data.Migrations
                     b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsBlocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ProviderId")
                         .HasColumnType("nvarchar(450)");
@@ -505,7 +514,7 @@ namespace BookingServices.Data.Migrations
                     b.Property<decimal>("InitialPaymentPercentage")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsOnlineOrOffline")
@@ -590,7 +599,7 @@ namespace BookingServices.Data.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool?>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")

@@ -10,7 +10,6 @@ namespace CusromerProject.DTO.Review
 
         public int BookingId { get; set; }
 
-        [Range(0.0, 5.0)]
         public decimal Rating { get; set; }
 
         public string? CustomerComment { get; set; }

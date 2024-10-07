@@ -7,8 +7,143 @@
 <link rel="stylesheet" href="~/css/StyleCustom/StyleList.css" />
 <h1 class="text-center head-color">Customers</h1>
 
- <div id="customerListContainer">
-     @Html.Partial("CustomerList", Model) 
-</div> 
+@if (Model.Count() > 0)
+{
+    <div class="table-responsive">
+        <table class="table" id="myTable">
+            <thead>
+                <tr>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.IsOnlineOrOfflineUser)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.AlternativePhone)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.SSN)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.City)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.Phone)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                        <td>
+                            @if (item.IsOnlineOrOfflineUser)
+                            {
+                                <i class="fas fa-check-circle" style="color: green;"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-times-circle" style="color: red;"></i>
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.AlternativePhone)</td>
+                        <td>@Html.DisplayFor(modelItem => item.SSN)</td>
+                        <td>@Html.DisplayFor(modelItem => item.City)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                        <td>
+                            @{
+                                if (item.IsBlocked ?? false)
+                                {
+                                    <button id="blockButton-@item.CustomerId" class="btn btn-sm btn-outline-success mx-1" onclick="toggleBlock('@item.CustomerId')">
+                                        <i class="fa-regular fa-circle-check"></i> UnBlock
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="blockButton-@item.CustomerId" class="btn btn-sm btn-outline-danger mx-1" onclick="toggleBlock('@item.CustomerId')">
+                                        <i class="fas fa-trash-alt"></i> Block
+                                    </button>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+else
+{
+    <div class="table-responsive">
+        <table class="table" id="myTable">
+            <thead>
+                <tr>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.IsOnlineOrOfflineUser)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.AlternativePhone)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.SSN)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.City)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(model => model.Phone)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="6" class="text-center">No Customers Found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+<script src="~/js/datatablesjs.js"></script>
+
+<script>
+
+    function toggleBlock(customerId) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("ToggleBlock", "Customer")',
+            data: {
+                id: customerId
+            },
+            success: function (response) {
+                if (response.success) {
+                    var button = $("#blockButton-" + customerId);
+                    if (response.isBlocked) {
+                        button.html('<i class="fa-regular fa-circle-check"></i> UnBlock');
+                        button.removeClass('btn-outline-danger').addClass('btn-outline-success');
+                    } else {
+                        button.html('<i class="fas fa-trash-alt"></i> Block');
+                        button.removeClass('btn-outline-success').addClass('btn-outline-danger');
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("An error occurred while processing your request.");
+            }
+        });
+    }
+</script>
+
 
 

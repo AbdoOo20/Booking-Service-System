@@ -34,8 +34,21 @@
             </td>
                 <td>
                         <div class="d-flex">
-                    <a asp-action="Edit" asp-route-id="@item.PaymentIncomeId" class="btn btn-outline-primary me-2"><i class="fa-solid fa-pen-to-square"></i></a> 
-                    <a asp-action="Delete" asp-route-id="@item.PaymentIncomeId" class="btn btn-outline-danger me-2"><i class="fa-solid fa-trash-can"></i></a>
+                    <a asp-action="Edit" asp-route-id="@item.PaymentIncomeId" class="btn btn-outline-primary me-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                            @{
+                                if (item.IsBlocked ?? false)
+                                {
+                                    <button id="blockButton-@item.PaymentIncomeId" class="btn btn-sm btn-outline-success mx-1" onclick="toggleBlock(@item.PaymentIncomeId)">
+                                        <i class="fa-regular fa-circle-check"></i> UnBlock
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="blockButton-@item.PaymentIncomeId" class="btn btn-sm btn-outline-danger mx-1" onclick="toggleBlock(@item.PaymentIncomeId)">
+                                        <i class="fas fa-trash-alt"></i> Block
+                                    </button>
+                                }
+                            }
                         </div>
                     </td>
         </tr>
@@ -44,3 +57,32 @@
 </table>
 </div>
 <script src="~/js/datatablesjs.js"></script>
+
+<script>
+    function toggleBlock(paymentId) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("ToggleBlock", "PaymentIncomes")',
+            data: {
+                id: paymentId
+            },
+            success: function (response) {
+                if (response.success) {
+                    var button = $("#blockButton-" + paymentId);
+                    if (response.isBlocked) {
+                        button.html('<i class="fa-regular fa-circle-check"></i> UnBlock');
+                        button.removeClass('btn-outline-danger').addClass('btn-outline-success');
+                    } else {
+                        button.html('<i class="fas fa-trash-alt"></i> Block');
+                        button.removeClass('btn-outline-success').addClass('btn-outline-danger');
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("An error occurred while processing your request.");
+            }
+        });
+    }
+</script>
