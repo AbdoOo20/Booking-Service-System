@@ -24,7 +24,7 @@ namespace BookingServices.Data
         [Range(0.0, 20.0)]
         public decimal PercentageForAdmin { get; set; }
 
-        public bool? IsBlocked { get; set; }
+        public bool? IsBlocked { get; set; } = false;
 
         [ForeignKey("ServiceProvider")]
         public string? ProviderId { get; set; }

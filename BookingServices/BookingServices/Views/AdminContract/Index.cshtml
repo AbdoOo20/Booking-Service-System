@@ -37,9 +37,19 @@
                     </a>
                     </td>
                     <td>
-                        <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger" title="Delete">
-                        <i class="fas fa-trash-alt"></i>
-                    </a>
+                        <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger">
+                            @{
+                                if (item.IsBlocked ?? false)
+                                {
+                                    <div>Un Block</div>
+                                }
+                                else
+                                {
+                                    <div> Block </div>
+                                }
+                            }
+                        
+                        </a>
                     </td>
                 </tr>
         }

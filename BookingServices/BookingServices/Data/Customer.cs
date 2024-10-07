@@ -29,7 +29,7 @@ namespace BookingServices.Data
 
         [Required]
         public required string City { get; set; }
-        public bool? IsBlocked { get; set; }
+        public bool? IsBlocked { get; set; } = false;
 
         public virtual IdentityUser? IdentityUser { get; set; }
 

@@ -15,7 +15,7 @@ namespace BookingServices.Data
         [Required]
         public string? Details { get; set; }
 
-        public bool? IsBlocked { get; set; }
+        public bool? IsBlocked { get; set; } = false;
 
         [ForeignKey("ServiceProvider")]
         public string? ProviderId { get; set; }
