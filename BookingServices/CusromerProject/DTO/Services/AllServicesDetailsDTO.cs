@@ -1,6 +1,6 @@
 ﻿namespace CusromerProject.DTO.Services
 {
-    public class AllServicesDetails
+    public class AllServicesDetailsDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -9,7 +9,7 @@ namespace CusromerProject.DTO.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
-        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(10); // Cache duration of 10 minutes
+        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5); // Cache duration of 5 minutes
 
         public ServiceRepository(ApplicationDbContext context, IMemoryCache cache)
         {
@@ -18,18 +18,19 @@ namespace CusromerProject.DTO.Services
         }
 
         // 1. Get all services with caching
-        public async Task<List<AllServicesDetails>> GetAllServicesAsync()
+        public async Task<List<AllServicesDetailsDTO>> GetAllServicesAsync()
         {
             const string cacheKey = "all_services_cache";
 
             // Check if data is in the cache
-            if (!_cache.TryGetValue(cacheKey, out List<AllServicesDetails>? services))
+            if (!_cache.TryGetValue(cacheKey, out List<AllServicesDetailsDTO>? services))
             {
                 services = await _context.Services
+                    .Where(s => s.IsOnlineOrOffline == true)
                     .Include(s => s.Category)
                     .Include(s => s.ServicePrices)
                     .Include(s => s.ServiceImages)
-                    .Select(s => new AllServicesDetails
+                    .Select(s => new AllServicesDetailsDTO
                     {
                         Id = s.ServiceId,
                         Name = s.Name,
@@ -55,14 +56,15 @@ namespace CusromerProject.DTO.Services
         }
 
         // 2. Get service details by ID with caching
-        public async Task<ServiceDetails?> GetServiceByIdAsync(int serviceId)
+        public async Task<ServiceDetailsDTO?> GetServiceByIdAsync(int serviceId)
         {
             string cacheKey = $"service_details_{serviceId}";
 
             // Check if data is in the cache
-            if (!_cache.TryGetValue(cacheKey, out ServiceDetails? service))
+            if (!_cache.TryGetValue(cacheKey, out ServiceDetailsDTO? service))
             {
                 service = await _context.Services
+                    .Where(s => s.IsOnlineOrOffline == true)
                     .Include(s => s.Category)
                     .Include(s => s.ServiceProvider)
                     .Include(s => s.ServicePrices)
@@ -70,7 +72,7 @@ namespace CusromerProject.DTO.Services
                     .Include(s => s.Relatedservices)
                     .ThenInclude(r => r.ServicePrices)
                     .Where(s => s.ServiceId == serviceId)
-                    .Select(s => new ServiceDetails
+                    .Select(s => new ServiceDetailsDTO
                     {
                         Id = s.ServiceId,
                         Name = s.Name,
@@ -87,7 +89,7 @@ namespace CusromerProject.DTO.Services
                             .Select(sp => sp.Price)
                             .FirstOrDefault(),
                         Images = s.ServiceImages.Select(i => i.URL).ToList(),
-                        RelatedServices = s.Relatedservices.Select(rs => new AllServicesDetails
+                        RelatedServices = s.Relatedservices.Select(rs => new AllServicesDetailsDTO
                         {
                             Id = rs.ServiceId,
                             Name = rs.Name,
