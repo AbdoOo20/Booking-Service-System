@@ -36,12 +36,14 @@ namespace BookingServices.Controllers
             IdentityUser? user = await _userManager.GetUserAsync(User);
             return user.Id ?? "";
         }
-        public IActionResult ErrorHandling(string action, string message)
+        private IActionResult HandleError(string message, string controller, string action)
         {
-            errorViewModel.Controller = "Services";
-            errorViewModel.Action = action;
-            errorViewModel.Message = message;
-
+            var errorViewModel = new ErrorViewModel
+            {
+                Message = message,
+                Controller = controller,
+                Action = action
+            };
             return View("Error", errorViewModel);
         }
 
@@ -131,8 +133,7 @@ namespace BookingServices.Controllers
             }
             catch (Exception e)
             {
-                ErrorHandling(nameof(Index), $"Error: {e.Message}, StackTrace: {e.StackTrace}");
-                return View(new List<ServiceModel>());
+                return HandleError($"Error: {e.Message}, StackTrace: {e.StackTrace}", "ProviderHome", nameof(Index));
             }
         }
 
@@ -144,11 +145,12 @@ namespace BookingServices.Controllers
         /// <returns></returns>
         // GET: Services/Details/5
         [Authorize("Provider")]
+        [Authorize("Provider")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                ErrorHandling(nameof(Details), "The ID is Required");
+                return HandleError("The ID is Required", "Services", nameof(Index));
             }
 
             var service = await _context.Services.Where(m => m.ServiceId == id)
@@ -166,7 +168,7 @@ namespace BookingServices.Controllers
 
             if (service == null)
             {
-                return NotFound();
+                return HandleError("Service Not Found", "Services", nameof(Index));
             }
 
             var CurrentDate = DateTime.Now.Date;
@@ -197,15 +199,16 @@ namespace BookingServices.Controllers
                 daysBack++;
             }
 
-            var providerName = await (from s in _context.Services
-                                      join sp in _context.ServiceProviders
-                                      on s.ProviderId equals sp.ProviderId
-                                      join a in _context.Users
-                                      on sp.ProviderId equals a.Id
-                                      select new
-                                      {
-                                          ProviderName = sp.Name
-                                      }).FirstOrDefaultAsync();
+            /*  var providerName = await (from s in _context.Services
+                                        join sp in _context.ServiceProviders
+                                        on s.ProviderId equals sp.ProviderId
+                                        join a in _context.Users
+                                        on sp.ProviderId equals a.Id
+                                        select new
+                                        {
+                                            ProviderName = sp.Name
+                                        }).FirstOrDefaultAsync();*/
+            var providerName = await _context.Services.Where(s => s.ServiceId == id).Select(s => s.ServiceProvider.Name).FirstOrDefaultAsync();
 
             var providerID = await _context.Services.Where(s => s.ServiceId == id).Select(s => s.ProviderId).FirstOrDefaultAsync();
 
@@ -213,12 +216,13 @@ namespace BookingServices.Controllers
                                        join si in _context.ServiceImages
                                        on s.ServiceId equals si.ServiceId
                                        where s.ServiceId == id
-            select si.URL).ToListAsync();
+                                       select si.URL).ToListAsync();
 
-            var CategoryName = await(from s in _context.Services
-                                      join c in _context.Categories on s.CategoryId equals c.CategoryId
-                                      where s.ServiceId == id
-                                      select c.Name).FirstOrDefaultAsync();
+            /*   var CategoryName = await(from s in _context.Services
+                                         join c in _context.Categories on s.CategoryId equals c.CategoryId
+                                         where s.ServiceId == id
+                                         select c.Name).FirstOrDefaultAsync();*/
+            var CategoryName = await _context.Services.Where(s => s.ServiceId == id).Select(s => s.Category.Name).FirstOrDefaultAsync();
 
             var bookingServicesIds = _context.BookingServices
                 .Where(bs => bs.ServiceId == id)
@@ -242,8 +246,8 @@ namespace BookingServices.Controllers
                     numberOfReviews++;
                 }
             }
-                       
-            
+
+
             averageRating = numberOfReviews == 0 ? 0 : (sumationOfRatings / numberOfReviews);
 
             List<ReviewModel> reviews = new List<ReviewModel>();
@@ -300,7 +304,7 @@ namespace BookingServices.Controllers
                 AvailableQuantity = service.Quantity,
                 ServiceDetails = service.Details,
                 serviceLocation = service.Location,
-                providerName = providerName.ProviderName,
+                providerName = providerName,
                 CategoryName = CategoryName,
                 serviceImages = serviceImages,
                 Reviews = reviews,
@@ -312,7 +316,6 @@ namespace BookingServices.Controllers
 
             return View(serviceDetailsModel);
         }
-
 
         [HttpPost]
         [Authorize("Provider")]
@@ -392,7 +395,7 @@ namespace BookingServices.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ErrorHandling(nameof(Create), ex.Message);
+                    HandleError(ex.Message,"Services", nameof(Index));
                 }
             }
 
@@ -405,7 +408,7 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-                ErrorHandling(nameof(Edit), "ID is Required !!!");
+                HandleError("ID is Required !!!", "Services",nameof(Index));
 
             var service = await _context.Services
                 .Where(s => s.ServiceId == id)
@@ -413,7 +416,7 @@ namespace BookingServices.Controllers
                 .FirstOrDefaultAsync();
 
             if (service == null)
-                ErrorHandling(nameof(Edit), "The Service Does Not Exist !!!");
+                HandleError("The Service Does Not Exist !!!","Services", nameof(Index));
 
             var serviceModel = new ServiceModel()
             {
@@ -446,7 +449,7 @@ namespace BookingServices.Controllers
                     .FirstOrDefaultAsync(s => s.ServiceId == serviceModel.ServiceId);
 
                 if (service == null)
-                    ErrorHandling(nameof(Edit), "The Service Does Not Exist !!!");
+                    HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
 
                 if (ModelState.IsValid)
                 {
@@ -475,7 +478,7 @@ namespace BookingServices.Controllers
             }
             catch (Exception e)
             {
-                ErrorHandling(nameof(Edit), e.Message);
+                HandleError(e.Message, "Services", nameof(Index));
             }
 
             await AddSelectLists(serviceModel);
@@ -487,11 +490,11 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-                ErrorHandling(nameof(Edit), "ID is Required !!!");
+                HandleError("ID is Required !!!", "Services", nameof(Index));
 
             var service = await _context.Services.FindAsync(id);
             if (service == null)
-                ErrorHandling(nameof(Edit), "The Service Dose Not Exists !!!");
+                HandleError("The Service Dose Not Exists !!!", "Services", nameof(Index));
 
             return View(service);
         }
@@ -504,10 +507,13 @@ namespace BookingServices.Controllers
         {
             var service = await _context.Services.FindAsync(id);
             if (service == null)
-                ErrorHandling(nameof(Delete), "The Service Dose Not Exists !!!");
+                HandleError("The Service Dose Not Exists !!!", "Services", nameof(Delete));
 
 
-            var hasBookings = _context.BookingServices.Any(b => b.ServiceId == id);
+            var hasBookings = _context.BookingServices
+                .Include(bs => bs.Booking)
+                .Where(b => b.Booking.EventDate > DateTime.Now)
+                .Any(b => b.ServiceId == id);
             if (hasBookings)
             {
                 ViewData["ServiceBooking"] = _context.BookingServices.FirstOrDefault(b => b.ServiceId == id);
@@ -516,12 +522,12 @@ namespace BookingServices.Controllers
 
             try
             {
-                _context.Services.Remove(service);
+                service.IsBlocked = !service.IsBlocked;
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                ErrorHandling(nameof(Delete), ex.Message);
+                HandleError(ex.Message,"Services","Index");
             }
             return RedirectToAction(nameof(Index));
         }
@@ -531,8 +537,8 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> GetImages(int id)
         {
             if (!ServiceExists(id))
-                ErrorHandling(nameof(GetImages), "The Service Dose Not Exists !!!");
-
+                HandleError("The Service Dose Not Exists !!!", "Services", "Index");
+            
             var serviceImages = _context.ServiceImages.Where(s => s.ServiceId == id).Include(s => s.Service);
             var service = await _context.Services.FindAsync(id);
             ViewData["servicename"] = service.Name;
@@ -545,7 +551,7 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> AddImage(int id)
         {
             if (!ServiceExists(id))
-                ErrorHandling(nameof(AddImage), "The Service Dose Not Exists !!!");
+                HandleError("The Service Dose Not Exists !!!", "Services", nameof(GetImages));
 
             ViewData["ServiceId"] = id;
             return View();
@@ -557,7 +563,7 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> AddImage(int id, IFormFileCollection Images)
         {
             if (!ServiceExists(id))
-                ErrorHandling(nameof(AddImage), "The Service Dose Not Exists !!!");
+                HandleError("Service Not Found", "Services", "GetImages");
 
             await FileUpload(Images, id);
             return RedirectToAction(nameof(GetImages), new { id });
@@ -566,13 +572,13 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> DeleteImage(int id, [FromQuery] string url)
         {
             if (!ServiceExists(id))
-                ErrorHandling(nameof(DeleteImage), "The Service Dose Not Exists !!!");
+                HandleError("Id Is Requirer !!!", "Services", nameof(GetImages));
 
             var serviceImage = await _context.ServiceImages
                 .FirstOrDefaultAsync(si => si.ServiceId == id && si.URL == url);
 
-            if (serviceImage == null) 
-                ErrorHandling(nameof(DeleteImage), "The Service Dose Not Exists !!!");
+            if (serviceImage == null)
+                HandleError("The Service Dose Not Exists !!!", "Services", nameof(GetImages));
 
 
             _context.ServiceImages.Remove(serviceImage);
@@ -587,10 +593,7 @@ namespace BookingServices.Controllers
         {
             if (!ServiceExists(id))
             {
-                errorViewModel.Action = nameof(Index);
-                errorViewModel.Message = "Service Not Found!!!";
-
-                return View("Error", errorViewModel);
+                return HandleError("Services Does Not Exists", "Services", "Index");
             }
 
             var servicePrices = _context.ServicePrices.Where(s => s.ServiceId == id).Include(s => s.Service);
@@ -605,7 +608,7 @@ namespace BookingServices.Controllers
         public IActionResult AddPrice(int id)
         {
             if (!ServiceExists(id))
-                ErrorHandling(nameof(AddPrice), "The Service Dose Not Exists !!!");
+                return HandleError("Services Does Not Exists", "Services", "Index");
 
             ViewData["ServiceId"] = id;
             return View();
@@ -618,8 +621,7 @@ namespace BookingServices.Controllers
         {
             if (!ServiceExists(id))
             {
-                ErrorHandling(nameof(AddPrice), "The Service does not exist!");
-                return NotFound();
+                return HandleError("Services Does Not Exists", "Services", nameof(Prices));
             }
 
             try
@@ -659,11 +661,7 @@ namespace BookingServices.Controllers
             }
             catch (Exception ex) 
             {
-                errorViewModel.Controller = "Services";
-                errorViewModel.Action = nameof(Prices);
-                errorViewModel.Message = ex.Message;
-
-                return View("Error", errorViewModel);
+                HandleError(ex.Message, "Services", nameof(Prices));
             }
             return View(servicePriceModel);
         }
@@ -671,8 +669,7 @@ namespace BookingServices.Controllers
         {
             if (!ServiceExists(id))
             {
-                ErrorHandling(nameof(EditPrice), "The Service Does Not Exist!");
-                return NotFound();
+                return HandleError("The Service Does Not Exist!", "Services", nameof(Prices));
             }
 
             var servicePrice = await _context.ServicePrices
@@ -681,8 +678,7 @@ namespace BookingServices.Controllers
 
             if (servicePrice == null)
             {
-                ErrorHandling(nameof(EditPrice), "The Service Price does not exist for the given date!");
-                return NotFound();
+                return HandleError("The Service Price does not exist for the given date!", "Services", nameof(Prices));
             }
 
             ViewData["ServiceId"] = id;
@@ -694,7 +690,7 @@ namespace BookingServices.Controllers
         {
             if (!ServiceExists(id))
             {
-                ErrorHandling(nameof(EditPrice), "The Service does not exist!");
+                HandleError("The Service does not exist!","Services", nameof(Prices));
                 return NotFound();
             }
 
@@ -709,7 +705,7 @@ namespace BookingServices.Controllers
 
                     if (existingServicePrice == null)
                     {
-                        ErrorHandling(nameof(EditPrice), "The Service Price does not exist for the given date!");
+                        HandleError("The Service Price does not exist for the given date!", "Services", nameof(Prices));
                         return NotFound();
                     }
 
@@ -726,13 +722,13 @@ namespace BookingServices.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     // Handle concurrency issues
-                    ErrorHandling(nameof(EditPrice), "The service price could not be updated due to concurrency issues.");
+                    HandleError("The service price could not be updated due to concurrency issues.", "Services", nameof(Prices));
                     return StatusCode(500);
                 }
                 catch (Exception ex)
                 {
                     // Handle other possible exceptions
-                    ErrorHandling(nameof(EditPrice), $"An error occurred while updating the service price: {ex.Message}");
+                    HandleError($"An error occurred while updating the service price: {ex.Message}", "Services", nameof(Prices));
                     return StatusCode(500);
                 }
             }
@@ -787,8 +783,8 @@ namespace BookingServices.Controllers
                 baseServicesQuery = baseServicesQuery.Where(s => s.ServiceId != service.ServiceId);
             }
             ViewData["BaseServiceId"] = new SelectList(baseServicesQuery, "ServiceId", "Name", service?.BaseServiceId);
-            ViewData["AdminContractId"] = new SelectList(_context.AdminContracts, "ContractId", "ContractName", service?.AdminContractId);
-            ViewData["ProviderContractId"] = new SelectList(_context.ProviderContracts.Where(p => p.ProviderId == UserID), "ContractId", "ContractName", service?.ProviderContractId);
+            ViewData["AdminContractId"] = new SelectList(_context.AdminContracts.Where(ac => ac.IsBlocked == false), "ContractId", "ContractName", service?.AdminContractId);
+            ViewData["ProviderContractId"] = new SelectList(_context.ProviderContracts.Where(p => p.ProviderId == UserID && p.IsBlocked == false), "ContractId", "ContractName", service?.ProviderContractId);
             ViewData["StartTime"] = new SelectList(hours, "Value", "Key");
             ViewData["EndTime"] = new SelectList(hours, "Value", "Key");
         }
