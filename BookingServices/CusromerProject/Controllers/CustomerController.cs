@@ -1,5 +1,6 @@
 ﻿using BookingServices.Data;
-using CusromerProject.DTOs;
+using CusromerProject.DTO.Customer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,9 @@ namespace CusromerProject.Controllers
             context = _context;
             userManager = _userManager;
         }
+
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<CustomerCrudDTO> GetByID(string id) 
         {
             if (id == null) return NotFound();
@@ -36,6 +39,7 @@ namespace CusromerProject.Controllers
             return customerData;
         }
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(string id, CustomerCrudDTO customerData)
         {
             if (id == null) return NotFound();
@@ -59,7 +63,9 @@ namespace CusromerProject.Controllers
             }
             else return BadRequest();
         }
+
         [HttpPut("block{id}")]
+        [Authorize]
         public IActionResult Block(string id)
         {
             if (id == null) return NotFound();
@@ -74,7 +80,9 @@ namespace CusromerProject.Controllers
             }
             else return BadRequest();
         }
+
         [HttpPut("changePassword{id}")]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(string id , ChangeCustomerPasswordDTO chPassword) 
         {
             if (id == null) return NotFound();

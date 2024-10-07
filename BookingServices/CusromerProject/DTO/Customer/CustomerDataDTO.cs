@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CusromerProject.DTOs
+namespace CusromerProject.DTO.Customer
 {
     public class CustomerDataDTO
     {
