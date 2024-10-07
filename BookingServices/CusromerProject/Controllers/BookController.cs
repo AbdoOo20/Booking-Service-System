@@ -3,6 +3,7 @@ using BookingServices.Data;
 using Microsoft.EntityFrameworkCore;
 using CusromerProject.DTO.Book;
 using CusromerProject.DTO.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CusromerProject.Controllers
 {
@@ -20,6 +21,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetBookings()
         {
             List<Book> books = new List<Book>();
@@ -28,6 +30,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("GetBookingsForCustomer/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetBookingsForCustomer(string id)
         {
             List<Book> books = new List<Book>();
@@ -36,6 +39,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetBooking(int id)
         {
             var item = await _context.Bookings.Include(b => b.Reviews).Where(b => b.BookingId == id).FirstOrDefaultAsync();
@@ -62,6 +66,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateBook(Book book)
         {
             if (book == null)
@@ -114,21 +119,17 @@ namespace CusromerProject.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult DeleteBook(int id)
         {
             var getBook = _context.Bookings.Find(id);
-            var getBookService = _context.BookingServices.Where(b => b.BookingId == id).FirstOrDefault();
             if (getBook == null)
                 return NotFound("No Book With This ID");
-            if (getBookService == null)
-                return NotFound("No Book For Service With This ID");
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.BookingServices.Remove(getBookService);
-                    _context.SaveChanges();
-                    _context.Bookings.Remove(getBook);
+                    getBook.Status = "Canceled";
                     _context.SaveChanges();
                     return Ok($"Deleted Successfully");
                 }

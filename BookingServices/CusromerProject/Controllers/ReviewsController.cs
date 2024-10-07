@@ -33,6 +33,7 @@ namespace CusromerProject.Controllers
 
         // POST: api/Reviews
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<bool>> PostReview(PostedReviewDTO review)
         {
             var result = await _reviewRepository.AddReviewAsync(review);

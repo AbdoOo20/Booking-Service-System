@@ -244,7 +244,7 @@ namespace BookingServices.Controllers
                 return Json(new { success = false, message = "Provider not found" });
             }
 
-            provider.IsBlocked = !provider.IsBlocked;
+            provider.IsBlocked = !(provider.IsBlocked ?? false);
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, isBlocked = provider.IsBlocked });

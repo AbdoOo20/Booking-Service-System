@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookingServices.Data;
 using CusromerProject.DTO.Payment;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CusromerProject.Controllers
 {
@@ -23,6 +24,7 @@ namespace CusromerProject.Controllers
 
         // GET: api/Payments
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
         {
             try
@@ -60,6 +62,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("PaymentGetways")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<PaymentIncome>>> GetPaymentIncome()
         {
             try
@@ -85,6 +88,7 @@ namespace CusromerProject.Controllers
 
         //GET: api/Payments/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Payment>> GetPaymentByID(int id)
         {
             var payment = await _context.Payments
@@ -122,6 +126,7 @@ namespace CusromerProject.Controllers
         // POST: api/Payments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Payment>> PostPayment(PaymentDTO paymentDTO)
         {
             var payment = new Payment
@@ -139,23 +144,23 @@ namespace CusromerProject.Controllers
             return CreatedAtAction(nameof(GetPaymentByID), new { id = payment.PaymentId }, paymentDTO);
         }
 
-      /*  // DELETE: api/Payments/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayment(int id)
-        {
-            var payment = await _context.Payments.FindAsync(id);
-            if (payment == null)
-            {
-                return NotFound();
-            }
+        /*  // DELETE: api/Payments/5
+          [HttpDelete("{id}")]
+          public async Task<IActionResult> DeletePayment(int id)
+          {
+              var payment = await _context.Payments.FindAsync(id);
+              if (payment == null)
+              {
+                  return NotFound();
+              }
 
-            _context.Payments.Remove(payment);
-            await _context.SaveChangesAsync();
+              _context.Payments.Remove(payment);
+              await _context.SaveChangesAsync();
 
-            return NoContent();
-        }*/
+              return NoContent();
+          }*/
 
-       private bool PaymentExists(int id)
+        private bool PaymentExists(int id)
         {
             return _context.Payments.Any(e => e.PaymentId == id);
         }

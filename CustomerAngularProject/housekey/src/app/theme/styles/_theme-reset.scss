@@ -1,0 +1,263 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin theme-reset($theme) {
+    $color-config:  mat.m2-get-color-config($theme);
+    $primary:       map.get($color-config, 'primary');
+    $accent:        map.get($color-config, 'accent');
+    $warn:          map.get($color-config, 'warn'); 
+    $foreground:    map.get($color-config, 'foreground');
+    $background:    map.get($color-config, 'background');
+
+    .bg-primary { 
+        background: mat.m2-get-color-from-palette($primary);
+        color: mat.m2-get-color-from-palette($primary, default-contrast);
+    }
+    .bg-accent {
+        background: mat.m2-get-color-from-palette($accent);
+        color: mat.m2-get-color-from-palette($accent, default-contrast);
+    }
+    .bg-warn {
+        background: mat.m2-get-color-from-palette($warn);
+        color: mat.m2-get-color-from-palette($warn, default-contrast);
+    }
+    .bg-card { 
+        background: mat.m2-get-color-from-palette($background, card);
+    }
+
+    .text-muted {
+        color: mat.m2-get-color-from-palette($foreground, secondary-text) !important;
+    }
+    .primary-color{
+        color: mat.m2-get-color-from-palette($primary);
+    }
+    .secondary-color{
+        color: mat.m2-get-color-from-palette($primary, 100);
+    }
+    .default-contrast {
+        color: mat.m2-get-color-from-palette($primary, default-contrast) !important; 
+    }
+    .v-divider{
+        background-color: mat.m2-get-color-from-palette($foreground, divider);
+    }
+    .divider{
+        border-top: 1px solid mat.m2-get-color-from-palette($foreground, divider);
+    }
+
+    .top-toolbar.mat-toolbar .v-divider{
+        background-color: mat.m2-get-color-from-palette($primary, lighter, 0.2);
+    }
+    .border-bottom-lighter{
+        border-bottom: 1px solid mat.m2-get-color-from-palette($primary, lighter, 0.2);
+    }
+    .border-lighter{
+        border-color: mat.m2-get-color-from-palette($primary, lighter, 0.2);
+    }
+    .border-accent{
+        border-color: mat.m2-get-color-from-palette($accent);        
+    }
+
+    #top-toolbar{
+        background: mat.m2-get-color-from-palette($primary);
+        color: mat.m2-get-color-from-palette($primary, default-contrast);
+    }
+    .toolbar-2 #top-toolbar{
+        background-color: mat.m2-get-color-from-palette($background, card);
+        color: mat.m2-get-color-from-palette($foreground, text);
+    }
+    #main-toolbar{
+        background: mat.m2-get-color-from-palette($background, card);
+    }
+    .toolbar-2 #main-toolbar{
+        background: mat.m2-get-color-from-palette($primary);
+        color: mat.m2-get-color-from-palette($primary, default-contrast);
+    }
+    header{
+        .logo svg{
+            fill: mat.m2-get-color-from-palette($primary);
+        } 
+        &.toolbar-1{        
+            &.has-bg-image:not(.main-toolbar-fixed), &.has-bg-video:not(.main-toolbar-fixed){
+                .logo svg{
+                    fill: #fff;
+                }
+                .horizontal-menu{
+                    .mat-mdc-button{
+                        color:#fff;
+                        &.horizontal-active-link{
+                            background: rgba(mat.m2-get-color-from-palette($primary), 0.38);
+                        }                       
+                    }
+                }                
+                .mat-icon{
+                    color:#fff;
+                }
+            } 
+        }
+        &.toolbar-2{
+            .horizontal-menu{
+                .mat-mdc-button{
+                    color:#fff;
+                    &.horizontal-active-link{
+                        color:#fff;
+                    }                       
+                }
+            }
+            &.has-bg-image:not(.main-toolbar-fixed), &.has-bg-video:not(.main-toolbar-fixed){
+                .horizontal-menu{
+                    .mat-mdc-button{
+                        &.horizontal-active-link{
+                            background: rgba(mat.m2-get-color-from-palette($primary), 0.38);
+                        }                       
+                    }
+                }
+            }  
+            
+        }      
+    }
+
+    .header-carousel .slide-info .mat-mdc-card{
+        background: rgba(mat.m2-get-color-from-palette($background, card), 0.85);
+        &:hover{
+            background: mat.m2-get-color-from-palette($background, card);
+        }
+    }
+    
+    .user-menu .user-info {
+        color: mat.m2-get-color-from-palette($foreground, text);
+    }
+
+    main.content-offset-to-top{
+        .main-content-header{
+            border-top: 5px solid mat.m2-get-color-from-palette($primary);
+        }
+    } 
+
+    .property-item .title a,
+    .compare-item .title a{
+        color: mat.m2-get-color-from-palette($foreground, text);
+        &:hover{
+            color: mat.m2-get-color-from-palette($primary);
+        }        
+    }
+    .features p:after,
+    .compare-item .details .item { 
+        border-bottom: 1px dotted mat.m2-get-color-from-palette($foreground, divider); 
+    }
+
+    .small-carousel .swiper-slide.active-thumb img{ 
+        border-color: mat.m2-get-color-from-palette($primary);
+    } 
+
+    .active-link{
+        background-color: mat.m2-get-color-from-palette($primary); 
+        color: #fff;
+    }
+    .horizontal-active-link {
+        background: mat.m2-get-color-from-palette($background, hover);
+        color: mat.m2-get-color-from-palette($primary); 
+    }
+    .horizontal-sub-menu{ 
+        .mat-mdc-button, .mat-mdc-menu-item{
+            color: mat.m2-get-color-from-palette($foreground, text);
+            &.horizontal-active-link { 
+                color: mat.m2-get-color-from-palette($primary); 
+            }
+        }
+    }
+    
+ 
+    .section .section-title:after,
+    .section.testimonials .swiper-pagination-bullet-active {        
+        background-color: mat.m2-get-color-from-palette($primary); 
+    }
+     
+
+    .custom-table.mat-mdc-table .mat-mdc-header-row, 
+    .custom-table.mat-table .mat-mdc-row {
+        border-color: mat.m2-get-color-from-palette($foreground, divider);
+    }
+
+    .submit-property .step-section,
+    .edit-property .step-section{
+        background: rgba(mat.m2-get-color-from-palette($background, background), 0.7);
+    }
+    .input-file-container .mat-orphan-label{
+        color: mat.m2-get-color-from-palette($foreground, text) !important;
+    }
+
+
+    // google-map info-window styles
+    .gm-style {
+        .gm-style-iw {
+            padding: 0; 
+            background: mat.m2-get-color-from-palette($primary);
+            color: mat.m2-get-color-from-palette($primary, default-contrast);
+            border-radius: 2px;
+            button.gm-ui-hover-effect {
+                opacity: 1;  
+                right: 4px !important;
+                top: 4px !important;   
+                border-radius: 50%;
+                background: mat.m2-get-color-from-palette($primary) !important; 
+                box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 
+                            0px 4px 5px 0px rgba(0, 0, 0, 0.14), 
+                            0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+                >span {
+                    background: mat.m2-get-color-from-palette($primary, default-contrast); 
+                }
+            } 
+        }
+        .gm-style-iw-d { 
+            overflow: hidden !important;
+            a { 
+                color: inherit;
+                text-decoration: none;
+                display: block;
+                padding: 2px;
+                box-sizing: border-box;  
+            } 
+            .poi-info-window {
+                padding: 8px;
+                div, a {
+                    background: mat.m2-get-color-from-palette($primary);
+                    color: mat.m2-get-color-from-palette($primary, default-contrast); 
+                }
+                a {
+                    text-decoration: underline;
+                }
+            } 
+        }
+        .gm-style-iw-tc::after {
+            background: mat.m2-get-color-from-palette($primary);
+        }
+    } 
+    
+
+    @media screen and (max-width: 959px) { 
+        .all-properties {
+            .search-sidenav { 
+                background: mat.m2-get-color-from-palette($background, card) !important;                      
+            }
+        } 
+        .single-property .mat-drawer {
+            background: mat.m2-get-color-from-palette($background, card) !important;   
+        } 
+    }
+
+    .mat-badge-primary .mat-badge-content {
+        background: mat.m2-get-color-from-palette($primary); 
+    }
+    .mat-badge-warn .mat-badge-content {
+        background: mat.m2-get-color-from-palette($warn); 
+    }
+    .mat-badge-accent .mat-badge-content {
+        background: mat.m2-get-color-from-palette($accent); 
+    }
+
+    .mat-step-icon-selected,
+    .mat-step-icon-state-edit {
+        background-color: mat.m2-get-color-from-palette($primary);
+    }
+ 
+}
