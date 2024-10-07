@@ -17,7 +17,7 @@ namespace BookingServices.Data
         [Range(0.0, 20.0)]
         public decimal Percentage { get; set; }
 
-        public bool? IsBlocked { get; set; }
+        public bool? IsBlocked { get; set; } = false;
 
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 

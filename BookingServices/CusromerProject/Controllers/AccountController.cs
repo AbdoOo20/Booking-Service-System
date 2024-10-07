@@ -1,6 +1,6 @@
 ﻿using BookingServices.Data;
 using CusromerProject.DTO.Account;
-using CusromerProject.DTOs;
+using CusromerProject.DTO.Customer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;

@@ -1,4 +1,4 @@
-﻿namespace CusromerProject.DTOs
+﻿namespace CusromerProject.DTO.Customer
 {
     public class CustomerCrudDTO
     {

@@ -1,7 +1,10 @@
 ﻿using BookingServices.Data;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 
 namespace BookingServices.Controllers
 {
@@ -108,7 +111,17 @@ namespace BookingServices.Controllers
                 errorViewModel = new ErrorViewModel { Message = "Contract Not Exist", Controller = "AdminContract", Action = "Index" };
                 return View("Error", errorViewModel);
             }
-            context.AdminContracts.Remove(adminContract);
+            var services = context.Services;
+            foreach (var service in services)
+            {
+                if (service.AdminContractId == id) 
+                {
+                    errorViewModel = new ErrorViewModel { Message = "Cann't Block this Contract, becouse the are some services Using It, but you Can Edit the Contract Details",
+                         Controller = "AdminContract", Action = "Index" };
+                    return View("Error", errorViewModel);
+                }
+            }
+            adminContract.IsBlocked = !adminContract.IsBlocked;
             try
             {
                 context.SaveChanges();

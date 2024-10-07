@@ -26,7 +26,7 @@ namespace BookingServices.Data
         [Range(0.0, 5.0)]
         public decimal Rate { get; set; }
 
-        public bool? IsBlocked { get; set; }
+        public bool? IsBlocked { get; set; } = false;
         public virtual IdentityUser? IdentityUser { get; set; }
         
         public virtual ICollection<Package> Packages { get; set; } = new List<Package>();
