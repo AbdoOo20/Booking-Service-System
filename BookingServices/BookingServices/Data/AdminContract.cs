@@ -16,7 +16,7 @@ namespace BookingServices.Data
         [Required, Display(Name = "Details"), MinLength(20, ErrorMessage = "Length must be at least 20 character")]
         public string? Details { get; set; }
 
-        public  bool? IsBlocked { get; set; }
+        public  bool? IsBlocked { get; set; } = false;
 
         [ForeignKey("IdentityUser")]
         public string? UserId { get; set; }

@@ -26,7 +26,16 @@
     
     <form asp-action="Delete" class="d-flex justify-content-between mt-4">
         <input type="hidden" asp-for="ContractId" />
-        <input type="submit" value="Delete" class="btn btn-outline-danger" />
+        @{
+            if (Model.IsBlocked ?? false)
+            {
+                <input type="submit" value="Un Block" class="btn btn-outline-danger" />
+            }
+            else
+            {
+                <input type="submit" value="Block" class="btn btn-outline-danger" />
+            }
+        }        
         <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
     </form>
 </div>
