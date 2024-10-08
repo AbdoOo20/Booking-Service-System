@@ -9,7 +9,7 @@ namespace CusromerProject.DTO.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
-        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5); // Cache duration of 5 minutes
+        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(1); // Cache duration of 5 minutes
 
         public ServiceRepository(ApplicationDbContext context, IMemoryCache cache)
         {
@@ -124,7 +124,7 @@ namespace CusromerProject.DTO.Services
         }
 
         // Helper method for building contracts safely
-        private Contract BuildAdminContract(AdminContract? contract)
+        private static Contract? BuildAdminContract(AdminContract? contract)
         {
             return contract != null
                 ? new Contract
@@ -135,7 +135,7 @@ namespace CusromerProject.DTO.Services
                 }
                 : null;
         }
-        private Contract BuildProviderContract(ProviderContract? contract)
+        private static Contract? BuildProviderContract(ProviderContract? contract)
         {
             return contract != null
                 ? new Contract
