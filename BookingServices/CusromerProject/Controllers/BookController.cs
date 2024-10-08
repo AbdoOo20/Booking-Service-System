@@ -21,7 +21,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetBookings()
         {
             List<Book> books = new List<Book>();
@@ -30,7 +30,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("GetBookingsForCustomer/{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetBookingsForCustomer(string id)
         {
             List<Book> books = new List<Book>();
@@ -38,8 +38,40 @@ namespace CusromerProject.Controllers
             return Ok(books);
         }
 
+        [HttpGet("GetBookingsForService/{id}")]
+        //[Authorize]
+        public async Task<IActionResult> GetBookingsForService(int id, DateTime date)
+        {
+            List<Book> books = new List<Book>();
+            var bookings = await (from b in _context.Bookings
+                                  from s in _context.BookingServices
+                                  where s.ServiceId == id && b.BookingId == s.BookingId && b.EventDate == date
+                                  select b).ToListAsync();
+            foreach (var item in bookings)
+            {
+                Book newBook = new Book()
+                {
+                    BookId = item.BookingId,
+                    BookDate = item.BookDate,
+                    CashOrCashByHandOrInstallment = item.CashOrCashByHandOrInstallment,
+                    CustomerId = item.CustomerId,
+                    EndTime = item.EndTime,
+                    EventDate = item.EventDate,
+                    PaymentIncomeId = item.PaymentIncomeId,
+                    Price = item.Price,
+                    Quantity = item.Quantity,
+                    Type = item.Type,
+                    StartTime = item.StartTime,
+                    Status = item.Status,
+                    ServiceId = id,
+                };
+                books.Add(newBook);
+            }
+            return Ok(books);
+        }
+
         [HttpGet("{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetBooking(int id)
         {
             var item = await _context.Bookings.Include(b => b.Reviews).Where(b => b.BookingId == id).FirstOrDefaultAsync();
@@ -66,7 +98,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> CreateBook(Book book)
         {
             if (book == null)
@@ -119,7 +151,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        //[Authorize]
         public IActionResult DeleteBook(int id)
         {
             var getBook = _context.Bookings.Find(id);

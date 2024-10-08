@@ -31,7 +31,7 @@ export const appConfig: ApplicationConfig = {
     ),    
     provideClientHydration(),
     provideAnimationsAsync(),
-    
+    provideHttpClient(),
     importProvidersFrom([ 
       TranslateModule.forRoot({
         loader: {

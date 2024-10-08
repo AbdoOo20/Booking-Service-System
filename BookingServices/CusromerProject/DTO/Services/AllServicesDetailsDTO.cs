@@ -1,4 +1,6 @@
-﻿namespace CusromerProject.DTO.Services
+﻿using CustomerProject.DTO.Services;
+
+namespace CusromerProject.DTO.Services
 {
     public class AllServicesDetailsDTO
     {
@@ -8,7 +10,11 @@
         public string Location { get; set; }
         public string Category { get; set; }
         //public string ProviderName { get; set; }
+        public int Quantity { get; set; }
         public string PriceForTheCurrentDay { get; set; }
         public string Image { get; set; }
+
+        public Contract _AdminContract;
+        public Contract _ProviderContract;
     }
 }

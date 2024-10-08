@@ -107,9 +107,9 @@ namespace BookingServices.Controllers
             try
             {
                 var today = DateTime.Now.Date;
-                Tuple<int, decimal> result = GetPriceAndQuantity(id, today);
+                int result = GetQuantity(id, today);
                 SharedserviceId = id;
-                ViewBag.AvailableQuantity = result.Item1;
+                ViewBag.AvailableQuantity = result;
 
                 ViewBag.ServiceName = _context.Services
                     .Where(s => s.ServiceId == id)
@@ -117,7 +117,9 @@ namespace BookingServices.Controllers
 
                 ViewBag.paymentMethod = await _context.PaymentIncomes.ToListAsync();
 
-                ViewBag.priceOfCurrentDay = result.Item2;
+                ViewBag.priceOfCurrentDay = await _context.ServicePrices
+                    .Where(s => s.ServiceId == id && s.PriceDate == DateTime.Now.Date)
+                    .Select(s => s.Price).FirstOrDefaultAsync();
                 ViewBag.ServiceId = id;
                 return View();
             }
@@ -261,33 +263,32 @@ namespace BookingServices.Controllers
             return bookingQuantity;
         }
 
-        private Tuple<int, decimal> GetPriceAndQuantity(int serviceId, DateTime eventDate)
+        private int GetQuantity(int serviceId, DateTime eventDate)
         {
             var quantityAvailable = _context.Services
                 .Where(s => s.ServiceId == serviceId)
                 .Select(s => s.Quantity).FirstOrDefault() - GetAllquantity(serviceId, eventDate);
 
-            var price = _context.ServicePrices
-                .Where(x => x.ServiceId == serviceId && x.PriceDate.Date == eventDate.Date)
-                .Select(x => x.Price).FirstOrDefault();
+            //var price = _context.ServicePrices
+            //    .Where(x => x.ServiceId == serviceId && x.PriceDate.Date == eventDate.Date)
+            //    .Select(x => x.Price).FirstOrDefault();
 
-            return new Tuple<int, decimal>(quantityAvailable, price);
+            return quantityAvailable;//new Tuple<int, decimal>(quantityAvailable, price);
         }
 
-        private Tuple<int, decimal> GetPriceAndQuantityint(int serviceId, DateTime eventDate)
+        private int GetQuantityint(int serviceId, DateTime eventDate)
         {
-            return GetPriceAndQuantity(serviceId, eventDate);
+            return GetQuantity(serviceId, eventDate);
         }
 
         [HttpGet]
-        public IActionResult GetPriceAndQuantityout(int serviceId, DateTime eventDate)
+        public IActionResult GetQuantityout(int serviceId, DateTime eventDate)
         {
-            var result = GetPriceAndQuantity(serviceId, eventDate);
+            var result = GetQuantity(serviceId, eventDate);
             return Json(new
             {
                 success = true,
-                quantity = result.Item1,
-                price = result.Item2
+                quantity = result
             });
         }
     }

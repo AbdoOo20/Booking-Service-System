@@ -40,6 +40,17 @@ namespace CusromerProject.Controllers
             if (ModelState.IsValid)
             {
                 IdentityUser user = await _userManager.FindByNameAsync(loginDTO.UserName);
+
+                bool isBlocked = (from C in context.Customers
+                                  where C.CustomerId == user.Id
+                                  select C.IsBlocked).FirstOrDefault() ?? false;
+                if (isBlocked)
+                {
+                    ModelState.AddModelError("User Blocked", "Plz, connect with the customer service");
+
+                    return BadRequest(ModelState);
+                }
+
                 if (user != null)
                 {
                     bool passwordFound = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
@@ -138,20 +149,14 @@ namespace CusromerProject.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
-                // Don't reveal that the user does not exist or is not confirmed
                 return Ok(new { Message = "If an account with that email exists, a reset link will be sent." });
             }
 
-            // Generate the password reset token
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            // Generate reset link (this would be sent to the user by email)
             var callbackUrl = Url.Action(
                 "ResetPassword", "Account",
                 new { token, email = model.Email },
                 protocol: HttpContext.Request.Scheme);
-
-            // TODO: Send the URL via email using your email service provider
             await _emailSender.SendEmailAsync(model.Email, "Reset Password",
                 $"Please reset your password by clicking <a href='{callbackUrl}'>here</a>.");
 
@@ -169,7 +174,6 @@ namespace CusromerProject.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                // Don't reveal that the user does not exist
                 return BadRequest("Invalid request.");
             }
 
@@ -181,7 +185,6 @@ namespace CusromerProject.Controllers
                 return Ok(new { Message = "Password has been reset successfully." });
             }
 
-            // Handle errors
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);

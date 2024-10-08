@@ -116,10 +116,28 @@ export class HomeComponent implements OnInit {
                 }
             });
     }
+    //   this.watcher = mediaObserver
+    //   .asObservable()
+    //   .pipe(
+    //       filter((changes: MediaChange[]) => changes.length > 0),
+    //       map((changes: MediaChange[]) => changes[0])
+    //   )
+    //   .subscribe((change: MediaChange) => {
+    //       // console.log(change)
+    //       if (change.mqAlias == "xs") {
+    //           this.viewCol = 100;
+    //       } else if (change.mqAlias == "sm") {
+    //           this.viewCol = 50;
+    //       } else if (change.mqAlias == "md") {
+    //           this.viewCol = 33.3;
+    //       } else {
+    //           this.viewCol = 25;
+    //       }
+    //   });
 
     ngOnInit() {
         this.getSlides();
-        this.getLocations();
+        //this.getLocations();
         this.getProperties();
         this.getFeaturedProperties();
         // My Function

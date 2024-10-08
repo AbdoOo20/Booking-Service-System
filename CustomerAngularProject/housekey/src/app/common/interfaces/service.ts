@@ -1,8 +1,12 @@
 export interface Service {
     id: number;
     name: string;
+    details: string;
     location: string;
-    category: string;
+    startTime: string;
+    endTime: string;
+    providerName: string;
     priceForTheCurrentDay: number;
+    category: string;
     image: string;
 }

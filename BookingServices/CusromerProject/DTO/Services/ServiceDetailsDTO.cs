@@ -1,4 +1,6 @@
-﻿namespace CusromerProject.DTO.Services
+﻿using CustomerProject.DTO.Services;
+
+namespace CusromerProject.DTO.Services
 {
     public class ServiceDetailsDTO
     {
@@ -16,5 +18,8 @@
 
         public List<string> Images { get; set; }
         public List<AllServicesDetailsDTO> RelatedServices { get; set; }
+
+        public Contract _AdminContract;
+        public Contract _ProviderContract;
     }
 }
