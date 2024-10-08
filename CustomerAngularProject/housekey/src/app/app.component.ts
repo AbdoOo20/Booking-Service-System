@@ -8,7 +8,7 @@ import { DomHandlerService } from '@services/dom-handler.service';
 import { Settings, SettingsService } from '@services/settings.service';
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
   imports: [
     NgClass,
@@ -17,23 +17,25 @@ import { Settings, SettingsService } from '@services/settings.service';
     NgProgressModule,
     NgProgressHttpModule
   ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.scss",
 })
 export class AppComponent {
   public settings: Settings;
-  constructor(public settingsService: SettingsService,
-              public router: Router,
-              public translate: TranslateService,
-              private domHandlerService: DomHandlerService) {
+  constructor(
+    public settingsService: SettingsService,
+    public router: Router,
+    public translate: TranslateService,
+    private domHandlerService: DomHandlerService
+  ) {
     this.settings = this.settingsService.settings;
-    translate.addLangs(['en', 'de', 'fr', 'ru', 'tr']);
-    translate.setDefaultLang('en');
-    translate.use('en');
+    translate.addLangs(["en", "de", "fr", "ru", "tr"]);
+    translate.setDefaultLang("en");
+    translate.use("en");
   }
 
   ngAfterViewInit() {
-    this.router.events.subscribe(event => {
+    this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.domHandlerService.winScroll(0, 0);
       }

@@ -100,7 +100,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.getSlides();
-    this.getLocations();
+    //this.getLocations();
     this.getProperties();
     this.getFeaturedProperties();
   }
