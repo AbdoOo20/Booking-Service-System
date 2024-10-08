@@ -1,7 +1,7 @@
 ﻿using BookingServices.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-
+using CustomerProject.DTO.Services;
 
 namespace CusromerProject.DTO.Services
 {
@@ -30,6 +30,9 @@ namespace CusromerProject.DTO.Services
                     .Include(s => s.Category)
                     .Include(s => s.ServicePrices)
                     .Include(s => s.ServiceImages)
+                    .Include(s => s.AdminContract)
+                    .Include(s => s.ProviderContract)
+                    .Where(s => s.IsBlocked == false)
                     .Select(s => new AllServicesDetailsDTO
                     {
                         Id = s.ServiceId,
@@ -41,7 +44,20 @@ namespace CusromerProject.DTO.Services
                             .Where(sp => sp.PriceDate.Date == DateTime.Now.Date)
                             .Select(sp => sp.Price.ToString())
                             .FirstOrDefault(),
-                        Image = s.ServiceImages.FirstOrDefault().URL // First image
+                        Image = s.ServiceImages.FirstOrDefault().URL, // First image
+                        _AdminContract = new Contract { 
+                            Id = s.AdminContract.ContractId,
+                            Name = s.AdminContract.ContractName,
+                            Details = s.AdminContract.Details,
+                            IsBlocked = s.AdminContract.IsBlocked
+                        },
+                        _ProviderContract = new Contract
+                        {
+                            Id = s.ProviderContract.ContractId,
+                            Name = s.ProviderContract.ContractName,
+                            Details = s.ProviderContract.Details,
+                            IsBlocked = s.ProviderContract.IsBlocked
+                        }
                     })
                     .ToListAsync();
 
@@ -71,8 +87,9 @@ namespace CusromerProject.DTO.Services
                     .Include(s => s.ServicePrices)
                     .Include(s => s.ServiceImages)
                     .Include(s => s.Relatedservices)
-                    .ThenInclude(r => r.ServicePrices)
-                    .Where(s => s.ServiceId == serviceId)
+                    .Include(s => s.AdminContract)
+                    .Include(s => s.ProviderContract)
+                    .Where(s => s.ServiceId == serviceId && s.IsBlocked == false)
                     .Select(s => new ServiceDetailsDTO
                     {
                         Id = s.ServiceId,
@@ -101,7 +118,21 @@ namespace CusromerProject.DTO.Services
                                 .Select(sp => sp.Price.ToString())
                                 .FirstOrDefault(),
                             Image = rs.ServiceImages.FirstOrDefault().URL
-                        }).ToList()
+                        }).ToList(),
+                        _AdminContract = new Contract
+                        {
+                            Id = s.AdminContract.ContractId,
+                            Name = s.AdminContract.ContractName,
+                            Details = s.AdminContract.Details,
+                            IsBlocked = s.AdminContract.IsBlocked
+                        },
+                        _ProviderContract = new Contract
+                        {
+                            Id = s.ProviderContract.ContractId,
+                            Name = s.ProviderContract.ContractName,
+                            Details = s.ProviderContract.Details,
+                            IsBlocked = s.ProviderContract.IsBlocked
+                        }
                     })
                     .FirstOrDefaultAsync();
 
