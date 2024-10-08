@@ -36,6 +36,7 @@ namespace CusromerProject.DTO.Services
                         Name = s.Name,
                         Location = s.Location,
                         Category = s.Category.Name,
+                        Quantity = s.Quantity,
                         PriceForTheCurrentDay = s.ServicePrices
                             .Where(sp => sp.PriceDate.Date == DateTime.Now.Date)
                             .Select(sp => sp.Price.ToString())

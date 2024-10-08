@@ -8,6 +8,7 @@
         public string Location { get; set; }
         public string Category { get; set; }
         //public string ProviderName { get; set; }
+        public int Quantity { get; set; }
         public string PriceForTheCurrentDay { get; set; }
         public string Image { get; set; }
     }
