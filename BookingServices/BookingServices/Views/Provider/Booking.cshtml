@@ -205,23 +205,23 @@
                     startTimeDropdown.disabled = false;
                 });
 
-            fetch(`/Provider/GetPriceAndQuantityout?serviceId=${serviceId}&eventDate=${eventDate}`)
+            fetch(`/Provider/GetQuantityout?serviceId=${serviceId}&eventDate=${eventDate}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         //console.log("success " + data);
                         // Assigning values from the API response
-                        document.getElementById('PriceId').value = data.price;
+                        // document.getElementById('PriceId').value = data.price;
                         document.getElementById('QuantityId').placeholder = "Available quantity: " + data.quantity;
-                        document.getElementById('PriceError').textContent = '';
+                        // document.getElementById('PriceError').textContent = '';
                         document.getElementById('QuantityError').textContent = '';
                     } else {
                         //console.log("faild " + data);
 
-                        document.getElementById('PriceId').value = '';
+                        // document.getElementById('PriceId').value = '';
                         document.getElementById('QuantityId').placeholder = "Available quantity: 0";
                         document.getElementById('QuantityId').Disabled;
-                        document.getElementById('PriceError').textContent = 'Not found Price for the selected date';
+                        // document.getElementById('PriceError').textContent = 'Not found Price for the selected date';
                         document.getElementById('QuantityError').textContent = 'There is no longer any quantity available.';
                     }
                 })

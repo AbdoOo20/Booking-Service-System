@@ -20,20 +20,21 @@ namespace BookingServices.Controllers
 
         // to display all requested services
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                var AllRequestedServices = _appcontext.Services.Where(x => x.IsRequestedOrNot == true && x.IsOnlineOrOffline == false);
-                var viewModel = AllRequestedServices.Select(p => new ServicesVM
-                {
-                    Id = p.ServiceId,
-                    ServiceName = p.Name,
-                    Location = p.Location,
-                    Details = p.Details.Substring(0, 25) + "...",
-                    ProviderName = p.ServiceProvider.Name
-                }).ToList();
-                return View(viewModel);
+                var AllRequestedServices = await _appcontext.Services.Where(x => x.IsRequestedOrNot == true && x.IsOnlineOrOffline == false)
+                    .Select(p => new ServicesVM
+                    {
+                        Id = p.ServiceId,
+                        ServiceName = p.Name,
+                        Location = p.Location,
+                        Details = p.Details.Substring(0, 25) + "...",
+                        ProviderName = p.ServiceProvider.Name
+                    }).ToListAsync();
+
+                return View(AllRequestedServices);
             }
             catch (Exception e)
             {
@@ -45,11 +46,11 @@ namespace BookingServices.Controllers
 
         // to display the sevice details
         [HttpGet]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             try
             {
-                var _serviceDetails = _appcontext.Services
+                var _serviceDetails = await _appcontext.Services
                     .Where(s => s.ServiceId == id)
                     .Include(s => s.Category)
                     .Include(s => s.ServiceImages)
@@ -64,7 +65,7 @@ namespace BookingServices.Controllers
                         EndTime = s.EndTime,
                         Quantity = s.Quantity,
                         ImageUrl = s.ServiceImages.Select(img => img.URL).ToList()
-                    }).FirstOrDefault();
+                    }).FirstOrDefaultAsync();
 
                 if (_serviceDetails == null)
                 {
@@ -82,11 +83,11 @@ namespace BookingServices.Controllers
 
         // to accept the service
         [HttpGet]
-        public IActionResult Accept(int id)
+        public async Task<IActionResult> Accept(int id)
         {
             try
             {
-                var service = _appcontext.Services.FirstOrDefault(s => s.ServiceId == id);
+                var service = await _appcontext.Services.FirstOrDefaultAsync(s => s.ServiceId == id);
                 if (service == null)
                 {
                     errorViewModel = new ErrorViewModel { Message = "The requested Service was not found. Please try again later.", Controller = " Admin", Action = "Index" };
@@ -106,11 +107,11 @@ namespace BookingServices.Controllers
 
         // to reject the service
         [HttpGet]
-        public IActionResult Reject(int id)
+        public async Task<IActionResult> Reject(int id)
         {
             try
             {
-                var service = _appcontext.Services.FirstOrDefault(s => s.ServiceId == id);
+                var service = await _appcontext.Services.FirstOrDefaultAsync(s => s.ServiceId == id);
                 if (service == null)
                 {
                     errorViewModel = new ErrorViewModel { Message = "The requested Service was not found. Please try again later.", Controller = " Admin", Action = "Index" };
@@ -130,11 +131,11 @@ namespace BookingServices.Controllers
 
 
         [HttpGet]
-        public IActionResult ProviderBookingSummary()
+        public async Task<IActionResult> ProviderBookingSummary()
         {
             try
             {
-                var providerSummary = _appcontext.ServiceProviders
+                var providerSummary = await _appcontext.ServiceProviders
                     .Select(provider => new
                     {
                         ProviderName = provider.Name,
@@ -145,8 +146,7 @@ namespace BookingServices.Controllers
                                             .SelectMany(s => s.BookingServices)
                                             .Where(bs => bs.Booking.Status == "Accepted")
                                             .Sum(bs => bs.Booking.Price)
-                    })
-                    .ToList();
+                    }).ToListAsync();
 
                 return View(providerSummary);
             }

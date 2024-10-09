@@ -39,9 +39,8 @@ namespace CusromerProject.Controllers
             {
                 var service = await _serviceRepository.GetServiceByIdAsync(id);
                 if (service == null)
-                {
                     return NotFound(new { message = "Service not found" });
-                }
+
                 return Ok(service);
             }
             catch (Exception ex)

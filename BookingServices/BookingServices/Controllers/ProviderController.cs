@@ -102,22 +102,24 @@ namespace BookingServices.Controllers
         // Provider/Booking?id=1
         private static int SharedserviceId;
         [HttpGet]
-        public IActionResult Booking(int id)
+        public async Task<IActionResult> Booking(int id)
         {
             try
             {
                 var today = DateTime.Now.Date;
-                Tuple<int, decimal> result = GetPriceAndQuantity(id, today);
+                int result = GetQuantity(id, today);
                 SharedserviceId = id;
-                ViewBag.AvailableQuantity = result.Item1;
+                ViewBag.AvailableQuantity = result;
 
                 ViewBag.ServiceName = _context.Services
                     .Where(s => s.ServiceId == id)
                     .Select(s => s.Name).FirstOrDefault().ToString();
 
-                ViewBag.paymentMethod = _context.PaymentIncomes.ToList();
+                ViewBag.paymentMethod = await _context.PaymentIncomes.ToListAsync();
 
-                ViewBag.priceOfCurrentDay = result.Item2;
+                ViewBag.priceOfCurrentDay = await _context.ServicePrices
+                    .Where(s => s.ServiceId == id && s.PriceDate == DateTime.Now.Date)
+                    .Select(s => s.Price).FirstOrDefaultAsync();
                 ViewBag.ServiceId = id;
                 return View();
             }
@@ -132,7 +134,7 @@ namespace BookingServices.Controllers
         private string sharedSSN = "";
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Booking(Booking model)
+        public async Task<IActionResult> Booking(Booking model)
         {
             try
             {
@@ -140,7 +142,7 @@ namespace BookingServices.Controllers
                 model.Type = "Service";
                 if (ModelState.IsValid)
                 {
-                    var customer = _context.Customers.FirstOrDefault(x => x.SSN == model.CustomerId);
+                    var customer = await _context.Customers.FirstOrDefaultAsync(x => x.SSN == model.CustomerId);
                     if (customer == null)
                     {
                         TempData["Message"] = "Customer not found.";
@@ -189,10 +191,10 @@ namespace BookingServices.Controllers
 
 
         [HttpGet]
-        public IActionResult GetCustomerBySSN(string ssn)
+        public async Task<IActionResult> GetCustomerBySSN(string ssn)
         {
             // dont forget this is an offline customer
-            var customer = _context.Customers.FirstOrDefault(c => c.SSN == ssn && c.IsOnlineOrOfflineUser == false);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.SSN == ssn && c.IsOnlineOrOfflineUser == false);
             if (customer != null)
             {
                 return Json(new { success = true, customerName = customer.Name });
@@ -207,9 +209,9 @@ namespace BookingServices.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetEndTimes(int serviceId, DateTime eventDate, string startTime)
+        public async Task<IActionResult> GetEndTimes(int serviceId, DateTime eventDate, string startTime)
         {
-            var availableTimes = GetTheAvailableTime(serviceId, eventDate);
+            var availableTimes = await GetTheAvailableTime(serviceId, eventDate);
             var availableEndTime = new List<string>() { startTime.Substring(0, 2) };
             for (int i = 0; i < availableTimes.Count; i++)
             {
@@ -222,9 +224,9 @@ namespace BookingServices.Controllers
             return Json(availableEndTime);
         }
 
-        private List<string> GetTheAvailableTime(int serviceId, DateTime eventDate)
+        private async Task<List<string>> GetTheAvailableTime(int serviceId, DateTime eventDate)
         {
-            var StartEndTime = _context.Services.Select(x => new { id = x.ServiceId, from = x.StartTime, to = x.EndTime }).Where(x => x.id == serviceId).ToList();
+            var StartEndTime = await _context.Services.Select(x => new { id = x.ServiceId, from = x.StartTime, to = x.EndTime }).Where(x => x.id == serviceId).ToListAsync();
             var allTimes = new List<string>();
             for (int i = StartEndTime[0].from.Hours; i <= StartEndTime[0].to.Hours; i++)
             {
@@ -261,33 +263,32 @@ namespace BookingServices.Controllers
             return bookingQuantity;
         }
 
-        private Tuple<int, decimal> GetPriceAndQuantity(int serviceId, DateTime eventDate)
+        private int GetQuantity(int serviceId, DateTime eventDate)
         {
             var quantityAvailable = _context.Services
                 .Where(s => s.ServiceId == serviceId)
                 .Select(s => s.Quantity).FirstOrDefault() - GetAllquantity(serviceId, eventDate);
 
-            var price = _context.ServicePrices
-                .Where(x => x.ServiceId == serviceId && x.PriceDate.Date == eventDate.Date)
-                .Select(x => x.Price).FirstOrDefault();
+            //var price = _context.ServicePrices
+            //    .Where(x => x.ServiceId == serviceId && x.PriceDate.Date == eventDate.Date)
+            //    .Select(x => x.Price).FirstOrDefault();
 
-            return new Tuple<int, decimal>(quantityAvailable, price);
+            return quantityAvailable;//new Tuple<int, decimal>(quantityAvailable, price);
         }
 
-        private Tuple<int, decimal> GetPriceAndQuantityint(int serviceId, DateTime eventDate)
+        private int GetQuantityint(int serviceId, DateTime eventDate)
         {
-            return GetPriceAndQuantity(serviceId, eventDate);
+            return GetQuantity(serviceId, eventDate);
         }
 
         [HttpGet]
-        public IActionResult GetPriceAndQuantityout(int serviceId, DateTime eventDate)
+        public IActionResult GetQuantityout(int serviceId, DateTime eventDate)
         {
-            var result = GetPriceAndQuantity(serviceId, eventDate);
+            var result = GetQuantity(serviceId, eventDate);
             return Json(new
             {
                 success = true,
-                quantity = result.Item1,
-                price = result.Item2
+                quantity = result
             });
         }
     }

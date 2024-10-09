@@ -1,6 +1,8 @@
-﻿namespace CusromerProject.DTO.Services
+﻿using CustomerProject.DTO.Services;
+
+namespace CusromerProject.DTO.Services
 {
-    public class ServiceDetails
+    public class ServiceDetailsDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -15,6 +17,9 @@
         public decimal PriceForTheCurrentDay { get; set; }
 
         public List<string> Images { get; set; }
-        public List<AllServicesDetails> RelatedServices { get; set; }
+        public List<AllServicesDetailsDTO> RelatedServices { get; set; }
+
+        public Contract? _AdminContract { get; set; }
+        public Contract? _ProviderContract { get; set; }
     }
 }
