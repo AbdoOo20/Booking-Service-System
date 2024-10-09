@@ -10,6 +10,8 @@ import { RouterModule } from '@angular/router';
 import { Property } from '@models/app.models';
 import { TranslateModule } from '@ngx-translate/core';
 import { AppService } from '@services/app.service';
+import { CustomerBookings } from '../../../common/interfaces/customer-bookings';
+import { AllBookingsService } from '@services/all-bookings.service';
 
 @Component({
   selector: 'app-my-properties',
@@ -28,37 +30,36 @@ import { AppService } from '@services/app.service';
   templateUrl: './my-properties.component.html' 
 })
 export class MyPropertiesComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'image', 'title', 'published', 'views', 'actions'];
-  dataSource: MatTableDataSource<Property>;
+  displayedColumns: string[] = ['bookNum', 'serviceImage', 'serviceName', 'bookDate', 'status', 'price', 'moreDetails'];
+  dataSource: MatTableDataSource<CustomerBookings>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  customerBookings: CustomerBookings[] = [];
 
-  constructor(public appService: AppService) { }
+  constructor(
+    public appService: AppService, 
+    private _allBookingService: AllBookingsService
+  ){ 
+    
+  }
 
   ngOnInit() {
-    this.appService.getProperties().subscribe(res => {
-      this.initDataSource(res);
-    });
+    this._allBookingService.getBookingWithService("850e858a-c6e5-4fbd-b22e-723cc5be91e0").subscribe({
+      next:(res) => {
+        this.customerBookings = res;
+        console.log(this.customerBookings);
+        this.initDataSource(this.customerBookings);   
+      },
+      error:(error) => {
+        console.error('Error fetching customer bookings', error);
+      },
+    })
   }
 
-  public initDataSource(data: any) {
-    this.dataSource = new MatTableDataSource<Property>(data);
+  public initDataSource(data: CustomerBookings[]) {
+    this.dataSource = new MatTableDataSource<CustomerBookings>(data);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-  public remove(property: Property) {
-    const index: number = this.dataSource.data.indexOf(property);
-    if (index !== -1) {
-      const message = this.appService.getTranslateValue('MESSAGE.SURE_DELETE') ?? '';
-      let dialogRef = this.appService.openConfirmDialog('', message);
-      dialogRef.afterClosed().subscribe(dialogResult => {
-        if (dialogResult) {
-          this.dataSource.data.splice(index, 1);
-          this.initDataSource(this.dataSource.data);
-        }
-      });
-    }
   }
 
   public applyFilter(ev: EventTarget) {
