@@ -6,14 +6,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AppService } from '@services/app.service';
-import { CustomerBookings } from '../../../common/interfaces/customer-bookings';
-import { AllBookingsService } from '@services/all-bookings.service';
+import { CustomerPayments } from '../../../common/interfaces/customer-payments';
+import { CustomerPaymentsService } from '@services/customer-payments.service';
 
 @Component({
-  selector: 'app-my-properties',
+  selector: 'app-my-payments',
   standalone: true,
   imports: [
     RouterModule,
@@ -26,36 +26,40 @@ import { AllBookingsService } from '@services/all-bookings.service';
     MatPaginatorModule,
     DatePipe
   ],
-  templateUrl: './my-properties.component.html' 
+  templateUrl: './my-payments.component.html' 
 })
-export class MyPropertiesComponent implements OnInit {
-  displayedColumns: string[] = [ 'bookNum', 'serviceImage', 'serviceName', 'bookDate', 'status', 'price', 'paymentDetails'];
-  dataSource: MatTableDataSource<CustomerBookings>;
+export class MyPymentsComponent implements OnInit {
+  displayedColumns: string[] = ['paymentNum', 'paymentDate', 'paymentValue'];
+  dataSource: MatTableDataSource<CustomerPayments>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  customerBookings: CustomerBookings[] = [];
+  customerPayments: CustomerPayments[] = [];
 
   constructor(
     public appService: AppService, 
-    private _allBookingService: AllBookingsService
+    private _customerPaymentsService: CustomerPaymentsService,
+    private route: ActivatedRoute
   ){ 
     
   }
 
   ngOnInit() {
-    this._allBookingService.getBookingWithService("850e858a-c6e5-4fbd-b22e-723cc5be91e0").subscribe({
-      next:(res) => {
-        this.customerBookings = res;
-        this.initDataSource(this.customerBookings);   
-      },
-      error:(error) => {
-        console.error('Error fetching customer bookings', error);
-      },
-    })
+    const bookingID = this.route.snapshot.paramMap.get('id');
+    if(bookingID) {
+      this._customerPaymentsService.getCustomerPayments(+bookingID).subscribe({
+        next:(res) => {
+          this.customerPayments = res;
+          this.initDataSource(this.customerPayments);   
+        },
+        error:(error) => {
+          console.error('Error fetching customer payments', error);
+        },
+      })
+    }
   }
 
-  public initDataSource(data: CustomerBookings[]) {
-    this.dataSource = new MatTableDataSource<CustomerBookings>(data);
+  public initDataSource(data: CustomerPayments[]) {
+    this.dataSource = new MatTableDataSource<CustomerPayments>(data);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -67,10 +71,4 @@ export class MyPropertiesComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
   }
-
-  onImageError(event: Event) {
-    const target = event.target as HTMLImageElement;
-    target.src = 'images/bookingService/notFound.png';
-  }
-
 }
