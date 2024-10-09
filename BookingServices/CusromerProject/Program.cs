@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using CusromerProject.DTO.Categories;
 using CusromerProject.DTO.Review;
+using CustomerProject.Services;
 
 namespace CusromerProject
 {
@@ -63,7 +64,8 @@ namespace CusromerProject
             builder.Services.AddScoped<ServiceRepository>(); // Register ServiceRepository
             builder.Services.AddScoped<ReviewRepository>(); // Register ReviewRepository
             builder.Services.AddScoped<BookRepository>(); // Register BookRepository
-
+            builder.Services.AddSingleton<PayPalService>(); // Register PayPalService
+            
             // Register Other Services
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
