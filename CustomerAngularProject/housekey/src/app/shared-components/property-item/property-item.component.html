@@ -14,7 +14,11 @@
         class="thumbnail-section"
     >
         <div fxLayout="row wrap" class="property-status">
-            <span> status </span>
+            @if(service.quantity == 0){
+            <span class="quantity-status rent">for rent</span>
+            }@else {
+            <span class="quantity-status sale">for sale</span>
+            }
         </div>
         <div class="mat-card-image w-100 m-0">
             <img [src]="getImageUrl(service.image)" alt="Not Found" />

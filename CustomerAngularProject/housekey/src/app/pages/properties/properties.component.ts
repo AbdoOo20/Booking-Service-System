@@ -166,9 +166,9 @@ export class PropertiesComponent implements OnInit {
         );
     }
     // My Function
-    public filterDataServices(data) {
-        return this.myServ.filterData(data, this.searchFields);
-    }
+    // public filterDataServices(data) {
+    //     return this.myServ.filterData(data, this.searchFields);
+    // }
 
     public filterData(data) {
         return this.appService.filterData(

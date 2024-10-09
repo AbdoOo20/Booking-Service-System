@@ -1,11 +1,11 @@
-<app-header-image
+<!-- <app-header-image
     [backgroundImage]="'images/carousel/slide-3.jpg'"
     [bgImageAnimate]="false"
     [contentOffsetToTop]="false"
     [desc]="'“Home is where one starts from...” –T.S. Eliot'"
     [contentMinHeight]="200"
 >
-</app-header-image>
+</app-header-image> -->
 
 <div class="px-3">
     <div class="theme-container">
@@ -13,7 +13,7 @@
             [dir]="settings.rtl ? 'rtl' : 'ltr'"
             class="all-properties mt-3"
         >
-            <mat-sidenav
+            <!-- <mat-sidenav
                 #sidenav
                 [autoFocus]="false"
                 [opened]="sidenavOpen"
@@ -46,22 +46,22 @@
                         </app-properties-search>
                     </mat-card>
                 </ng-scrollbar>
-            </mat-sidenav>
+            </mat-sidenav> -->
             <mat-sidenav-content ngClass.gt-sm="distance">
                 <div fxLayout="row wrap" class="properties-wrapper mt-0">
                     <div fxFlex="100" class="px-2 pb-2 pt-0">
-                        <app-properties-toolbar
+                        <!-- <app-properties-toolbar
                             [showSidenavToggle]="!sidenavOpen"
                             (onSidenavToggle)="sidenav.toggle()"
                             (onChangeCount)="changeCount($event)"
                             (onChangeSorting)="changeSorting($event)"
                             (onChangeViewType)="changeViewType($event)"
                         >
-                        </app-properties-toolbar>
+                        </app-properties-toolbar> -->
                     </div>
 
                     <div fxFlex="100" fxLayoutAlign="start start" class="p-2">
-                        <mat-chip-listbox
+                        <!-- <mat-chip-listbox
                             [ngClass]="settings.rtl ? 'ml-2' : 'mr-2'"
                         >
                             <mat-chip-option
@@ -78,10 +78,10 @@
                             [searchFields]="searchFields"
                             (onRemoveSearchField)="removeSearchField($event)"
                         >
-                        </app-properties-search-results-filters>
+                        </app-properties-search-results-filters> -->
                     </div>
 
-                    @for (service of ServicesItems; track service.id) {
+                    <!-- @for (service of ServicesItems; track service.id) {
                     <div
                         [fxFlex]="viewType == 'grid' ? viewCol : 100"
                         class="item"
@@ -125,12 +125,12 @@
                         <mat-spinner></mat-spinner>
                         }
                     </div>
-                    }
+                    } -->
                 </div>
             </mat-sidenav-content>
         </mat-sidenav-container>
     </div>
 </div>
 
-<app-clients></app-clients>
-<app-get-in-touch></app-get-in-touch>
+<!-- <app-clients></app-clients> -->
+<!-- <app-get-in-touch></app-get-in-touch> -->

@@ -35,6 +35,7 @@ import { ServicesService } from "@services/services.service";
 import { Service } from "../../common/interfaces/service";
 import { Category } from "../../common/interfaces/category";
 import { CategoriesService } from "@services/categories.service";
+import { RecommendationBookingComponent } from "../../shared-components/recommendation-booking/recommendation-booking.component";
 
 @Component({
     selector: "app-home",
@@ -62,6 +63,7 @@ import { CategoriesService } from "@services/categories.service";
         OurAgentsComponent,
         ClientsComponent,
         GetInTouchComponent,
+        RecommendationBookingComponent,
     ],
     providers: [ServicesService, CategoriesService],
     templateUrl: "./home.component.html",
@@ -71,6 +73,7 @@ export class HomeComponent implements OnInit {
     watcher: Subscription;
     activeMediaQuery = "";
     catChangeName = "";
+    locChangeName = "";
     public slides: any[] = [];
     public properties: Property[];
     public viewType: string = "grid";
@@ -86,7 +89,11 @@ export class HomeComponent implements OnInit {
     public settings: Settings;
     // My Property
     public ServicesItems: Service[];
+    public SrvBookingRec: Service[];
     public CatsItems: Category[];
+    public resultView: number;
+    public fromPrice = 0;
+    public toPrice = Number.MAX_VALUE;
 
     constructor(
         public settingsService: SettingsService,
@@ -142,8 +149,11 @@ export class HomeComponent implements OnInit {
         this.getFeaturedProperties();
         // My Function
         this.getServiceCategories(this.catChangeName);
+        this.getServiceLocation(this.locChangeName);
+        this.getServicePrice(this.fromPrice, this.toPrice);
         this.getServices();
         this.getCategories();
+        this.GetRecSrvForBooking();
     }
 
     ngDoCheck() {
@@ -247,6 +257,7 @@ export class HomeComponent implements OnInit {
         event.valueChanges.subscribe(() => {
             this.resetLoadMore();
             this.searchFields = event.value;
+
             setTimeout(() => {
                 this.removedSearchField = null;
             });
@@ -265,6 +276,7 @@ export class HomeComponent implements OnInit {
     public removeSearchField(field: any) {
         this.message = null;
         this.removedSearchField = field;
+        console.log(field + "Any");
     }
 
     public changeCount(count: number) {
@@ -294,6 +306,42 @@ export class HomeComponent implements OnInit {
     //[1]
     public getServiceCategories(catName) {
         this.myServ.GetAllServicesByCatName(catName).subscribe({
+            next: (data) => {
+                this.ServicesItems = data;
+                console.log(data);
+            },
+            error: (err) => {
+                console.log(err);
+            },
+        });
+    }
+    //[2]
+    public getServiceLocation(locName) {
+        this.myServ.GetAllServicesByLocation(locName).subscribe({
+            next: (data) => {
+                this.ServicesItems = data;
+                console.log(data);
+            },
+            error: (err) => {
+                console.log(err);
+            },
+        });
+    }
+    // [3]
+    public GetRecSrvForBooking() {
+        this.myServ.GetRecomenditionServicesForBooking().subscribe({
+            next: (data) => {
+                this.SrvBookingRec = data;
+                console.log(data);
+            },
+            error: (err) => {
+                console.log(err);
+            },
+        });
+    }
+    //[4]
+    public getServicePrice(from: number, to: number) {
+        this.myServ.GetAllServicesPrice(from, to).subscribe({
             next: (data) => {
                 this.ServicesItems = data;
                 console.log(data);

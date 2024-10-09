@@ -20,6 +20,35 @@
                     }
                 </mat-select>
             </mat-form-field>
+            <!-- Start Status -->
+            <div [fxLayout]="vertical ? 'column' : 'row wrap'" class="w-100">
+                <div
+                    fxFlex="100"
+                    fxFlex.gt-sm="33.3"
+                    fxFlex.sm="50"
+                    class="p-2"
+                >
+                    <mat-form-field
+                        [appearance]="getAppearance()"
+                        [floatLabel]="getFloatLabel()"
+                    >
+                        <mat-label>City</mat-label>
+                        <mat-select
+                            placeholder="Select City..."
+                            formControlName="city"
+                            (selectionChange)="onSelectCity()"
+                        >
+                            @for (loc of LocationNames; track loc.region_id) {
+                            <mat-option [value]="loc">{{
+                                loc.name_en
+                            }}</mat-option>
+                            <mat-option>Cairo</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <!--End Status-->
 
             <!-- <select
                 (change)="filterCats($event)"
@@ -30,21 +59,21 @@
                 }
             </select> -->
         </div>
-
+        <!-- Began -->
         <div fxFlex="100" fxFlex.gt-sm="33.3" fxFlex.sm="50" class="p-2">
             <mat-form-field
                 [appearance]="getAppearance()"
                 [floatLabel]="getFloatLabel()"
             >
-                <mat-label>Property Status</mat-label>
+                <mat-label>Location</mat-label>
                 <mat-select
-                    placeholder="Select Property Status"
+                    (selectionChange)="filterLocs($event.value)"
+                    placeholder="Select Location"
                     formControlName="propertyStatus"
-                    multiple
                 >
-                    @for (propertyStatus of propertyStatuses; track $index) {
-                    <mat-option [value]="propertyStatus">{{
-                        propertyStatus.name
+                    @for (location of LocationNames; track location.region_id) {
+                    <mat-option [value]="location">{{
+                        location.name_en
                     }}</mat-option>
                     }
                 </mat-select>
@@ -72,7 +101,7 @@
                             autocomplete="off"
                             placeholder="From"
                             formControlName="from"
-                            type="text"
+                            type="number"
                             onlyNumber
                         />
                     </mat-form-field>
@@ -118,8 +147,8 @@
                         formControlName="city"
                         (selectionChange)="onSelectCity()"
                     >
-                        @for (city of cities; track $index) {
-                        <mat-option [value]="city">{{ city.name }}</mat-option>
+                        @for (loc of LocationNames; track loc.region_id) {
+                        <mat-option [value]="loc">{{ loc.name_en }}</mat-option>
                         }
                     </mat-select>
                 </mat-form-field>
@@ -498,14 +527,14 @@
             {{ "BTN.CLEAR" | translate }}
         </button>
         @if (!vertical) {
-        <button
+        <!-- <button
             mat-raised-button
             color="primary"
             class="uppercase mx-1"
             (click)="showMore = !showMore"
         >
             {{ (showMore ? "BTN.HIDE" : "BTN.ADVANCED") | translate }}
-        </button>
+        </button> -->
         } @if (searchOnBtnClick) {
         <button
             mat-raised-button

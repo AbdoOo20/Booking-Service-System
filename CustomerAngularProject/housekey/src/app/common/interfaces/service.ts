@@ -9,4 +9,5 @@ export interface Service {
     priceForTheCurrentDay: number;
     category: string;
     image: string;
+    quantity: number;
 }

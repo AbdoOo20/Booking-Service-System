@@ -64,12 +64,18 @@ export class PropertiesSearchComponent implements OnInit {
     public CategoryNames: Category[];
     public ServicesItems: Service[];
     public catChangeName = "";
+    public locChangeName = "";
+    public LocationNames: any[] = [];
+    public fromPrice = 0;
+    public toPrice = Number.MAX_VALUE;
+    public ValueFromInput: number;
+    public ValueToInput: number;
 
     constructor(
         public appService: AppService,
         public fb: FormBuilder,
         public CatServ: CategoriesService,
-        // private homeCmp: HomeComponent,
+        private homeCmp: HomeComponent,
         public myServ: ServicesService
     ) {}
 
@@ -89,8 +95,8 @@ export class PropertiesSearchComponent implements OnInit {
             categoryType: null,
             propertyStatus: null,
             price: this.fb.group({
-                from: null,
-                to: null,
+                from: 0,
+                to: 0,
             }),
             city: null,
             zipCode: null,
@@ -123,6 +129,10 @@ export class PropertiesSearchComponent implements OnInit {
         //My Code
         this.getCategories();
         this.getServiceCategories(this.catChangeName);
+        this.getServiceLocation(this.locChangeName);
+        this.getLocations();
+        // this.getServicePrice(this.fromPrice);
+        this.getPrice();
     }
 
     public buildFeatures() {
@@ -153,13 +163,14 @@ export class PropertiesSearchComponent implements OnInit {
     }
 
     public reset() {
+        this.homeCmp.getServices();
         this.form.reset({
             propertyType: null,
             categoryType: null,
             propertyStatus: null,
             price: {
-                from: null,
-                to: null,
+                from: 0,
+                to: 0,
             },
             city: null,
             zipCode: null,
@@ -210,8 +221,13 @@ export class PropertiesSearchComponent implements OnInit {
     // My Functions
     filterCats(e: any) {
         // let value = e.target.value;
-        // this.homeCmp.getServiceCategories(e.name);
+        this.homeCmp.getServiceCategories(e.name);
         console.log(e.name);
+    }
+    filterLocs(e: any) {
+        // let value = e.target.value;
+        this.homeCmp.getServiceLocation(e.name_en);
+        console.log(e.name_en);
     }
     getCategories() {
         this.CatServ.GetAllCategories().subscribe({
@@ -221,6 +237,18 @@ export class PropertiesSearchComponent implements OnInit {
             },
             error: (err) => {
                 console.log(err);
+            },
+        });
+    }
+
+    getLocations(): void {
+        this.myServ.getLocations().subscribe({
+            next: (data) => {
+                this.LocationNames = data;
+                console.log(data);
+            },
+            error: (err) => {
+                console.error("Error fetching regions data:", err);
             },
         });
     }
@@ -235,4 +263,55 @@ export class PropertiesSearchComponent implements OnInit {
             },
         });
     }
+    public getServiceLocation(locName) {
+        this.myServ.GetAllServicesByCatName(locName).subscribe({
+            next: (data) => {
+                this.ServicesItems = data;
+                console.log(data);
+            },
+            error: (err) => {
+                console.log(err);
+            },
+        });
+    }
+    // getInputPriceValue() {
+    //     this.form.get("price.from")?.valueChanges.subscribe((value) => {
+    //         this.homeCmp.getServicePrice(value, Number.MIN_VALUE);
+    //         console.log(value);
+    //     });
+    //     this.form.get("price.to")?.valueChanges.subscribe((value) => {
+    //         this.homeCmp.getServicePrice(0, value);
+    //         console.log(value);
+    //     });
+    // }
+
+    getPrice() {
+        this.form.get("price.from")?.valueChanges.subscribe((value) => {
+            this.ValueFromInput = value;
+            console.log(this.ValueFromInput + " " + this.ValueToInput);
+            this.homeCmp.getServicePrice(
+                this.ValueFromInput,
+                this.ValueToInput
+            );
+        });
+        this.form.get("price.to")?.valueChanges.subscribe((value) => {
+            this.ValueToInput = value;
+            console.log(this.ValueFromInput + " " + this.ValueToInput);
+            this.homeCmp.getServicePrice(
+                this.ValueFromInput,
+                this.ValueToInput
+            );
+        });
+    }
+    // public getServicePrice(from: number) {
+    //     this.myServ.GetAllServicesPrice(from).subscribe({
+    //         next: (data) => {
+    //             this.ServicesItems = data;
+    //             console.log(data);
+    //         },
+    //         error: (err) => {
+    //             console.log(err);
+    //         },
+    //     });
+    // }
 }
