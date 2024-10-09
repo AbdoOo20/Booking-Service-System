@@ -17,6 +17,8 @@ namespace CusromerProject.DTO.Book
         [Required(ErrorMessage = "End Time is required.")]
         public TimeOnly EndTime { get; set; }
 
+        public decimal InitialPaymentPercentage { get; set; }
+
         [StringLength(20)]
         public string? Status { get; set; } // pending - paid - complete - canceled
 

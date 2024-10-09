@@ -9,7 +9,7 @@ namespace CusromerProject.DTO.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
-        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5); // Cache duration of 5 minutes
+        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(1); // Cache duration of 5 minutes
 
         public ServiceRepository(ApplicationDbContext context, IMemoryCache cache)
         {
@@ -26,13 +26,11 @@ namespace CusromerProject.DTO.Services
             if (!_cache.TryGetValue(cacheKey, out List<AllServicesDetailsDTO>? services))
             {
                 services = await _context.Services
-                    .Where(s => s.IsOnlineOrOffline == true)
+                    .Where(s => s.IsOnlineOrOffline == true && s.IsBlocked == false)
                     .Include(s => s.Category)
                     .Include(s => s.ServicePrices)
                     .Include(s => s.ServiceImages)
-                    .Include(s => s.AdminContract)
-                    .Include(s => s.ProviderContract)
-                    .Where(s => s.IsBlocked == false)
+                    .AsNoTracking()  // Disable change tracking for read-only operation
                     .Select(s => new AllServicesDetailsDTO
                     {
                         Id = s.ServiceId,
@@ -44,20 +42,9 @@ namespace CusromerProject.DTO.Services
                             .Where(sp => sp.PriceDate.Date == DateTime.Now.Date)
                             .Select(sp => sp.Price.ToString())
                             .FirstOrDefault(),
-                        Image = s.ServiceImages.FirstOrDefault().URL, // First image
-                        _AdminContract = new Contract { 
-                            Id = s.AdminContract.ContractId,
-                            Name = s.AdminContract.ContractName,
-                            Details = s.AdminContract.Details,
-                            IsBlocked = s.AdminContract.IsBlocked
-                        },
-                        _ProviderContract = new Contract
-                        {
-                            Id = s.ProviderContract.ContractId,
-                            Name = s.ProviderContract.ContractName,
-                            Details = s.ProviderContract.Details,
-                            IsBlocked = s.ProviderContract.IsBlocked
-                        }
+                        Image = s.ServiceImages.FirstOrDefault().URL, // Null-conditional operator
+                        _AdminContract = BuildAdminContract(s.AdminContract), // Use helper method
+                        _ProviderContract = BuildProviderContract(s.ProviderContract)
                     })
                     .ToListAsync();
 
@@ -81,15 +68,13 @@ namespace CusromerProject.DTO.Services
             if (!_cache.TryGetValue(cacheKey, out ServiceDetailsDTO? service))
             {
                 service = await _context.Services
-                    .Where(s => s.IsOnlineOrOffline == true)
+                    .Where(s => s.ServiceId == serviceId && s.IsOnlineOrOffline == true && s.IsBlocked == false)
                     .Include(s => s.Category)
                     .Include(s => s.ServiceProvider)
                     .Include(s => s.ServicePrices)
                     .Include(s => s.ServiceImages)
                     .Include(s => s.Relatedservices)
-                    .Include(s => s.AdminContract)
-                    .Include(s => s.ProviderContract)
-                    .Where(s => s.ServiceId == serviceId && s.IsBlocked == false)
+                    .AsNoTracking()  // Disable change tracking
                     .Select(s => new ServiceDetailsDTO
                     {
                         Id = s.ServiceId,
@@ -101,7 +86,7 @@ namespace CusromerProject.DTO.Services
                         Quantity = s.Quantity,
                         InitialPayment = s.InitialPaymentPercentage,
                         Category = s.Category.Name,
-                        ProviderName = s.ServiceProvider.Name,
+                        ProviderName = s.ServiceProvider.Name ?? string.Empty, // Null check for provider
                         PriceForTheCurrentDay = s.ServicePrices
                             .Where(sp => sp.PriceDate.Date == DateTime.Now.Date)
                             .Select(sp => sp.Price)
@@ -119,20 +104,8 @@ namespace CusromerProject.DTO.Services
                                 .FirstOrDefault(),
                             Image = rs.ServiceImages.FirstOrDefault().URL
                         }).ToList(),
-                        _AdminContract = new Contract
-                        {
-                            Id = s.AdminContract.ContractId,
-                            Name = s.AdminContract.ContractName,
-                            Details = s.AdminContract.Details,
-                            IsBlocked = s.AdminContract.IsBlocked
-                        },
-                        _ProviderContract = new Contract
-                        {
-                            Id = s.ProviderContract.ContractId,
-                            Name = s.ProviderContract.ContractName,
-                            Details = s.ProviderContract.Details,
-                            IsBlocked = s.ProviderContract.IsBlocked
-                        }
+                        _AdminContract = BuildAdminContract(s.AdminContract), // Use helper method
+                        _ProviderContract = BuildProviderContract(s.ProviderContract)
                     })
                     .FirstOrDefaultAsync();
 
@@ -148,6 +121,30 @@ namespace CusromerProject.DTO.Services
             }
 
             return service;
+        }
+
+        // Helper method for building contracts safely
+        private static Contract? BuildAdminContract(AdminContract? contract)
+        {
+            return contract != null
+                ? new Contract
+                {
+                    Id = contract.ContractId,
+                    Name = contract.ContractName ?? string.Empty, // Handle null values
+                    Details = contract.Details ?? string.Empty
+                }
+                : null;
+        }
+        private static Contract? BuildProviderContract(ProviderContract? contract)
+        {
+            return contract != null
+                ? new Contract
+                {
+                    Id = contract.ContractId,
+                    Name = contract.ContractName ?? string.Empty, // Handle null values
+                    Details = contract.Details ?? string.Empty
+                }
+                : null;
         }
     }
 
