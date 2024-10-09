@@ -1,0 +1,5 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="ratings" [matTooltip]="ratingsCount + ' ratings'">
+  @for (star of stars; track $index) {
+    <mat-icon class="mat-icon-sm">{{star}}</mat-icon>
+  }
+</div>

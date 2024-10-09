@@ -1,0 +1,48 @@
+<mat-toolbar fxLayoutAlign="space-between center">      
+  <a routerLink="/compare" (click)="hideSheet(true)" mat-raised-button color="primary">Compare - {{ properties.length }}</a>        
+  <div fxLayout="row" fxLayoutAlign="end center">
+      <button mat-icon-button (click)="appService.Data.compareList.length = 0; hideSheet(false)" matTooltip="Clear Compare List" class="p-0">
+        <mat-icon color="warn" class="mat-icon-lg m-0">cancel</mat-icon> 
+      </button>
+      <button mat-icon-button (click)="hideSheet(false)" matTooltip="Hide" class="p-0">
+        <mat-icon color="primary" class="mat-icon-lg m-0">arrow_drop_down_circle</mat-icon> 
+      </button>
+  </div>
+</mat-toolbar>
+<mat-nav-list>
+  @for (property of properties; track $index) { 
+    <a mat-list-item [routerLink]="['/properties', property.id]" (click)="hideSheet(true)" class="h-auto">
+      <div fxLayout="row" fxLayoutAlign="space-between center" class="py-2">
+        <div>
+          <h4 class="fw-500">{{property.title}}</h4>
+          <i><mat-icon class="mat-icon-sm text-muted">location_on</mat-icon><small>{{property.formattedAddress}}</small></i>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          @if (settings.currency == 'USD') {
+            <span class="primary-color price fw-500 mx-2">
+              @if (property.priceDollar.sale) {
+                <span>{{property.priceDollar.sale | currency : 'USD' : 'symbol' : '1.0'}}</span>
+              }
+              @if (property.priceDollar.rent) {
+                <span>{{property.priceDollar.rent | currency : 'USD' : 'symbol' : '1.0'}} /month</span>
+              }         
+            </span>
+          }
+          @if (settings.currency == 'EUR') {
+            <span class="primary-color price fw-500 mx-2">
+              @if (property.priceEuro.sale) {
+                <span>{{property.priceEuro.sale | currency : 'EUR' : 'symbol' : '1.0'}}</span>
+              }
+              @if (property.priceEuro.rent) {
+                <span>{{property.priceEuro.rent | currency : 'EUR' : 'symbol' : '1.0'}} /month</span>
+              }         
+            </span>
+          } 
+          <button mat-icon-button color="warn" class="remove p-0" (click)="remove(property, $event)" matTooltip="Remove" matTooltipPosition="after">
+              <mat-icon class="mat-icon-sm m-0">close</mat-icon>
+          </button>
+        </div>
+      </div>  
+    </a>
+  }
+</mat-nav-list>

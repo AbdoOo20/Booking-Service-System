@@ -10,7 +10,7 @@
 <h1 class="text-center head-color">Categories</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create</a>
+    <a asp-action="Create" class="btn btn-outline-primary">Create</a>
 </p>
 <div class="table-responsive">
 <table class="table" id="myTable">
@@ -29,12 +29,12 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-link" title="Edit">
-                        <i class="fas fa-edit text-warning" style="font-size: 24px;"></i>
+                        <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-outline-primary" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
                     </a>
 
-                    <a asp-action="Delete" asp-route-id="@item.CategoryId" class="btn btn-link" title="Delete">
-                        <i class="fas fa-trash-alt text-danger" style="font-size: 24px;"></i>
+                        <a asp-action="Delete" asp-route-id="@item.CategoryId" class="btn btn-outline-danger" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
                     </a>
                 </td>
         </tr>

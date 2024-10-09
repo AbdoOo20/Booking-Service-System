@@ -1,9 +1,13 @@
-﻿using CusromerProject.DTO.Account;
+﻿using BookingServices.Data;
+using CusromerProject.DTO.Account;
+using CusromerProject.DTO.Customer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
@@ -15,11 +19,19 @@ namespace CusromerProject.Controllers
     {
         UserManager<IdentityUser> _userManager;
         IConfiguration _configuration;
+        ApplicationDbContext context;
+        IEmailSender _emailSender;
 
-        public AccountController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AccountController(
+            UserManager<IdentityUser> userManager, 
+            IConfiguration configuration , 
+            ApplicationDbContext _context,
+            IEmailSender emailSender)
         { 
             _userManager = userManager;
             _configuration = configuration;
+            context = _context;
+            _emailSender = emailSender;
         }
 
         [HttpPost("Login")]
@@ -28,6 +40,17 @@ namespace CusromerProject.Controllers
             if (ModelState.IsValid)
             {
                 IdentityUser user = await _userManager.FindByNameAsync(loginDTO.UserName);
+
+                bool isBlocked = (from C in context.Customers
+                                  where C.CustomerId == user.Id
+                                  select C.IsBlocked).FirstOrDefault() ?? false;
+                if (isBlocked)
+                {
+                    ModelState.AddModelError("User Blocked", "Plz, connect with the customer service");
+
+                    return BadRequest(ModelState);
+                }
+
                 if (user != null)
                 {
                     bool passwordFound = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
@@ -67,6 +90,104 @@ namespace CusromerProject.Controllers
 
                 }
                 ModelState.AddModelError("UserName", "The name or password invaild");
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> CreateCustomer([FromBody] CustomerDataDTO customerData)
+        {
+            if (customerData == null ||
+                string.IsNullOrEmpty(customerData.Username) ||
+                string.IsNullOrEmpty(customerData.Password) ||
+                string.IsNullOrEmpty(customerData.Name) ||
+                string.IsNullOrEmpty(customerData.AlternativePhone) ||
+                string.IsNullOrEmpty(customerData.SSN) ||
+                string.IsNullOrEmpty(customerData.City))
+            {
+                return BadRequest();
+            }
+            var user = new IdentityUser
+            {
+                UserName = customerData.Username,
+                Email = customerData.Email,
+                PhoneNumber = customerData.Phone
+            };
+
+            var result = await _userManager.CreateAsync(user, customerData.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            var customer = new Customer
+            {
+                CustomerId = user.Id,
+                Name = customerData.Name,
+                AlternativePhone = customerData.AlternativePhone,
+                SSN = customerData.SSN,
+                City = customerData.City,
+                IsOnlineOrOfflineUser = true,
+                IsBlocked = false
+            };
+
+            context.Customers.Add(customer);
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                return Ok(new { Message = "If an account with that email exists, a reset link will be sent." });
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.Action(
+                "ResetPassword", "Account",
+                new { token, email = model.Email },
+                protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password",
+                $"Please reset your password by clicking <a href='{callbackUrl}'>here</a>.");
+
+            return Ok(new { Message = "Password reset link sent to your email." });
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest("Invalid request.");
+            }
+
+            var decodedToken = WebUtility.UrlDecode(model.Token);
+            // Reset the password
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+            if (result.Succeeded)
+            {
+                return Ok(new { Message = "Password has been reset successfully." });
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return BadRequest(ModelState);

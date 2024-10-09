@@ -1,14 +1,10 @@
 using BookingServices.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using System.Globalization;
 using Microsoft.AspNetCore.Http.Features;
 using BookingServices.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using BookingServices.ViewModel;
 
 
 namespace BookingServices
@@ -22,10 +18,12 @@ namespace BookingServices
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -37,10 +35,14 @@ namespace BookingServices
                     .AddDefaultTokenProviders();
 
             builder.Services.AddControllersWithViews();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+            });
 
             builder.Services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = 10485760; // 10 MB limit
+                options.MultipartBodyLengthLimit = 2097152; // 2 MB limit
             });
          
             builder.Services.AddHttpClient();
@@ -62,6 +64,9 @@ namespace BookingServices
             });
 
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+            builder.Services.AddRazorPages();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -79,12 +84,38 @@ namespace BookingServices
             app.UseRouting();
 
             app.UseAuthentication();
+
             app.UseAuthorization();
-            
+
+            app.Use(async (context, next) =>
+            {
+                var path = context.Request.Path.Value;
+                if (path == "/" || path == "/Home/Index")
+                {
+                    if (context.User.Identity.IsAuthenticated)
+                    {
+                        if (context.User.IsInRole("Admin"))
+                        {
+                            context.Response.Redirect("/AdminHome");
+                            return;
+                        }
+                        else if (context.User.IsInRole("Provider"))
+                        {
+                            context.Response.Redirect("/ProviderHome");
+                            return;
+                        }
+                    }
+                    else 
+                    {
+                        context.Response.Redirect("/Identity/Account/Login");
+                    }
+                }
+                await next();
+            });
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
             app.MapRazorPages();
 
             app.Run();

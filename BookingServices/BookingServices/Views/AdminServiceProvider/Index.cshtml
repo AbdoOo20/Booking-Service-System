@@ -42,7 +42,7 @@
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
                         @{
-                            if (item.Isblocked)
+                            if (item.Isblocked ?? false)
                             {
                                 <button id="blockButton-@item.ProviderId" class="btn btn-sm btn-outline-success mx-1" onclick="toggleBlock('@item.ProviderId')">
                                     <i class="fa-regular fa-circle-check"></i> UnBlock

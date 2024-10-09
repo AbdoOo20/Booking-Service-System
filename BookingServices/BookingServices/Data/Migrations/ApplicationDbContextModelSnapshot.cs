@@ -38,6 +38,9 @@ namespace BookingServices.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("IsBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
@@ -45,7 +48,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AdminContracts");
+                    b.ToTable("AdminContracts", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Booking", b =>
@@ -98,7 +101,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("PaymentIncomeId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.BookingConsultation", b =>
@@ -118,7 +121,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("ConsultationId");
 
-                    b.ToTable("BookingConsultations");
+                    b.ToTable("BookingConsultations", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.BookingPackage", b =>
@@ -135,7 +138,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("PackageId");
 
-                    b.ToTable("BookingPackages");
+                    b.ToTable("BookingPackages", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.BookingService", b =>
@@ -152,7 +155,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("BookingServices");
+                    b.ToTable("BookingServices", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Category", b =>
@@ -169,7 +172,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Consultation", b =>
@@ -184,6 +187,9 @@ namespace BookingServices.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("IsBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -194,7 +200,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasKey("ConsultationId");
 
-                    b.ToTable("Consultations");
+                    b.ToTable("Consultations", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Customer", b =>
@@ -229,7 +235,7 @@ namespace BookingServices.Data.Migrations
                     b.HasIndex("AlternativePhone")
                         .IsUnique();
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Discount", b =>
@@ -256,7 +262,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("PaymentIncomeId");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Link", b =>
@@ -272,7 +278,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasKey("ProviderId", "SocialAccount");
 
-                    b.ToTable("Links");
+                    b.ToTable("Links", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Package", b =>
@@ -286,7 +292,7 @@ namespace BookingServices.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool?>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<string>("PackageName")
@@ -311,7 +317,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.PackageService", b =>
@@ -328,7 +334,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("PackageService");
+                    b.ToTable("PackageService", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Payment", b =>
@@ -357,7 +363,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.PaymentIncome", b =>
@@ -368,7 +374,7 @@ namespace BookingServices.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentIncomeId"));
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool?>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -384,7 +390,7 @@ namespace BookingServices.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("PaymentIncomes");
+                    b.ToTable("PaymentIncomes", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.ProviderContract", b =>
@@ -403,6 +409,9 @@ namespace BookingServices.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("IsBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ProviderId")
                         .HasColumnType("nvarchar(450)");
 
@@ -410,7 +419,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("ProviderContracts");
+                    b.ToTable("ProviderContracts", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.ProviderRegister", b =>
@@ -443,7 +452,7 @@ namespace BookingServices.Data.Migrations
                     b.HasIndex("ProviderPhoneNumber")
                         .IsUnique();
 
-                    b.ToTable("ProviderRegisters");
+                    b.ToTable("ProviderRegisters", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Review", b =>
@@ -475,7 +484,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.Service", b =>
@@ -505,7 +514,7 @@ namespace BookingServices.Data.Migrations
                     b.Property<decimal>("InitialPaymentPercentage")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsOnlineOrOffline")
@@ -548,7 +557,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("Services");
+                    b.ToTable("Services", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.ServiceImage", b =>
@@ -561,7 +570,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasKey("ServiceId", "URL");
 
-                    b.ToTable("ServiceImages");
+                    b.ToTable("ServiceImages", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.ServicePrice", b =>
@@ -579,7 +588,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasKey("ServiceId", "PriceDate");
 
-                    b.ToTable("ServicePrices");
+                    b.ToTable("ServicePrices", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.ServiceProvider", b =>
@@ -590,7 +599,7 @@ namespace BookingServices.Data.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsBlooked")
+                    b.Property<bool?>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -608,7 +617,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasKey("ProviderId");
 
-                    b.ToTable("ServiceProviders");
+                    b.ToTable("ServiceProviders", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.UserMessage", b =>
@@ -638,7 +647,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("SenderID");
 
-                    b.ToTable("UserMessages");
+                    b.ToTable("UserMessages", (string)null);
                 });
 
             modelBuilder.Entity("BookingServices.Data.WishList", b =>
@@ -655,7 +664,7 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("WishList");
+                    b.ToTable("WishList", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

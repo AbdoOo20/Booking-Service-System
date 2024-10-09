@@ -154,5 +154,18 @@ namespace BookingServices.Controllers
         {
             return _context.PaymentIncomes.Any(e => e.PaymentIncomeId == id);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleBlock(int id)
+        {
+            var gatway = await _context.PaymentIncomes.FindAsync(id);
+            if (gatway == null)
+            {
+                return Json(new { success = false, message = "Payment Method Not Found" });
+            }
+            gatway.IsBlocked = !(gatway.IsBlocked ?? false);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, isBlocked = gatway.IsBlocked });
+        }
     }
 }

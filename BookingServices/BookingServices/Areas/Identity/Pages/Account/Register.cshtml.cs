@@ -183,6 +183,10 @@ namespace BookingServices.Areas.Identity.Pages.Account
 
                 if (userResult.Succeeded)
                 {
+                    user.EmailConfirmed = true;
+                    // Update the user to save the EmailConfirmed change
+                    var updateResult = await _userManager.UpdateAsync(user);
+
                     userResult = await _userManager.AddToRoleAsync(user, Input.Role);
 
                     if (userResult.Succeeded)
@@ -213,6 +217,12 @@ namespace BookingServices.Areas.Identity.Pages.Account
                         return RedirectToAction("Index", "AdminServiceProvider");
                     }
                 }
+                foreach (var error in userResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return Page();
             }
                 
             await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

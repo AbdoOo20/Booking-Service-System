@@ -20,6 +20,8 @@ namespace BookingServices.Data
         [Required]
         public string? Description { get; set; }
 
+        public bool? IsBlocked { get; set; } = false;
+
         public virtual ICollection<BookingConsultation> BookingConsultations { get; set; } = new List<BookingConsultation>();
     }
 }

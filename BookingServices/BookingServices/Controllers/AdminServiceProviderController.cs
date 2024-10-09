@@ -38,7 +38,7 @@ namespace BookingServices.Controllers
                                        providerBalance = sp.Balance,
                                        providerRate = sp.Rate,
                                        providerReservedBalance = sp.ReservedBalance,
-                                       Isblocked = sp.IsBlooked
+                                       Isblocked = sp.IsBlocked,
                                    }).ToListAsync();
 
             var numberOfServicesPerProvider = await _context.ServiceProviders
@@ -67,7 +67,7 @@ namespace BookingServices.Controllers
                     Balance = p.providerBalance,
                     ReservedBalance = p.providerReservedBalance,
                     NumberOfServices = numberOfServices ,
-                    Isblocked = p.Isblocked
+                    Isblocked = p.Isblocked,
                 };
 
                 providerDataVMs.Add(providerDataVM);
@@ -244,10 +244,10 @@ namespace BookingServices.Controllers
                 return Json(new { success = false, message = "Provider not found" });
             }
 
-            provider.IsBlooked = !provider.IsBlooked;
+            provider.IsBlocked = !(provider.IsBlocked ?? false);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, isBlocked = provider.IsBlooked });
+            return Json(new { success = true, isBlocked = provider.IsBlocked });
         }
 
 

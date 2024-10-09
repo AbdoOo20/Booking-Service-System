@@ -1,11 +1,16 @@
-
 using BookingServices.Data;
+using BookingServices.Services;
+using CusromerProject.DTO.Book;
+using CusromerProject.DTO.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using CusromerProject.DTO.Categories;
+using CusromerProject.DTO.Review;
 
 namespace CusromerProject
 {
@@ -15,34 +20,18 @@ namespace CusromerProject
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
+            // Configure Database (Entity Framework Core)
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<BookingServices.Data.ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            });
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAllOrigins",
-                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            });
-
+            // Configure Identity
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
+            // Configure JWT Authentication
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -66,21 +55,54 @@ namespace CusromerProject
                 };
             });
 
+            // Configure Memory Caching
+            builder.Services.AddMemoryCache(); // Register IMemoryCache
+
+            // Register Repositories
+            builder.Services.AddScoped<CategoryRepository>(); // Register CategoryRepository
+            builder.Services.AddScoped<ServiceRepository>(); // Register ServiceRepository
+            builder.Services.AddScoped<ReviewRepository>(); // Register ReviewRepository
+            builder.Services.AddScoped<BookRepository>(); // Register BookRepository
+
+            // Register Other Services
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+            // Configure CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+
+            // Configure Controllers and JSON Serialization Options
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                });
+
+            // Add Swagger/OpenAPI
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+            // Build the application
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure Middleware for Development
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            // Middleware Configuration
             app.UseAuthorization();
-
-            app.MapControllers();
-
             app.UseCors("AllowAllOrigins");
 
+            // Map Controllers
+            app.MapControllers();
+
+            // Run the application
             app.Run();
         }
     }

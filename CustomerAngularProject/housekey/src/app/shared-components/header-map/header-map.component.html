@@ -1,0 +1,55 @@
+<div class="map-wrapper" [class.fullscreen]="fullscreen" [ngClass]="'toolbar-'+settings.toolbar"> 
+
+    <google-map [center]="center" 
+                [zoom]="zoom" 
+                [options]="mapOptions"
+                height="100%" 
+                width="100%"
+                (mapClick)="onMapClick($event)"
+                (zoomChanged)="onZoomChanged()"
+                (idle)="onMapReady()">
+        @for (location of locations; track $index; let i = $index) {
+            <map-marker #marker="mapMarker" 
+                [position]="{ lat: location.lat, lng: location.lng }"
+                [options]="markerOptions"
+                (mapClick)="onMarkerClick($event, location.propertyId, marker)"></map-marker>
+        }
+     
+ 
+        <map-info-window> 
+            @if (property) {
+                <a [routerLink]="['/properties', property.id]" class="text-center">
+                    <img [src]="property.gallery[0].small" alt="image" class="d-block w-100"> 
+                    <p class="my-1">{{property.title}}</p> 
+                    @if (settings.currency == 'USD') {
+                        <p class="fw-500 my-1">
+                            @if (property.priceDollar.sale) {
+                                <span>{{property.priceDollar.sale | currency : 'USD' : 'symbol' : '1.0'}}</span>
+                            }
+                            @if (property.priceDollar.rent) {
+                                <span>{{property.priceDollar.rent | currency : 'USD' : 'symbol' : '1.0'}} /month</span>
+                            }                           
+                        </p>
+                    }
+
+                    @if (settings.currency == 'EUR') {
+                        <p class="fw-500 my-1">
+                            @if (property.priceEuro.sale) {
+                                <span>{{property.priceEuro.sale | currency : 'EUR' : 'symbol' : '1.0'}}</span>
+                            }
+                            @if (property.priceEuro.rent) {
+                                <span>{{property.priceEuro.rent | currency : 'EUR' : 'symbol' : '1.0'}} /month</span>
+                            }                           
+                        </p>
+                    } 
+                </a> 
+            } @else {
+                <div class="p-3">
+                    <mat-spinner color="warn"></mat-spinner>
+                </div>
+            } 
+        </map-info-window>
+     
+    </google-map>
+
+</div>

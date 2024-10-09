@@ -19,13 +19,16 @@
         </div>
     }
 }
-
+<style>
+    .head-color {
+        color: #012970;
+        font-weight: bold;
+    }</style>
 <link rel="stylesheet" href="~/css/StyleCustom/StyleCreateForm.css"/>
-
+<h1 class="text-center head-color m-3">Provider Registerion</h1>
 <div class="container">
     <form class="p-5 form-container" asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <h4>Provider Data</h4>
         <div class="form-floating input-group-lg mb-3 mt-3">
             <input asp-for="ProviderName" class="form-control" autocomplete="ProviderName" aria-required="true" placeholder="Your name" />
             <label asp-for="ProviderName">Name</label>
