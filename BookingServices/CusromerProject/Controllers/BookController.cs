@@ -74,7 +74,27 @@ namespace CusromerProject.Controllers
         //[Authorize]
         public async Task<IActionResult> GetBooking(int id)
         {
-            var item = await _context.Bookings.Include(b => b.Reviews).Where(b => b.BookingId == id).FirstOrDefaultAsync();
+            var item = await (from b in _context.Bookings
+                              join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+                              join s in _context.Services on bs.ServiceId equals s.ServiceId
+                              where b.BookingId == id   
+                              select new
+                              {
+                                  BookingId = b.BookingId,
+                                  BookDate = b.BookDate,
+                                  CashOrCashByHandOrInstallment = b.CashOrCashByHandOrInstallment,
+                                  CustomerId = b.CustomerId,
+                                  EndTime = b.EndTime,
+                                  EventDate = b.EventDate,
+                                  PaymentIncomeId = b.PaymentIncomeId,
+                                  Price = b.Price,
+                                  Quantity = b.Quantity,
+                                  Type = b.Type,
+                                  StartTime = b.StartTime,
+                                  Status = b.Status,
+                                  InitialPaymentPercentage = s.InitialPaymentPercentage,
+                                  ServiceId = s.ServiceId,
+                              }).FirstOrDefaultAsync();
             if (item == null)
             {
                 return NotFound("Not Found This Book");
@@ -93,6 +113,8 @@ namespace CusromerProject.Controllers
                 Type = item.Type,
                 StartTime = item.StartTime,
                 Status = item.Status,
+                ServiceId = item.ServiceId, 
+                InitialPaymentPercentage = item.InitialPaymentPercentage,
             };
             return Ok(newBook);
         }

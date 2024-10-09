@@ -1,0 +1,120 @@
+<!-- <mat-card
+    class="property-item p-0"
+    [ngClass]="[viewType + '-item', 'column-' + column]"
+    [class.full-width-page]="fullWidthPage"
+    fxLayout="row wrap"
+> -->
+<!-- My Code -->
+@if(service){
+<div
+    fxFlex="100"
+    fxShrink="3"
+    [fxFlex.gt-sm]="viewType == 'list' ? 40 : 100"
+    [fxFlex.sm]="viewType == 'list' ? 50 : 100"
+    class="thumbnail-section"
+>
+    <div fxLayout="row wrap" class="property-status">
+        @if(service.quantity == 0){
+        <span class="quantity-status rent">for rent</span>
+        }@else {
+        <span class="quantity-status sale">for sale</span>
+        }
+    </div>
+    <div class="mat-card-image w-100 m-0">
+        <img [src]="getImageUrl(service.image)" alt="Not Found" />
+    </div>
+
+    <div class="control-icons">
+        <button
+            mat-button
+            [disabled]="onFavorites()"
+            (click)="addToFavorites()"
+            matTooltip="Add To Favorite"
+        >
+            <mat-icon class="mat-icon-sm">favorite_border</mat-icon>
+        </button>
+        <button
+            mat-button
+            [disabled]="onCompare()"
+            (click)="addToCompare()"
+            matTooltip="Add To Compare"
+        >
+            <mat-icon class="mat-icon-sm">compare_arrows</mat-icon>
+        </button>
+    </div>
+</div>
+
+<div
+    fxFlex="100"
+    [fxFlex.gt-sm]="viewType == 'list' ? 60 : 100"
+    [fxFlex.sm]="viewType == 'list' ? 50 : 100"
+    class="p-3"
+>
+    <div fxLayout="column" fxLayoutAlign="start stretch" class="h-100">
+        <mat-card-content class="mb-0 p-0">
+            <h1 class="title">
+                <!-- <a [routerLink]="['/properties', property.id]">{{
+                    property.title
+                }}</a> -->
+                <a> {{ service.name }} </a>
+            </h1>
+
+            <p fxLayout="row" class="address">
+                <mat-icon class="text-muted">location_on</mat-icon>
+                <span>
+                    <a> {{ service.location }} </a>
+                </span>
+            </p>
+
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div>
+                    <h3 class="primary-color price">
+                        <span>
+                            {{
+                                service.priceForTheCurrentDay
+                                    | currency : "USD" : "symbol" : "1.0"
+                            }}
+                        </span>
+                    </h3>
+                </div>
+                <!-- <app-rating
+                        [ratingsCount]="5"
+                        [ratingsValue]="3"
+                    ></app-rating> -->
+            </div>
+
+            @if (viewType=='list' && fullWidthPage) {
+            <!-- <div fxShow="false" fxShow.gt-sm class="mt-3">
+                    <p>property.desc</p>
+                </div> -->
+            }
+
+            <div class="features mt-3">
+                <p>
+                    <span>Category Name</span
+                    ><span>{{ service.category }}</span>
+                </p>
+            </div>
+        </mat-card-content>
+        <div class="sticky-footer-helper" fxFlex="grow"></div>
+        <mat-card-actions class="m-0 p-0" fxLayoutAlign="space-between center">
+            <!-- <p fxLayout="row" class="date mb-0">
+                    <mat-icon class="text-muted">date_range</mat-icon>
+                    <span class="mx-2">
+                        property.published | date : "dd MMMM, yyyy"
+                    </span>
+                </p> -->
+            <div>
+                <a
+                    [routerLink]="['/properties', service.id]"
+                    mat-stroked-button
+                    color="primary"
+                    class="uppercase"
+                    >Details</a
+                >
+            </div>
+        </mat-card-actions>
+    </div>
+</div>
+}
+<!-- </mat-card> -->

@@ -71,7 +71,7 @@ namespace BookingServices.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(providerDataVM);
+            return RedirectToAction("Index");
         }
 
 

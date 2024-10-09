@@ -8,4 +8,7 @@ export interface Service {
   providerName: string;
   priceForTheCurrentDay: number;
   initialPayment: number;
+  category: string;
+  image: string;
+  quantity: number;
 }
