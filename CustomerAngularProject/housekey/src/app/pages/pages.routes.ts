@@ -11,13 +11,17 @@ export const routes: Routes = [
                 loadComponent: () => import('./home/home.component').then(c => c.HomeComponent)
             },
             {
+                path: 'home',
+                loadComponent: () => import('./home/home.component').then(c => c.HomeComponent)
+            },
+            {
                 path: 'about',
                 loadComponent: () => import('./about/about.component').then(c => c.AboutComponent)
             },
             {
                 path: 'contact',
                 loadComponent: () => import('./contact/contact.component').then(c => c.ContactComponent)
-            }, 
+            },
             {
                 path: 'agents',
                 loadChildren: () => import('./agents/agents.routes').then(p => p.routes)
@@ -55,9 +59,13 @@ export const routes: Routes = [
                 loadComponent: () => import('./submit-property/submit-property.component').then(c => c.SubmitPropertyComponent)
             },
             {
+                path: 'confirmation',
+                loadComponent: () => import('./confirmation/confirmation.component').then(c => c.ConfirmationComponent)
+            },
+            {
                 path: 'account',
                 loadChildren: () => import('./account/account.routes').then(p => p.routes)
-            }            
+            }
         ]
     }
 ];

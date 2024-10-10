@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookingServices.Data;
 using CusromerProject.DTO.Payment;
 using Microsoft.AspNetCore.Authorization;
+using CustomerProject.DTO.Payment;
 
 namespace CusromerProject.Controllers
 {
@@ -24,7 +20,7 @@ namespace CusromerProject.Controllers
 
         // GET: api/Payments
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
         {
             try
@@ -62,7 +58,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("PaymentGetways")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<IEnumerable<PaymentIncome>>> GetPaymentIncome()
         {
             try
@@ -88,7 +84,7 @@ namespace CusromerProject.Controllers
 
         //GET: api/Payments/5
         [HttpGet("{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<Payment>> GetPaymentByID(int id)
         {
             var payment = await _context.Payments
@@ -121,28 +117,45 @@ namespace CusromerProject.Controllers
             return Ok(payment);
         }
 
-        
+
 
         // POST: api/Payments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize]
-        public async Task<ActionResult<Payment>> PostPayment(PaymentDTO paymentDTO)
+        //[Authorize]
+        public async Task<ActionResult<Payment>> PostPayment([Bind("CustomerId,PaymentValue,PaymentDate,BookingId")] PostedPaymentDTO postedPaymentDTO)
         {
-            var payment = new Payment
+            try
             {
-                CustomerId= paymentDTO.CustomerID,
-                PaymentValue = paymentDTO.PaymentValue,
-                PaymentDate = paymentDTO.PaymentDate,
-                BookingId = paymentDTO.BookingID
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState); // Return 400 if the model state is invalid
+                }
+                var payment = new Payment()
+                {
+                    BookingId = postedPaymentDTO.BookingId,
+                    CustomerId = postedPaymentDTO.CustomerId,
+                    PaymentDate = postedPaymentDTO.PaymentDate,
+                    PaymentValue = postedPaymentDTO.PaymentValue
+                };
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
 
-            };
-
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetPaymentByID), new { id = payment.PaymentId }, paymentDTO);
+                return CreatedAtAction(nameof(GetPaymentByID), new { id = payment.PaymentId }, postedPaymentDTO); // Return 201 if successful
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the exception (you could use a logging framework like NLog or Serilog)
+                // For now, we return a 500 Internal Server Error with a message
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error saving payment to the database: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // General catch block for any other exceptions
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An unexpected error occurred: {ex.Message}");
+            }
         }
+
 
         /*  // DELETE: api/Payments/5
           [HttpDelete("{id}")]

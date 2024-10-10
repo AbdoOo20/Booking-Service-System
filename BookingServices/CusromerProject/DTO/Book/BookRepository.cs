@@ -4,6 +4,7 @@ using CusromerProject.DTO.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CusromerProject.DTO.Book
 {
@@ -26,7 +27,26 @@ namespace CusromerProject.DTO.Book
             if (!_cache.TryGetValue(cacheKey, out List<Book> books))
             {
                 books = new List<Book>();
-                var bookings = await _context.Bookings.Include(b => b.Reviews).ToListAsync();
+                var bookings = await (from b in _context.Bookings
+                                      join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+                                      join s in _context.Services on bs.ServiceId equals s.ServiceId
+                                      select new {
+                                          BookingId = b.BookingId,
+                                          BookDate = b.BookDate,
+                                          CashOrCashByHandOrInstallment = b.CashOrCashByHandOrInstallment,
+                                          CustomerId = b.CustomerId,
+                                          EndTime = b.EndTime,
+                                          EventDate = b.EventDate,
+                                          PaymentIncomeId = b.PaymentIncomeId,
+                                          Price = b.Price,
+                                          Quantity = b.Quantity,
+                                          Type = b.Type,
+                                          StartTime = b.StartTime,
+                                          Status = b.Status,
+                                          InitialPaymentPercentage = s.InitialPaymentPercentage,
+                                          ServiceId = s.ServiceId,
+                                      }).ToListAsync();
+
                 foreach (var item in bookings)
                 {
                     Book newBook = new Book()
@@ -43,6 +63,8 @@ namespace CusromerProject.DTO.Book
                         Type = item.Type,
                         StartTime = item.StartTime,
                         Status = item.Status,
+                        ServiceId = item.ServiceId,
+                        InitialPaymentPercentage = item.InitialPaymentPercentage,
                     };
                     books.Add(newBook);
                 }
@@ -62,7 +84,28 @@ namespace CusromerProject.DTO.Book
             if (!_cache.TryGetValue(cacheKey, out List<Book> books))
             {
                 books = new List<Book>();
-                var bookings = await _context.Bookings.Include(b => b.Reviews).Where(b => b.CustomerId == id).ToListAsync();
+                var bookings = await (from b in _context.Bookings
+                                      join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+                                      join s in _context.Services on bs.ServiceId equals s.ServiceId
+                                      where b.CustomerId == id
+                                      select new
+                                      {
+                                          BookingId = b.BookingId,
+                                          BookDate = b.BookDate,
+                                          CashOrCashByHandOrInstallment = b.CashOrCashByHandOrInstallment,
+                                          CustomerId = b.CustomerId,
+                                          EndTime = b.EndTime,
+                                          EventDate = b.EventDate,
+                                          PaymentIncomeId = b.PaymentIncomeId,
+                                          Price = b.Price,
+                                          Quantity = b.Quantity,
+                                          Type = b.Type,
+                                          StartTime = b.StartTime,
+                                          Status = b.Status,
+                                          InitialPaymentPercentage = s.InitialPaymentPercentage,
+                                          ServiceId = s.ServiceId,
+                                      }).ToListAsync();
+
                 foreach (var item in bookings)
                 {
                     Book newBook = new Book()
@@ -79,6 +122,8 @@ namespace CusromerProject.DTO.Book
                         Type = item.Type,
                         StartTime = item.StartTime,
                         Status = item.Status,
+                        ServiceId= item.ServiceId,
+                        InitialPaymentPercentage = item.InitialPaymentPercentage
                     };
                     books.Add(newBook);
                 }
