@@ -1,5 +1,18 @@
-import { Component, ElementRef, Input, NgZone, OnInit, ViewChild, } from "@angular/core";
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators, } from "@angular/forms";
+import {
+  Component,
+  ElementRef,
+  Input,
+  NgZone,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatStepper, MatStepperModule } from "@angular/material/stepper";
@@ -21,6 +34,12 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { CommonModule } from "@angular/common";
 import { PayPalService } from "@services/pay-pal.service";
 import { DataService } from "@services/data.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ContractDialogComponent } from "./../../shared-components/contract-dialog/contract-dialog.component";
+import { MatDialogModule } from "@angular/material/dialog";
+import { AbstractControl, ValidationErrors } from "@angular/forms";
+import { Observable, of } from "rxjs";
+import { delay } from "rxjs/operators";
 
 @Component({
   selector: "app-submit-property",
@@ -42,6 +61,7 @@ import { DataService } from "@services/data.service";
     MatDatepickerModule,
     MatNativeDateModule,
     CommonModule,
+    MatDialogModule,
   ],
   templateUrl: "./submit-property.component.html",
 })
@@ -83,6 +103,9 @@ export class SubmitPropertyComponent implements OnInit {
   endHour: number;
   services: Service[] = [];
   date: string;
+  isContractAccepted: boolean = false;
+  hasQuantity: boolean = false;
+  acceptContract: boolean = false;
 
   // //Payment
   public payment: FormGroup;
@@ -100,12 +123,24 @@ export class SubmitPropertyComponent implements OnInit {
     private domHandlerService: DomHandlerService,
     public bookService: BookingService,
     private PayPal: PayPalService,
-    private dataService: DataService
+    private dataService: DataService,
+    private dialog: MatDialog
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
     this.maxDate.setMonth(this.maxDate.getMonth() + 3);
     // this.total = 0;
+  }
+
+  asyncQuantityValidator(serviceQuantity: number) {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value) {
+        return of(null);
+      }
+      return of(
+        control.value > serviceQuantity ? { invalidQuantity: true } : null
+      ).pipe(delay(500));
+    };
   }
 
   ngOnInit() {
@@ -128,6 +163,12 @@ export class SubmitPropertyComponent implements OnInit {
         eventDate: ["", Validators.required],
         startTime: ["", Validators.required],
         endTime: ["", Validators.required],
+        quantity: [
+          "",
+          Validators.required,
+          Validators.min(1),
+          Validators.max(100000000000000000000000000000),
+        ],
         //propertyType: [null, Validators.required],
         //propertyStatus: null,
         //gallery: null,
@@ -135,47 +176,44 @@ export class SubmitPropertyComponent implements OnInit {
       payment: this.fb.group({
         amount: [0, Validators.required],
         minValue: 0,
-        maxValue: 0
-      })
+        maxValue: 0,
+      }),
     });
 
-    //set Booking Opject
-    this.dataService.setData({
-      bookId: 0,
-      eventDate: new Date().toISOString(),
-      startTime: "string",
-      endTime: "string",
-      status: "",
-      quantity: 1,
-      price: 1,
-      cashOrCashByHandOrInstallment: "",
-      bookDate: new Date().toISOString(),
-      type: "Service",
-      customerId: "Static ID Here Now",
-      serviceId: 0,
-      paymentIncomeId: 0 // need to featch PaymentsIncoms But in The feature, now just PayPal
-    })
     //call service (bookService) for get the Service Data
     this.bookService.getService(this.serviceID).subscribe({
       next: (data) => {
+        this.hasQuantity = false;
         this.service = data as Service;
-
         this.submitForm.patchValue({
           booking: {
             service: this.service.name,
             priceEuro: this.service.priceForTheCurrentDay?.toString(),
+            quantity: null,
           },
         });
         this.submitForm.patchValue({
           payment: {
             minValue: this.service.initialPayment,
             maxValue: this.service.priceForTheCurrentDay,
-          }
+          },
         });
+        this.hasQuantity = this.service.quantity > 0 ? true : false;
         this.calculateTotal();
         this.initializeTimeOptions();
+
+        const quantityControl = this.submitForm.get("booking.quantity");
+        if (this.service.quantity > 0) {
+          quantityControl?.setAsyncValidators(
+            this.asyncQuantityValidator(this.service.quantity)
+          );
+        } else {
+          quantityControl?.clearAsyncValidators(); // Clear async validators if not needed
+        }
+        quantityControl?.updateValueAndValidity();
       },
       error: (error) => {
+        this.hasQuantity = false;
         alert("Error Fetching Service: " + error);
       },
     });
@@ -186,25 +224,114 @@ export class SubmitPropertyComponent implements OnInit {
       });
   }
 
+  convertTo24HourFormat(time: string): string {
+    // Parse the input time
+    const [timePart, modifier] = time.split(" "); // Split into time part and AM/PM
+    let [hours, minutes] = timePart.split(":").map(Number); // Split hours and minutes
+
+    // Handle AM/PM
+    if (modifier === "PM" && hours < 12) {
+      hours += 12; // Convert PM hours to 24-hour format
+    } else if (modifier === "AM" && hours === 12) {
+      hours = 0; // Midnight case
+    }
+
+    // Format hours, minutes, and seconds
+    const formattedTime = `${hours.toString().padStart(2, "0")}:${(minutes || 0)
+      .toString()
+      .padStart(2, "0")}:00`;
+    return formattedTime;
+  }
+
+  createBook() {
+    // Convert Data
+    const selectedDate = this.submitForm.get("booking.eventDate").value;
+    const date = new Date(selectedDate);
+    const localDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    );
+    const formattedDate = localDate.toISOString();
+    const convertedStartTime = this.convertTo24HourFormat(
+      this.submitForm.get("booking.startTime").value
+    );
+    const convertedEndTime = this.convertTo24HourFormat(
+      this.submitForm.get("booking.endTime").value
+    );
+
+    //set Booking Opject
+    const bookingData = {
+      eventDate: formattedDate,
+      startTime: convertedStartTime,
+      endTime: convertedEndTime,
+      initialPaymentPercentage: 20,
+      status: "Pending",
+      quantity: Number(this.submitForm.get("booking.quantity").value),
+      price: parseFloat(this.submitForm.get("booking.priceEuro").value),
+      cashOrCashByHandOrInstallment: "Cash",
+      bookDate: new Date().toISOString(),
+      type: "Service",
+      customerId: this.customerID,
+      serviceId: this.serviceID,
+      paymentIncomeId: null,
+    };
+    this.bookService
+      .addBooking(JSON.stringify(bookingData, null, 2))
+      .subscribe({
+        next: (response) => {
+          console.log("Booking successful:", response);
+        },
+        error: (error) => {
+          console.error("Error during booking:", error);
+        },
+      });
+  }
+
+  openContractDialog(): void {
+    const dialogRef = this.dialog.open(ContractDialogComponent, {
+      width: "60vw",
+      height: "80vh",
+      data: {
+        admin: this.service._AdminContract,
+        provider: this.service._ProviderContract,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.acceptContract = true;
+      } else {
+        this.acceptContract = false;
+      }
+    });
+  }
+
   // Method to calculate total
   calculateTotal() {
-    const initialPayment = parseFloat(this.submitForm.get('payment.minValue')?.value) || 0;
-    const priceEuro = parseFloat(this.submitForm.get('payment.maxValue')?.value) || 0;
-    const minPrice = (initialPayment * priceEuro) / 100;;
-    this.submitForm.get('payment.amount')?.setValue(minPrice, { emitEvent: false });
+    const initialPayment =
+      parseFloat(this.submitForm.get("payment.minValue")?.value) || 0;
+    const priceEuro =
+      parseFloat(this.submitForm.get("payment.maxValue")?.value) || 0;
+    const minPrice = (initialPayment * priceEuro) / 100;
+    this.submitForm
+      .get("payment.amount")
+      ?.setValue(minPrice, { emitEvent: false });
   }
 
   CreatePayment() {
     // Get total value from the form
-    const amount = this.submitForm.get('payment.amount')?.value; // Reference the correct form group
+    const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
 
     // Ensure minValue and maxValue are properly set from the form
-    this.minValue = parseFloat(this.submitForm.get('payment.minValue')?.value);
-    this.maxValue = parseFloat(this.submitForm.get('payment.maxValue')?.value);
+    this.minValue = parseFloat(this.submitForm.get("payment.minValue")?.value);
+    this.maxValue = parseFloat(this.submitForm.get("payment.maxValue")?.value);
 
     // Check if the total is between minValue and maxValue
-    if (amount < ((this.minValue * this.maxValue) / 100) || amount > this.maxValue || amount <= 0) {
-      console.warn('Total must be between minimum and maximum values:', amount);
+    if (
+      amount < (this.minValue * this.maxValue) / 100 ||
+      amount > this.maxValue ||
+      amount <= 0
+    ) {
+      console.warn("Total must be between minimum and maximum values:", amount);
       return; // Exit the method if the total is not in the valid range
     }
 
@@ -222,11 +349,10 @@ export class SubmitPropertyComponent implements OnInit {
         window.location.href = response.approvalUrl;
       },
       error: (error) => {
-        console.error('Payment Error:', error);
-      }
+        console.error("Payment Error:", error);
+      },
     });
   }
-
 
   private initializeTimeOptions() {
     this.timeOptions = [];
@@ -235,6 +361,7 @@ export class SubmitPropertyComponent implements OnInit {
     for (let hour = this.startHour; hour <= this.endHour; hour++) {
       const amPm = hour >= 12 ? "PM" : "AM";
       const displayHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
+      console.log(`${displayHour} ${amPm}`);
       if (!this.timeBooked.includes(`${displayHour} ${amPm}`)) {
         this.timeOptions.push(`${displayHour} ${amPm}`);
       }

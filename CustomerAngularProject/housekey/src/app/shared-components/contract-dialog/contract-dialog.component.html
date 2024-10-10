@@ -1,0 +1,32 @@
+
+
+<h2 class="dialog-title">Contract</h2>
+<div class="contract-container">
+    <!-- Contract 1 -->
+    @if(data.admin != null){
+        <div class="contract">
+            <h3 class="contract-title">{{ data.admin.name }}</h3>
+            <div class="contract-details-scroll">
+                <p>{{ data.admin.details }}</p>
+            </div>
+        </div>
+    }
+    @if(data.provider != null){
+        <div class="contract">
+            <h3 class="contract-title">{{ data.provider.name }}</h3>
+            <div class="contract-details-scroll">
+                <p>{{ data.provider.details }}</p>
+            </div>
+        </div>
+    } 
+    <!-- Contract 2 -->
+    
+</div>
+
+<div fxLayout="row" fxLayoutAlign="space-between center" class="accept-section">
+    <mat-checkbox [(ngModel)]="isAccepted">I have read and accept the terms</mat-checkbox>
+    <button mat-raised-button class="custom-button" fxLayoutAlign="center center" type="button" [disabled]="!isAccepted"
+        (click)="acceptContract()">
+        Accept
+    </button>
+</div>
