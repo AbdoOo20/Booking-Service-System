@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using CustomerProject.DTO.Services;
+using Microsoft.DotNet.Scaffolding.Shared;
 
 namespace CusromerProject.DTO.Services
 {
@@ -44,7 +45,14 @@ namespace CusromerProject.DTO.Services
                             .FirstOrDefault(),
                         Image = s.ServiceImages.FirstOrDefault().URL, // Null-conditional operator
                         _AdminContract = BuildAdminContract(s.AdminContract), // Use helper method
-                        _ProviderContract = BuildProviderContract(s.ProviderContract)
+                        _ProviderContract = BuildProviderContract(s.ProviderContract),
+                        Provider = new ProviderDTO
+                        {
+                            ProviderId = s.ServiceProvider.ProviderId,
+                            Name = s.ServiceProvider.Name,
+                            ServiceDetails = s.ServiceProvider.ServiceDetails ?? string.Empty,
+                            Rate = s.ServiceProvider.Rate
+                        }
                     })
                     .ToListAsync();
 
@@ -105,7 +113,14 @@ namespace CusromerProject.DTO.Services
                             Image = rs.ServiceImages.FirstOrDefault().URL
                         }).ToList(),
                         _AdminContract = BuildAdminContract(s.AdminContract), // Use helper method
-                        _ProviderContract = BuildProviderContract(s.ProviderContract)
+                        _ProviderContract = BuildProviderContract(s.ProviderContract),
+                        Provider = new ProviderDTO
+                        {
+                            ProviderId = s.ServiceProvider.ProviderId,
+                            Name = s.ServiceProvider.Name,
+                            ServiceDetails = s.ServiceProvider.ServiceDetails ?? string.Empty,
+                            Rate = s.ServiceProvider.Rate
+                        }
                     })
                     .FirstOrDefaultAsync();
 
@@ -124,10 +139,10 @@ namespace CusromerProject.DTO.Services
         }
 
         // Helper method for building contracts safely
-        private static Contract? BuildAdminContract(AdminContract? contract)
+        private static ContractDTO? BuildAdminContract(AdminContract? contract)
         {
             return contract != null
-                ? new Contract
+                ? new ContractDTO
                 {
                     Id = contract.ContractId,
                     Name = contract.ContractName ?? string.Empty, // Handle null values
@@ -135,10 +150,10 @@ namespace CusromerProject.DTO.Services
                 }
                 : null;
         }
-        private static Contract? BuildProviderContract(ProviderContract? contract)
+        private static ContractDTO? BuildProviderContract(ProviderContract? contract)
         {
             return contract != null
-                ? new Contract
+                ? new ContractDTO
                 {
                     Id = contract.ContractId,
                     Name = contract.ContractName ?? string.Empty, // Handle null values

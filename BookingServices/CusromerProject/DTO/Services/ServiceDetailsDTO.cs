@@ -19,7 +19,9 @@ namespace CusromerProject.DTO.Services
         public List<string> Images { get; set; }
         public List<AllServicesDetailsDTO> RelatedServices { get; set; }
 
-        public Contract? _AdminContract { get; set; }
-        public Contract? _ProviderContract { get; set; }
+        public ContractDTO? _AdminContract { get; set; }
+        public ContractDTO? _ProviderContract { get; set; }
+
+        public ProviderDTO Provider { get; set; }
     }
 }
