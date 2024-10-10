@@ -1,17 +1,5 @@
-import {
-  Component,
-  ElementRef,
-  NgZone,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from "@angular/forms";
+import { Component, ElementRef, Input, NgZone, OnInit, ViewChild, } from "@angular/core";
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators, } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatStepper, MatStepperModule } from "@angular/material/stepper";
@@ -31,6 +19,8 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { CommonModule } from "@angular/common";
+import { PayPalService } from "@services/pay-pal.service";
+import { DataService } from "@services/data.service";
 
 @Component({
   selector: "app-submit-property",
@@ -78,18 +68,6 @@ export class SubmitPropertyComponent implements OnInit {
     fullscreenControl: true,
   };
 
-  constructor(
-    public appService: AppService,
-    private fb: FormBuilder,
-    private ngZone: NgZone,
-    private domHandlerService: DomHandlerService,
-    public bookService: BookingService
-  ) {
-    this.minDate = new Date();
-    this.maxDate = new Date();
-    this.maxDate.setMonth(this.maxDate.getMonth() + 3);
-  }
-
   ///////////////////////////////////////////////////////////////////////
   serviceID: number = 1;
   customerID: string = "221d4d90-d8f5-423f-920a-196a0a8c12d8";
@@ -106,6 +84,30 @@ export class SubmitPropertyComponent implements OnInit {
   services: Service[] = [];
   date: string;
 
+  // //Payment
+  public payment: FormGroup;
+  public minValue: number;
+  public maxValue: number;
+  public amount: number;
+
+  // Booking Data
+  @Input() BookingData: any;
+
+  constructor(
+    public appService: AppService,
+    private fb: FormBuilder,
+    private ngZone: NgZone,
+    private domHandlerService: DomHandlerService,
+    public bookService: BookingService,
+    private PayPal: PayPalService,
+    private dataService: DataService
+  ) {
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.maxDate.setMonth(this.maxDate.getMonth() + 3);
+    // this.total = 0;
+  }
+
   ngOnInit() {
     this.features = this.appService.getFeatures();
     this.propertyTypes = this.appService.getPropertyTypes();
@@ -116,6 +118,7 @@ export class SubmitPropertyComponent implements OnInit {
     this.minDate = new Date();
     const currentDate = new Date();
     this.maxDate = new Date(currentDate.setMonth(currentDate.getMonth() + 3));
+
     this.submitForm = this.fb.group({
       booking: this.fb.group({
         service: [""],
@@ -129,37 +132,47 @@ export class SubmitPropertyComponent implements OnInit {
         //propertyStatus: null,
         //gallery: null,
       }),
-      address: this.fb.group({
-        location: ["", Validators.required],
-        city: ["", Validators.required],
-        zipCode: "",
-        neighborhood: "",
-        street: "",
-      }),
-      additional: this.fb.group({
-        bedrooms: "",
-        bathrooms: "",
-        garages: "",
-        area: "",
-        yearBuilt: "",
-        features: this.buildFeatures(),
-      }),
-      media: this.fb.group({
-        videos: this.fb.array([this.createVideo()]),
-        plans: this.fb.array([this.createPlan()]),
-        additionalFeatures: this.fb.array([this.createFeature()]),
-        featured: false,
-      }),
+      payment: this.fb.group({
+        amount: [0, Validators.required],
+        minValue: 0,
+        maxValue: 0
+      })
     });
+
+    //set Booking Opject
+    this.dataService.setData({
+      bookId: 0,
+      eventDate: new Date().toISOString(),
+      startTime: "string",
+      endTime: "string",
+      status: "",
+      quantity: 1,
+      price: 1,
+      cashOrCashByHandOrInstallment: "",
+      bookDate: new Date().toISOString(),
+      type: "Service",
+      customerId: "Static ID Here Now",
+      serviceId: 0,
+      paymentIncomeId: 0 // need to featch PaymentsIncoms But in The feature, now just PayPal
+    })
+    //call service (bookService) for get the Service Data
     this.bookService.getService(this.serviceID).subscribe({
       next: (data) => {
         this.service = data as Service;
+
         this.submitForm.patchValue({
           booking: {
             service: this.service.name,
             priceEuro: this.service.priceForTheCurrentDay?.toString(),
           },
         });
+        this.submitForm.patchValue({
+          payment: {
+            minValue: this.service.initialPayment,
+            maxValue: this.service.priceForTheCurrentDay,
+          }
+        });
+        this.calculateTotal();
         this.initializeTimeOptions();
       },
       error: (error) => {
@@ -171,8 +184,49 @@ export class SubmitPropertyComponent implements OnInit {
       ?.valueChanges.subscribe((startTime) => {
         this.updateEndTimeOptions(startTime);
       });
-    // this.setCurrentPosition();
   }
+
+  // Method to calculate total
+  calculateTotal() {
+    const initialPayment = parseFloat(this.submitForm.get('payment.minValue')?.value) || 0;
+    const priceEuro = parseFloat(this.submitForm.get('payment.maxValue')?.value) || 0;
+    const minPrice = (initialPayment * priceEuro) / 100;;
+    this.submitForm.get('payment.amount')?.setValue(minPrice, { emitEvent: false });
+  }
+
+  CreatePayment() {
+    // Get total value from the form
+    const amount = this.submitForm.get('payment.amount')?.value; // Reference the correct form group
+
+    // Ensure minValue and maxValue are properly set from the form
+    this.minValue = parseFloat(this.submitForm.get('payment.minValue')?.value);
+    this.maxValue = parseFloat(this.submitForm.get('payment.maxValue')?.value);
+
+    // Check if the total is between minValue and maxValue
+    if (amount < ((this.minValue * this.maxValue) / 100) || amount > this.maxValue || amount <= 0) {
+      console.warn('Total must be between minimum and maximum values:', amount);
+      return; // Exit the method if the total is not in the valid range
+    }
+
+    const paymentData = {
+      total: amount,
+      currency: "USD",
+      description: "New Transaction",
+      returnUrl: "http://localhost:4200/confirmation",
+      cancelUrl: "http://localhost:4200/submit-property",
+    };
+
+    // Call the addPayment method
+    this.PayPal.addPayment(paymentData).subscribe({
+      next: (response) => {
+        window.location.href = response.approvalUrl;
+      },
+      error: (error) => {
+        console.error('Payment Error:', error);
+      }
+    });
+  }
+
 
   private initializeTimeOptions() {
     this.timeOptions = [];
