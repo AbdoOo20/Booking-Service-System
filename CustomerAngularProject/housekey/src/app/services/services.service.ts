@@ -1,20 +1,55 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
 import { forkJoin, map, Observable, of } from "rxjs";
 import { Service } from "../common/interfaces/service";
 import { Category } from "../common/interfaces/category";
+// Basma Code
+import { ServiceDetails } from "../common/interfaces/ServiceDetails";
+import { MatBottomSheet } from "@angular/material/bottom-sheet";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
+import { TranslateService } from "@ngx-translate/core";
+import { DomHandlerService } from "./dom-handler.service";
+import {
+    ConfirmDialogComponent,
+    ConfirmDialogModel,
+} from "@shared-components/confirm-dialog/confirm-dialog.component";
+import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
+import { Agent } from "../common/interfaces/agent";
+import { Injectable } from "@angular/core";
 
 @Injectable({
     providedIn: "root",
 })
+// Basma Code
+// export class wishList {
+//     customerId: string;
+//     serviceId: number;
+
+//     constructor(CustomerID: string, serviceID: number) {
+//         this.customerId = CustomerID;
+//         this.serviceId = serviceID;
+//     }
+// }
 export class ServicesService {
     API_URL = "http://localhost:18105/api/Services/all";
     CAT_URL = "http://localhost:18105/api/Categories";
     LOCATION_URL =
         "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
     Booking_SRV_URL = "http://localhost:18105/api/Book";
+    // Basma Code
+    API_GetServicebyID = "http://localhost:18105/api/services";
+    ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
+    API_getAgents = "";
+    // Favourite_service: wishList;
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private bottomSheet: MatBottomSheet,
+        private snackBar: MatSnackBar,
+        public dialog: MatDialog,
+        public translateService: TranslateService,
+        private domHandlerService: DomHandlerService
+    ) {}
 
     // GetAllLocations(): Observable<Location[]> {
     //     return this.http.get<Location[]>(this.LOCATION_URL);
@@ -66,7 +101,15 @@ export class ServicesService {
     }
     GetAllServicesByLocation(locName: string): Observable<Service[]> {
         if (locName == "") {
-            return this.http.get<Service[]>(this.API_URL);
+            return this.http
+                .get<Service[]>(this.API_URL)
+                .pipe(
+                    map((services) =>
+                        services.filter(
+                            (item) => item.priceForTheCurrentDay != null
+                        )
+                    )
+                );
         } else if (locName != "") {
             return this.http
                 .get<Service[]>(this.API_URL)
@@ -106,41 +149,79 @@ export class ServicesService {
     //     }
     // }
     GetAllServicesPrice(from: number, to: number): Observable<Service[]> {
+        if (from == 0 && to == 0) {
+            return this.http
+                .get<Service[]>(this.API_URL)
+                .pipe(
+                    map((services) =>
+                        services.filter(
+                            (item) => item.priceForTheCurrentDay != null
+                        )
+                    )
+                );
+        } else {
+            return this.http.get<Service[]>(this.API_URL).pipe(
+                map((services) =>
+                    services.filter((item) => {
+                        const price = Number(item.priceForTheCurrentDay);
+                        return (
+                            price >= from &&
+                            price <= to &&
+                            item.priceForTheCurrentDay != null
+                        );
+                    })
+                )
+            );
+        }
+    }
+    // Test Function
+    GetAllFilterion(
+        cat: string | null | undefined,
+        loc: string | null | undefined,
+        frm: number | null | undefined,
+        to: number | null | undefined
+    ): Observable<Service[]> {
         return this.http.get<Service[]>(this.API_URL).pipe(
             map((services) =>
                 services.filter((item) => {
                     const price = Number(item.priceForTheCurrentDay);
                     return (
-                        price >= from &&
-                        price <= to &&
+                        (cat == null || cat === item.category) &&
+                        (loc == null || loc === item.location) &&
+                        (frm == null || price >= frm) &&
+                        (to == null || price <= to) &&
                         item.priceForTheCurrentDay != null
                     );
                 })
             )
         );
     }
+
     GetRecomenditionServicesForBooking(): Observable<Service[]> {
         const bookingData$: Observable<any[]> = this.http.get<any[]>(
             this.Booking_SRV_URL
         );
-        const serviceData$: Observable<Service[]> = this.http.get<Service[]>(
-            this.API_URL
-        );
+        const serviceData$: Observable<Service[]> = this.http
+            .get<Service[]>(this.API_URL)
+            .pipe(
+                map((services) =>
+                    services.filter(
+                        (item) => item.priceForTheCurrentDay != null
+                    )
+                )
+            );
 
         return forkJoin([bookingData$, serviceData$]).pipe(
             map(([bookingData, serviceData]) => {
-                // استخراج serviceId من البيانات المحجوزة
                 const serviceIds: number[] = bookingData.map(
                     (item) => item.serviceId
                 );
                 const frequency: { [key: number]: number } = {};
 
-                // حساب تكرار serviceIds
                 serviceIds.forEach((num: number) => {
                     frequency[num] = (frequency[num] || 0) + 1;
                 });
 
-                // ترتيب serviceIds بناءً على التكرار
                 const sorted: number[] = Object.entries(frequency)
                     .sort(
                         (a: [string, number], b: [string, number]) =>
@@ -148,15 +229,13 @@ export class ServicesService {
                     )
                     .map((entry: [string, number]) => Number(entry[0]));
 
-                // الحصول على أعلى 8 serviceIds
                 const top8: number[] = sorted.slice(0, 8);
 
-                // تصفية الخدمات بناءً على top8 serviceIds
                 const filteredServices: Service[] = serviceData.filter(
                     (service) => top8.includes(service.id)
                 );
 
-                return filteredServices; // إرجاع الخدمات المصفاة
+                return filteredServices;
             })
         );
     }
@@ -446,5 +525,148 @@ export class ServicesService {
     //             totalPages: totalPages,
     //         },
     //     };
+    // }
+    // Basma Code
+    getPropertyById(id: number): Observable<ServiceDetails> {
+        return this.http.get<ServiceDetails>(
+            this.API_GetServicebyID + "/" + id
+        );
+    }
+
+    getRelatedProperties(id: number): Observable<Service[]> {
+        return this.http.get<Service[]>(this.API_GetServicebyID + "/" + id);
+    }
+
+    // public addToFavorites(
+    //     property: Service,
+    //     direction: any,
+    //     CustomerID: string
+    // ) {
+    //     this.Favourite_service = new wishList(CustomerID, property.id);
+
+    //     this.http
+    //         .post(this.ApI_Add_to_wishList, this.Favourite_service)
+    //         .subscribe(
+    //             (response) => {
+    //                 // Success: Show a success message using snackbar
+    //                 this.snackBar.open(
+    //                     'The property "' +
+    //                         property.name +
+    //                         '" has been added to favorites.',
+    //                     "×",
+    //                     {
+    //                         verticalPosition: "top",
+    //                         duration: 3000,
+    //                         direction: direction,
+    //                     }
+    //                 );
+    //             },
+    //             (error) => {
+    //                 // Error: Handle the error case here, you can also show an error message
+    //                 this.snackBar.open(
+    //                     "Failed to add the property to favorites.",
+    //                     "×",
+    //                     {
+    //                         verticalPosition: "top",
+    //                         duration: 3000,
+    //                         direction: direction,
+    //                     }
+    //                 );
+    //             }
+    //         );
+    // }
+    public openConfirmDialog(title: string, message: string) {
+        const dialogData = new ConfirmDialogModel(title, message);
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            maxWidth: "400px",
+            data: dialogData,
+        });
+        return dialogRef;
+    }
+
+    public openAlertDialog(message: string) {
+        const dialogRef = this.dialog.open(AlertDialogComponent, {
+            maxWidth: "400px",
+            data: message,
+        });
+        return dialogRef;
+    }
+    public paginator(items: any, page?: number, perPage?: number) {
+        var page = page || 1,
+            perPage = perPage || 4,
+            offset = (page - 1) * perPage,
+            paginatedItems = items.slice(offset).slice(0, perPage),
+            totalPages = Math.ceil(items.length / perPage);
+        return {
+            data: paginatedItems,
+            pagination: {
+                page: page,
+                perPage: perPage,
+                prePage: page - 1 ? page - 1 : null,
+                nextPage: totalPages > page ? page + 1 : null,
+                total: items.length,
+                totalPages: totalPages,
+            },
+        };
+    }
+    public getAgents(): Agent[] {
+        return [
+            {
+                id: 1,
+                fullName: "Lusia Manuel",
+                desc: "Phasellus sed metus leo. Donec laoreet, lacus ut suscipit convallis, erat enim eleifend nulla, at sagittis enim urna et lacus.",
+                organization: "HouseKey",
+                email: "lusia.m@housekey.com",
+                phone: "(224) 267-1346",
+                social: {
+                    facebook: "lusia",
+                    twitter: "lusia",
+                    linkedin: "lusia",
+                    instagram: "lusia",
+                    website: "https://lusia.manuel.com",
+                },
+                ratingsCount: 6,
+                ratingsValue: 480,
+                image: "images/agents/a-1.jpg",
+            },
+        ];
+    }
+    // public addToFavoritesInServiceDetails(
+    //     property: ServiceDetails,
+    //     direction: any,
+    //     CustomerID: string
+    // ) {
+    //     this.Favourite_service = new wishList(CustomerID, property.id);
+
+    //     this.http
+    //         .post(this.ApI_Add_to_wishList, this.Favourite_service)
+    //         .subscribe(
+    //             (response) => {
+    //                 // Success: Show a success message using snackbar
+    //                 this.snackBar.open(
+    //                     'The property "' +
+    //                         property.name +
+    //                         '" has been added to favorites.',
+    //                     "×",
+    //                     {
+    //                         verticalPosition: "top",
+    //                         duration: 3000,
+    //                         direction: direction,
+    //                     }
+    //                 );
+    //             },
+    //             (error) => {
+    //                 // Error: Handle the error case here, you can also show an error message
+    //                 this.snackBar.open(
+    //                     "Failed to add the property to favorites.",
+    //                     "×",
+    //                     {
+    //                         verticalPosition: "top",
+    //                         duration: 3000,
+    //                         direction: direction,
+    //                     }
+    //                 );
+    //             }
+    //         );
     // }
 }

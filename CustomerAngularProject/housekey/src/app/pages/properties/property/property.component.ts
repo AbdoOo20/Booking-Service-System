@@ -1,6 +1,7 @@
 import {
     Component,
     HostListener,
+    Input,
     OnInit,
     QueryList,
     ViewChild,
@@ -42,6 +43,8 @@ import { GetInTouchComponent } from "@shared-components/get-in-touch/get-in-touc
 import { MatButtonModule } from "@angular/material/button";
 import { FlexLayoutModule } from "@ngbracket/ngx-layout";
 import { ServicesService } from "@services/services.service";
+import { ServiceDetails } from "../../../common/interfaces/ServiceDetails";
+import { Service } from "../../../common/interfaces/service";
 
 @Component({
     selector: "app-property",
@@ -71,19 +74,20 @@ import { ServicesService } from "@services/services.service";
     ],
     templateUrl: "./property.component.html",
     styleUrl: "./property.component.scss",
-    providers: [EmbedVideoService],
+    providers: [EmbedVideoService, ServicesService], //ServicesService
 })
 export class PropertyComponent implements OnInit {
+    @Input() property: ServiceDetails;
     @ViewChild("sidenav") sidenav: any;
     @ViewChildren(SwiperDirective) swipers: QueryList<SwiperDirective>;
     public sidenavOpen: boolean = true;
     public config: SwiperConfigInterface = {};
     public config2: SwiperConfigInterface = {};
     private sub: any;
-    public property: Property;
+    public service: ServiceDetails;
     public settings: Settings;
     public embedVideo: any;
-    public relatedProperties: Property[];
+    public relatedServices: Service[];
     public featuredProperties: Property[];
     public agent: any;
     public mortgageForm: FormGroup;
@@ -98,9 +102,9 @@ export class PropertyComponent implements OnInit {
 
     constructor(
         public settingsService: SettingsService,
-        public appService: AppService,
+        public appService: ServicesService,
         private activatedRoute: ActivatedRoute,
-        private embedService: EmbedVideoService,
+        //private embedService: EmbedVideoService,
         public fb: FormBuilder,
         private domHandlerService: DomHandlerService
     ) {
@@ -112,7 +116,7 @@ export class PropertyComponent implements OnInit {
             this.getPropertyById(params["id"]);
         });
         this.getRelatedProperties();
-        this.getFeaturedProperties();
+        //this.getFeaturedProperties();
         this.getAgent(1);
         if (this.domHandlerService.window?.innerWidth < 960) {
             this.sidenavOpen = false;
@@ -150,12 +154,9 @@ export class PropertyComponent implements OnInit {
 
     public getPropertyById(id: number) {
         this.appService.getPropertyById(id).subscribe((data) => {
-            this.property = data;
-            this.embedVideo = this.embedService.embed(
-                this.property.videos[1].link
-            );
-            this.lat = +this.property.location.lat;
-            this.lng = +this.property?.location.lng;
+            this.service = data;
+            this.lat = +this.service.location;
+            this.lng = +this.service?.location;
             if (this.domHandlerService.isBrowser) {
                 this.config.observer = false;
                 this.config2.observer = false;
@@ -248,44 +249,47 @@ export class PropertyComponent implements OnInit {
         });
     }
 
-    public addToCompare() {
-        this.appService.addToCompare(
-            this.property,
-            CompareOverviewComponent,
-            this.settings.rtl ? "rtl" : "ltr"
-        );
-    }
+    // public addToCompare() {
+    //     this.appService.addToCompare(
+    //         this.property,
+    //         CompareOverviewComponent,
+    //         this.settings.rtl ? "rtl" : "ltr"
+    //     );
+    // }
 
-    public onCompare() {
-        return this.appService.Data.compareList.filter(
-            (item) => item.id == this.property.id
-        )[0];
-    }
+    // public onCompare() {
+    //     return this.appService.Data.compareList.filter(
+    //         (item) => item.id == this.property.id
+    //     )[0];
+    // }
 
-    public addToFavorites() {
-        this.appService.addToFavorites(
-            this.property,
-            this.settings.rtl ? "rtl" : "ltr"
-        );
-    }
+    // public addToFavorites() {
+    //     this.appService.addToFavoritesInServiceDetails(
+    //         this.service,
+    //         this.settings.rtl ? "rtl" : "ltr",
+    //         ""
+    //     );
+    // }
 
-    public onFavorites() {
-        return this.appService.Data.favorites.filter(
-            (item) => item.id == this.property.id
-        )[0];
-    }
+    // public onFavorites() {
+    //     return this.appService.Data.favorites.filter(
+    //         (item) => item.id == this.property.id
+    //     )[0];
+    // }
 
     public getRelatedProperties() {
-        this.appService.getRelatedProperties().subscribe((properties) => {
-            this.relatedProperties = properties;
-        });
+        this.appService
+            .getRelatedProperties(this.service.id)
+            .subscribe((services) => {
+                this.relatedServices = this.service.RelatedServices;
+            });
     }
 
-    public getFeaturedProperties() {
-        this.appService.getFeaturedProperties().subscribe((properties) => {
-            this.featuredProperties = properties.slice(0, 3);
-        });
-    }
+    // public getFeaturedProperties() {
+    //     this.appService.getFeaturedProperties().subscribe((properties) => {
+    //         this.featuredProperties = properties.slice(0, 3);
+    //     });
+    // }
 
     public getAgent(agentId: number = 1) {
         var ids = [1, 2, 3, 4, 5]; //agent ids
