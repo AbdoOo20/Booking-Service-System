@@ -19,6 +19,10 @@ export class CustomerPaymentsService {
     return this._httpClient.get(`${this._apiURL}/Customer/${customerId}`)
   }
 
+  getBooking(bookingID: number): Observable<any> {
+    return this._httpClient.get(`${this._apiURL}/Book/${bookingID}`);
+  }
+
   getCustomerPayments(bookingID: number): Observable<any[]> {
     return this.getPayments().pipe(
       map((payments: any[]) => {
@@ -30,16 +34,22 @@ export class CustomerPaymentsService {
           return of([]);
         }
   
-        return forkJoin(
-          filteredPayments.map(payment =>
-            this.getPaymentCustomer(payment.customerID).pipe(
-              map(customer => ({
-                ...payment,
-                customer
-              }))
-            )
-          )
-        );
+        return this.getBooking(bookingID).pipe(
+          mergeMap((booking: any) => {
+            return forkJoin(
+              filteredPayments.map(payment =>
+                this.getPaymentCustomer(payment.customerID).pipe(
+                  map(customer => ({
+                    ...payment,
+                    customer,
+                    bookingStatus: booking.status,
+                    bookingPrice : booking.price
+                  }))
+                )
+              )
+            );
+          })
+        )
       })
     );
   }  
