@@ -1,4 +1,4 @@
-<div class="p-3">
+<!-- <div class="p-3">
     <div class="theme-container">  
         <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
             <mat-card [style.max-width.px]="500" class="p-3">
@@ -13,11 +13,11 @@
                         <mat-select placeholder="Select User Type" formControlName="userType">
                             @for (type of userTypes; track $index) {
                                 <mat-option [value]="type">{{type.name}}</mat-option>
-                            }                            
+                            }
                         </mat-select>
                         @if (registerForm.controls.userType.errors?.required) {
                             <mat-error>User type is required</mat-error>  
-                        }                                     
+                        }
                     </mat-form-field>
                     <mat-form-field  appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
@@ -88,6 +88,116 @@
                 <mat-card-actions fxLayoutAlign="center center" class="text-center">
                     <small class="my-3">By clicking the "Create an Account" button you agree with our <a mat-button routerLink="/terms-conditions" color="primary" class="mx-2">Terms and conditions</a> </small>
                 </mat-card-actions>
+            </mat-card>
+        </div>  
+    </div>
+</div> -->
+
+
+
+
+
+
+<div class="p-3">
+    <div class="theme-container">  
+        <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
+            <mat-card [style.max-width.px]="500" class="p-3">
+                <div fxLayout="column" fxLayoutAlign="center center" class="text-center">  
+                    <h1 class="uppercase">Register</h1>  
+                    <a mat-button routerLink="/login" color="accent" class="w-100">Already have an account? Sign in!</a>  
+                </div>
+                <form [formGroup]="registerForm" (ngSubmit)="onRegisterFormSubmit()"> 
+                    
+                    <!-- Username -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
+                        <mat-label>Username</mat-label>
+                        <input matInput placeholder="Username" formControlName="username">
+                        <mat-error *ngIf="registerForm.controls.username.hasError('required')">Username is required</mat-error>
+                        <mat-error *ngIf="registerForm.controls.username.hasError('minlength')">Minimum 6 characters required</mat-error>
+                    </mat-form-field>
+
+                    <!-- Name -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">badge</mat-icon>
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="Name" formControlName="name">
+                        <mat-error *ngIf="registerForm.controls.name.hasError('required')">Name is required</mat-error>
+                        <mat-error *ngIf="registerForm.controls.name.hasError('minlength')">Name must be at least 3 characters</mat-error>
+                        <mat-error *ngIf="registerForm.controls.name.hasError('maxlength')">Name must be less than 30 characters</mat-error>
+                    </mat-form-field>
+
+                    <!-- Email -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">email</mat-icon>
+                        <mat-label>Email</mat-label>
+                        <input matInput placeholder="Email" formControlName="email">
+                        <mat-error *ngIf="registerForm.controls.email.hasError('required')">Email is required</mat-error>
+                        <mat-error *ngIf="registerForm.controls.email.hasError('email')">Invalid email address</mat-error>
+                    </mat-form-field>
+
+                    <!-- Phone -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+                        <mat-label>Phone</mat-label>
+                        <input matInput placeholder="Phone" formControlName="phone">
+                        <mat-error *ngIf="registerForm.controls.phone.hasError('pattern')">Invalid Saudi phone number</mat-error>
+                    </mat-form-field>
+
+                    <!-- Alternative Phone -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+                        <mat-label>Alternative Phone</mat-label>
+                        <input matInput placeholder="Alternative Phone" formControlName="alternativePhone">
+                        <mat-error *ngIf="registerForm.controls.alternativePhone.hasError('pattern')">Invalid Saudi phone number</mat-error>
+                    </mat-form-field>
+
+                    <!-- SSN -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">fingerprint</mat-icon>
+                        <mat-label>SSN</mat-label>
+                        <input matInput placeholder="SSN" formControlName="ssn">
+                        <mat-error *ngIf="registerForm.controls.ssn.hasError('pattern')">Invalid Saudi SSN</mat-error>
+                    </mat-form-field>
+
+                    <!-- City -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">location_city</mat-icon>
+                        <mat-label>City</mat-label>
+                        <mat-select placeholder="Select City" formControlName="city">
+                            <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="registerForm.controls.city.hasError('required')">City is required</mat-error>
+                    </mat-form-field>
+
+                    <!-- Password -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+                        <mat-label>Password</mat-label>
+                        <input matInput placeholder="Password" formControlName="password" [type]="hide ? 'password' : 'text'">
+                        <mat-error *ngIf="registerForm.controls.password.hasError('required')">Password is required</mat-error>
+                        <button mat-icon-button matSuffix (click)="hide = !hide">
+                            <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                    </mat-form-field>
+
+                    <!-- Confirm Password -->
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+                        <mat-label>Confirm Password</mat-label>
+                        <input matInput placeholder="Confirm Password" formControlName="confirmPassword" [type]="hide ? 'password' : 'text'">
+                        <mat-error *ngIf="registerForm.hasError('mismatchedPasswords')">Passwords do not match</mat-error>
+                        <button mat-icon-button matSuffix (click)="hide1 = !hide1">
+                            <mat-icon>{{ hide1 ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                    </mat-form-field>
+
+                    <div class="text-center mt-2">
+                        <button mat-raised-button color="accent" class="uppercase" type="submit">
+                            Create an Account
+                        </button>
+                    </div>
+                </form>
             </mat-card>
         </div>  
     </div>

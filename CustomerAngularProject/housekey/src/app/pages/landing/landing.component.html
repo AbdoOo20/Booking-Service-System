@@ -1,4 +1,4 @@
-<mat-drawer-container class="landing-page">
+<!-- <mat-drawer-container class="landing-page">
        
     <div class="p-3 header-section" id="top">
         <div class="theme-container">
@@ -133,4 +133,40 @@
         </div>
     </mat-toolbar> 
 
+</mat-drawer-container> -->
+
+
+
+
+<mat-drawer-container class="landing-page">
+    <div class="header-bar">
+        <div class="logo-section">
+            <img src="https://lily-night.com/wp-content/uploads/2024/08/%D9%84%D9%8A%D9%84%D9%8A%D9%87-.png" alt="Logo" class="logo">
+        </div>
+
+        <div class="nav-buttons">
+            <button mat-raised-button class="custom-button login-btn" (click)="navigateToLogin()">Login</button>
+    <button mat-raised-button class="custom-button register-btn" (click)="navigateToRegister()">Register</button>
+        </div>
+    </div>
+
+    <div class="video-section">
+        <video autoplay muted loop class="fullscreen-video">
+            <source src="https://videos.files.wordpress.com/im1QP0gk/pexels-edtor-e385a4-13145342-1440p.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <div class="overlay-content">
+            <h1 class="landing-message">We are here to turn every special moment into a cherished, unforgettable memory, creating experiences that last a lifetime.</h1>
+        </div>
+    </div>
+
+
+    <div id="our-services">
+        <app-our-services></app-our-services>
+    </div>
+
+    <div id="mission">
+        <app-mission></app-mission>
+    </div>
 </mat-drawer-container>

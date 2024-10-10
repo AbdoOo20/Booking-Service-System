@@ -1,89 +1,180 @@
+// .landing-page {
+//     .header-section {
+//         position: relative;
+//         overflow: hidden;
+//         background-repeat: no-repeat;
+//         background-size: cover;
+//         background-position: center;
+//         background-image: url('/images/props/office-2/1-big.jpg');
+
+//         &:before {
+//             content: '';
+//             position: absolute;
+//             top: 0;
+//             left: 0;
+//             right: 0;
+//             z-index: 1;
+//             width: 100%;
+//             height: 100%;
+//             background: rgba(0, 0, 0, 0.81);
+//         }
+
+//         .content {
+//             position: relative;
+//             z-index: 9;
+//             color: #fff;
+//             text-align: center;
+
+//             h1 {
+//                 font-size: 36px;
+//                 font-weight: 400;
+//             }
+
+//             h4 {
+//                 font-size: 16px;
+//                 font-weight: 300;
+//                 max-width: 700px;
+//                 margin: 0 auto;
+//             }
+//         }
+//     }
+
+//     .main-wrapper {
+//         margin: -16px;
+
+//         .box {
+//             text-align: center;
+//             padding: 16px;
+//             margin-bottom: 24px;
+
+//             h2 {
+//                 padding: 16px 0;
+//                 font-weight: 500;
+//             }
+
+//             .mat-mdc-card {
+//                 background-size: cover;
+//                 height: 300px;
+//                 background-position: top;
+//                 transition: 5s;
+//                 box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+//                     0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+//                     0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+//             }
+
+//             &:hover {
+//                 .mat-mdc-card {
+//                     background-position: bottom;
+//                 }
+
+//             }
+//         }
+//     }
+
+//     p {
+//         font-size: 16px;
+//     }
+
+//     .copyright {
+//         margin-top: 36px;
+//         height: 64px;
+
+//         p {
+//             font-size: 13px;
+//             font-weight: 400;
+//             margin-bottom: 0;
+//             line-height: 1.2;
+//         }
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
 .landing-page {
-    .header-section {
-        position: relative;
-        overflow: hidden;
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        background-image: url('/images/props/office-2/1-big.jpg');
+    .header-bar {
+        background-color: white;  /* Set background to white */
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        margin-top: 10px;
 
-        &:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.81);
+        .logo-section {
+            .logo {
+                width: 120px;
+            }
         }
 
-        .content {
-            position: relative;
-            z-index: 9;
-            color: #fff;
-            text-align: center;
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
 
-            h1 {
-                font-size: 36px;
-                font-weight: 400;
-            }
-
-            h4 {
+            .custom-button {
+                border-radius: 25px;
+                padding: 10px 30px;
                 font-size: 16px;
-                font-weight: 300;
-                max-width: 700px;
-                margin: 0 auto;
-            }
-        }
-    }
+                font-weight: bold;
+                transition: all 0.3s ease;
 
-    .main-wrapper {
-        margin: -16px;
-
-        .box {
-            text-align: center;
-            padding: 16px;
-            margin-bottom: 24px;
-
-            h2 {
-                padding: 16px 0;
-                font-weight: 500;
-            }
-
-            .mat-mdc-card {
-                background-size: cover;
-                height: 300px;
-                background-position: top;
-                transition: 5s;
-                box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
-                    0px 3px 4px 0px rgba(0, 0, 0, 0.14),
-                    0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-            }
-
-            &:hover {
-                .mat-mdc-card {
-                    background-position: bottom;
+                &.login-btn {
+                    border: 2px solid #e56060; /* Blue border for login */
+                    background-color: transparent;  /* Transparent background */
+                    color: #e56060;  /* Blue text color */
                 }
 
+                &.register-btn {
+                    background-color: #e56060;  /* Solid blue for register */
+                    color: white;  /* White text for register */
+                }
+
+                &:hover.login-btn {
+                    background-color: #d75050;  /* Blue on hover */
+                    color: white;  /* White text on hover */
+                }
+
+                &:hover.register-btn {
+                    background-color: #d75050;  /* Darker blue on hover */
+                }
             }
         }
     }
 
-    p {
-        font-size: 16px;
-    }
+    .video-section {
+        position: relative;
+        width: 100%;
+        height: 100vh;
 
-    .copyright {
-        margin-top: 36px;
-        height: 64px;
+        .fullscreen-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        p {
-            font-size: 13px;
-            font-weight: 400;
-            margin-bottom: 0;
-            line-height: 1.2;
+        .overlay-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+
+            .landing-message {
+                font-size: 24px;
+                font-weight: 600;
+                line-height: 1.5;
+                max-width: 700px;
+            }
         }
     }
 }
