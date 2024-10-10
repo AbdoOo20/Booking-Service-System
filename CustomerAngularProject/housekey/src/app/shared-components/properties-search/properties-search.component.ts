@@ -70,6 +70,11 @@ export class PropertiesSearchComponent implements OnInit {
     public toPrice = Number.MAX_VALUE;
     public ValueFromInput: number;
     public ValueToInput: number;
+    // Test
+    public fromTest = null;
+    public toTest = null;
+    public catTest = null;
+    public locTest = null;
 
     constructor(
         public appService: AppService,
@@ -95,8 +100,8 @@ export class PropertiesSearchComponent implements OnInit {
             categoryType: null,
             propertyStatus: null,
             price: this.fb.group({
-                from: 0,
-                to: 0,
+                from: null,
+                to: null,
             }),
             city: null,
             zipCode: null,
@@ -163,14 +168,13 @@ export class PropertiesSearchComponent implements OnInit {
     }
 
     public reset() {
-        this.homeCmp.getServices();
         this.form.reset({
             propertyType: null,
             categoryType: null,
             propertyStatus: null,
             price: {
-                from: 0,
-                to: 0,
+                from: null,
+                to: null,
             },
             city: null,
             zipCode: null,
@@ -198,6 +202,8 @@ export class PropertiesSearchComponent implements OnInit {
             },
             features: this.features,
         });
+        this.catTest = null;
+        this.locTest = null;
     }
 
     public search() {
@@ -219,16 +225,6 @@ export class PropertiesSearchComponent implements OnInit {
         return this.variant == 1 ? "always" : "auto";
     }
     // My Functions
-    filterCats(e: any) {
-        // let value = e.target.value;
-        this.homeCmp.getServiceCategories(e.name);
-        console.log(e.name);
-    }
-    filterLocs(e: any) {
-        // let value = e.target.value;
-        this.homeCmp.getServiceLocation(e.name_en);
-        console.log(e.name_en);
-    }
     getCategories() {
         this.CatServ.GetAllCategories().subscribe({
             next: (data) => {
@@ -287,19 +283,43 @@ export class PropertiesSearchComponent implements OnInit {
 
     getPrice() {
         this.form.get("price.from")?.valueChanges.subscribe((value) => {
-            this.ValueFromInput = value;
-            console.log(this.ValueFromInput + " " + this.ValueToInput);
-            this.homeCmp.getServicePrice(
-                this.ValueFromInput,
-                this.ValueToInput
+            this.fromTest = value;
+            console.log(this.fromTest + " " + this.toTest);
+            this.homeCmp.getServ(
+                this.homeCmp.catTest,
+                this.locTest,
+                this.fromTest,
+                this.toTest
             );
         });
         this.form.get("price.to")?.valueChanges.subscribe((value) => {
-            this.ValueToInput = value;
-            console.log(this.ValueFromInput + " " + this.ValueToInput);
-            this.homeCmp.getServicePrice(
-                this.ValueFromInput,
-                this.ValueToInput
+            this.toTest = value;
+            console.log(this.fromTest + " " + this.toTest);
+            this.homeCmp.getServ(
+                this.catTest,
+                this.locTest,
+                this.fromTest,
+                this.toTest
+            );
+        });
+        this.form.get("propertyType")?.valueChanges.subscribe((value) => {
+            this.catTest = value.name;
+            console.log(this.catTest);
+            this.homeCmp.getServ(
+                this.catTest,
+                this.locTest,
+                this.fromTest,
+                this.toTest
+            );
+        });
+        this.form.get("city")?.valueChanges.subscribe((value) => {
+            this.locTest = value.name_en;
+            console.log(this.locTest);
+            this.homeCmp.getServ(
+                this.catTest,
+                this.locTest,
+                this.fromTest,
+                this.toTest
             );
         });
     }

@@ -65,7 +65,7 @@ import { RecommendationBookingComponent } from "../../shared-components/recommen
         GetInTouchComponent,
         RecommendationBookingComponent,
     ],
-    providers: [ServicesService, CategoriesService],
+    providers: [CategoriesService, ServicesService], //,
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
 })
@@ -94,6 +94,11 @@ export class HomeComponent implements OnInit {
     public resultView: number;
     public fromPrice = 0;
     public toPrice = Number.MAX_VALUE;
+    // Test
+    public catTest: string;
+    public locTest: string;
+    public fromTest: number;
+    public toTest: number;
 
     constructor(
         public settingsService: SettingsService,
@@ -143,17 +148,19 @@ export class HomeComponent implements OnInit {
     //   });
 
     ngOnInit() {
+        //Test
         this.getSlides();
         //this.getLocations();
         this.getProperties();
         this.getFeaturedProperties();
         // My Function
-        this.getServiceCategories(this.catChangeName);
-        this.getServiceLocation(this.locChangeName);
-        this.getServicePrice(this.fromPrice, this.toPrice);
-        this.getServices();
+        // this.getServiceCategories(this.catChangeName);
+        // this.getServiceLocation(this.locChangeName);
+        // this.getServicePrice(this.fromPrice, this.toPrice);
+        // this.getServices();
         this.getCategories();
         this.GetRecSrvForBooking();
+        this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
     }
 
     ngDoCheck() {
@@ -181,7 +188,6 @@ export class HomeComponent implements OnInit {
     }
 
     public getProperties() {
-        //console.log('get properties by : ', this.searchFields);
         this.appService.getProperties().subscribe((data) => {
             if (this.properties && this.properties.length > 0) {
                 this.settings.loadMore.page++;
@@ -303,6 +309,23 @@ export class HomeComponent implements OnInit {
     }
 
     public ServiceCatName: any;
+    // Test
+    public getServ(cat: string, loc: string, from: number, to: number) {
+        this.myServ.GetAllFilterion(cat, loc, from, to).subscribe({
+            next: (data) => {
+                console.log("test");
+                console.log(data);
+                console.log(cat);
+                console.log(loc);
+                console.log(from);
+                console.log(to);
+                this.ServicesItems = data;
+            },
+            error: (error) => {
+                console.log(error);
+            },
+        });
+    }
     //[1]
     public getServiceCategories(catName) {
         this.myServ.GetAllServicesByCatName(catName).subscribe({
@@ -315,6 +338,7 @@ export class HomeComponent implements OnInit {
             },
         });
     }
+
     //[2]
     public getServiceLocation(locName) {
         this.myServ.GetAllServicesByLocation(locName).subscribe({

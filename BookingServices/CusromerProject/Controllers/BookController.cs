@@ -159,7 +159,10 @@ namespace CusromerProject.Controllers
                     }
                     else if (newBooking.Type == "Package") { }
                     else if (newBooking.Type == "Consultation") { }
-                    return Ok("Added Successfully");
+                    return Ok(new {
+                        Message = "Added Successfully",
+                        Id = newBooking.BookingId
+                    });
                 }
                 catch (Exception e)
                 {
