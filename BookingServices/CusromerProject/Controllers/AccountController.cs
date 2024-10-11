@@ -127,7 +127,8 @@ namespace CusromerProject.Controllers
                 SSN = customerData.SSN,
                 City = customerData.City,
                 IsOnlineOrOfflineUser = true,
-                IsBlocked = false
+                IsBlocked = false , 
+                BankAccount = null
             };
 
             context.Customers.Add(customer);
