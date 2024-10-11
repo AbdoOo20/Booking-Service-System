@@ -42,6 +42,8 @@ export class ServicesService {
     API_getAgents = "";
     // Favourite_service: wishList;
 
+    
+
     constructor(
         private http: HttpClient,
         private bottomSheet: MatBottomSheet,
@@ -50,6 +52,11 @@ export class ServicesService {
         public translateService: TranslateService,
         private domHandlerService: DomHandlerService
     ) {}
+
+
+    getServiceById(id: number) {
+        return this.http.get("http://localhost:18105/api/Services/" + id)
+    }
 
     // GetAllLocations(): Observable<Location[]> {
     //     return this.http.get<Location[]>(this.LOCATION_URL);

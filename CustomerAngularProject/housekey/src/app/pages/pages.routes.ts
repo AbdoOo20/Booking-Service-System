@@ -63,6 +63,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./confirmation/confirmation.component').then(c => c.ConfirmationComponent)
             },
             {
+                path: 'NewPayment',
+                loadComponent: () => import('./pay-installments/pay-installments.component').then(c => c.PayInstallmentsComponent)
+            },
+            {
                 path: 'account',
                 loadChildren: () => import('./account/account.routes').then(p => p.routes)
             }
