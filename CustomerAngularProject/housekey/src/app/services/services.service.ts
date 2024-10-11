@@ -16,6 +16,7 @@ import {
 import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
 import { Agent } from "../common/interfaces/agent";
 import { Injectable } from "@angular/core";
+import { wishList } from "../common/interfaces/wishList";
 
 @Injectable({
     providedIn: "root",
@@ -40,7 +41,7 @@ export class ServicesService {
     API_GetServicebyID = "http://localhost:18105/api/services";
     ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
     API_getAgents = "";
-    // Favourite_service: wishList;
+    Favourite_service: wishList;
 
     
 
@@ -133,28 +134,6 @@ export class ServicesService {
             return of([]);
         }
     }
-    // GetAllServicesPrice(from: number, to: number): Observable<Service[]> {
-    //     if (from >= 0) {
-    //         return this.http
-    //             .get<Service[]>(this.API_URL)
-    //             .pipe(
-    //                 map((services) =>
-    //                     services.filter(
-    //                         (item) => item.priceForTheCurrentDay != null
-    //                     )
-    //                 )
-    //             );
-    //     } else {
-    //         return this.http.get<Service[]>(this.API_URL).pipe(
-    //             map((services) =>
-    //                 services.filter((item) => {
-    //                     const price = Number(item.priceForTheCurrentDay);
-    //                     return price >= from && price <= to && price != null;
-    //                 })
-    //             )
-    //         );
-    //     }
-    // }
     GetAllServicesPrice(from: number, to: number): Observable<Service[]> {
         if (from == 0 && to == 0) {
             return this.http
@@ -247,293 +226,83 @@ export class ServicesService {
         );
     }
 
-    // GetAllServices(): Observable<Service[]> {
-    //     return this.httpClient.get<Service[]>(this.API_URL);
-    // }
-    // public filterData(
-    //     data: any,
-    //     params: any,
-    //     sort?: any,
-    //     page?: any,
-    //     perPage?: any
-    // ) {
-    //     if (params) {
-    //         if (params.propertyType) {
-    //             data = data.filter(
-    //                 (service: Service) =>
-    //                     service.category == params.propertyType.name
-    //             );
-    //         }
-
-    //         //     if (params.propertyStatus && params.propertyStatus.length) {
-    //         //         let statuses: any[] = [];
-    //         //         params.propertyStatus.forEach((status: any) => {
-    //         //             statuses.push(status.name);
-    //         //         });
-    //         //         let properties: any[] = [];
-    //         //         data.filter((property: any) =>
-    //         //             property.propertyStatus.forEach((status: any) => {
-    //         //                 if (statuses.indexOf(status) > -1) {
-    //         //                     if (!properties.includes(property)) {
-    //         //                         properties.push(property);
-    //         //                     }
-    //         //                 }
-    //         //             })
-    //         //         );
-    //         //         data = properties;
-    //         //     }
-
-    //         //     if (params.price) {
-    //         //         if (this.settingsService.settings.currency == "USD") {
-    //         //             if (params.price.from) {
-    //         //                 data = data.filter((property: Property) => {
-    //         //                     if (
-    //         //                         property.priceDollar.sale &&
-    //         //                         property.priceDollar.sale >= params.price.from
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     if (
-    //         //                         property.priceDollar.rent &&
-    //         //                         property.priceDollar.rent >= params.price.from
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     return false;
-    //         //                 });
-    //         //             }
-    //         //             if (params.price.to) {
-    //         //                 data = data.filter((property: Property) => {
-    //         //                     if (
-    //         //                         property.priceDollar.sale &&
-    //         //                         property.priceDollar.sale <= params.price.to
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     if (
-    //         //                         property.priceDollar.rent &&
-    //         //                         property.priceDollar.rent <= params.price.to
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     return false;
-    //         //                 });
-    //         //             }
-    //         //         }
-    //         //         if (this.settingsService.settings.currency == "EUR") {
-    //         //             if (params.price.from) {
-    //         //                 data = data.filter((property: Property) => {
-    //         //                     if (
-    //         //                         property.priceEuro.sale &&
-    //         //                         property.priceEuro.sale >= params.price.from
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     if (
-    //         //                         property.priceEuro.rent &&
-    //         //                         property.priceEuro.rent >= params.price.from
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     return false;
-    //         //                 });
-    //         //             }
-    //         //             if (params.price.to) {
-    //         //                 data = data.filter((property: Property) => {
-    //         //                     if (
-    //         //                         property.priceEuro.sale &&
-    //         //                         property.priceEuro.sale <= params.price.to
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     if (
-    //         //                         property.priceEuro.rent &&
-    //         //                         property.priceEuro.rent <= params.price.to
-    //         //                     ) {
-    //         //                         return true;
-    //         //                     }
-    //         //                     return false;
-    //         //                 });
-    //         //             }
-    //         //         }
-    //         //     }
-
-    //         //     if (params.city) {
-    //         //         data = data.filter(
-    //         //             (property: Property) => property.city == params.city.name
-    //         //         );
-    //         //     }
-
-    //         //     if (params.zipCode) {
-    //         //         data = data.filter(
-    //         //             (property: Property) => property.zipCode == params.zipCode
-    //         //         );
-    //         //     }
-
-    //         //     if (params.neighborhood && params.neighborhood.length) {
-    //         //         let neighborhoods: any[] = [];
-    //         //         params.neighborhood.forEach((item: any) => {
-    //         //             neighborhoods.push(item.name);
-    //         //         });
-    //         //         let properties: any[] = [];
-    //         //         data.filter((property: any) =>
-    //         //             property.neighborhood.forEach((item: any) => {
-    //         //                 if (neighborhoods.indexOf(item) > -1) {
-    //         //                     if (!properties.includes(property)) {
-    //         //                         properties.push(property);
-    //         //                     }
-    //         //                 }
-    //         //             })
-    //         //         );
-    //         //         data = properties;
-    //         //     }
-
-    //         //     if (params.street && params.street.length) {
-    //         //         let streets: any[] = [];
-    //         //         params.street.forEach((item: any) => {
-    //         //             streets.push(item.name);
-    //         //         });
-    //         //         let properties: any[] = [];
-    //         //         data.filter((property: Property) =>
-    //         //             property.street.forEach((item) => {
-    //         //                 if (streets.indexOf(item) > -1) {
-    //         //                     if (!properties.includes(property)) {
-    //         //                         properties.push(property);
-    //         //                     }
-    //         //                 }
-    //         //             })
-    //         //         );
-    //         //         data = properties;
-    //         //     }
-
-    //         //     if (params.bedrooms) {
-    //         //         if (params.bedrooms.from) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.bedrooms >= params.bedrooms.from
-    //         //             );
-    //         //         }
-    //         //         if (params.bedrooms.to) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.bedrooms <= params.bedrooms.to
-    //         //             );
-    //         //         }
-    //         //     }
-
-    //         //     if (params.bathrooms) {
-    //         //         if (params.bathrooms.from) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.bathrooms >= params.bathrooms.from
-    //         //             );
-    //         //         }
-    //         //         if (params.bathrooms.to) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.bathrooms <= params.bathrooms.to
-    //         //             );
-    //         //         }
-    //         //     }
-
-    //         //     if (params.garages) {
-    //         //         if (params.garages.from) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.garages >= params.garages.from
-    //         //             );
-    //         //         }
-    //         //         if (params.garages.to) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.garages <= params.garages.to
-    //         //             );
-    //         //         }
-    //         //     }
-
-    //         //     if (params.area) {
-    //         //         if (params.area.from) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.area.value >= params.area.from
-    //         //             );
-    //         //         }
-    //         //         if (params.area.to) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.area.value <= params.area.to
-    //         //             );
-    //         //         }
-    //         //     }
-
-    //         //     if (params.yearBuilt) {
-    //         //         if (params.yearBuilt.from) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.yearBuilt >= params.yearBuilt.from
-    //         //             );
-    //         //         }
-    //         //         if (params.yearBuilt.to) {
-    //         //             data = data.filter(
-    //         //                 (property: Property) =>
-    //         //                     property.yearBuilt <= params.yearBuilt.to
-    //         //             );
-    //         //         }
-    //         //     }
-
-    //         //     if (params.features) {
-    //         //         let arr: any[] = [];
-    //         //         params.features.forEach((feature: any) => {
-    //         //             if (feature.selected) arr.push(feature.name);
-    //         //         });
-    //         //         if (arr.length > 0) {
-    //         //             let properties: any[] = [];
-    //         //             data.filter((property: Property) =>
-    //         //                 property.features.forEach((feature) => {
-    //         //                     if (arr.indexOf(feature) > -1) {
-    //         //                         if (!properties.includes(property)) {
-    //         //                             properties.push(property);
-    //         //                         }
-    //         //                     }
-    //         //                 })
-    //         //             );
-    //         //             data = properties;
-    //         //         }
-    //         //     }
-    //         // }
-
-    //         // // console.log(data)
-
-    //         // //for show more properties mock data
-    //         // for (var index = 0; index < 2; index++) {
-    //         //     data = data.concat(data);
-    //     }
-    //     for (var index = 0; index < 2; index++) {
-    //         data = data.concat(data);
-    //     }
-
-    //     // this.sortData(sort, data);
-    //     return this.paginator(data, page, perPage);
-    // }
-    // public paginator(items: any, page?: number, perPage?: number) {
-    //     var page = page || 1,
-    //         perPage = perPage || 4,
-    //         offset = (page - 1) * perPage,
-    //         paginatedItems = items.slice(offset).slice(0, perPage),
-    //         totalPages = Math.ceil(items.length / perPage);
-    //     return {
-    //         data: paginatedItems,
-    //         pagination: {
-    //             page: page,
-    //             perPage: perPage,
-    //             prePage: page - 1 ? page - 1 : null,
-    //             nextPage: totalPages > page ? page + 1 : null,
-    //             total: items.length,
-    //             totalPages: totalPages,
-    //         },
-    //     };
-    // }
     // Basma Code
+    public addToFavorites(
+        property: Service,
+        direction: any,
+        CustomerID: string
+    ) {
+        this.Favourite_service = new wishList(CustomerID, property.id);
+
+        this.http
+            .post(this.ApI_Add_to_wishList, this.Favourite_service)
+            .subscribe(
+                (response) => {
+                    // Success: Show a success message using snackbar
+                    this.snackBar.open(
+                        'The property "' +
+                            property.name +
+                            '" has been added to favorites.',
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                },
+                (error) => {
+                    // Error: Handle the error case here, you can also show an error message
+                    this.snackBar.open(
+                        "Failed to add the property to favorites.",
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                }
+            );
+    }
+    public addToFavoritesInServiceDetails(
+        property: ServiceDetails,
+        direction: any,
+        CustomerID: string
+    ) {
+        this.Favourite_service = new wishList(CustomerID, property.id);
+
+        this.http
+            .post(this.ApI_Add_to_wishList, this.Favourite_service)
+            .subscribe(
+                (response) => {
+                    // Success: Show a success message using snackbar
+                    this.snackBar.open(
+                        'The property "' +
+                            property.name +
+                            '" has been added to favorites.',
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                },
+                (error) => {
+                    // Error: Handle the error case here, you can also show an error message
+                    this.snackBar.open(
+                        "Failed to add the property to favorites.",
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                }
+            );
+    }
     getPropertyById(id: number): Observable<ServiceDetails> {
         return this.http.get<ServiceDetails>(
             this.API_GetServicebyID + "/" + id
@@ -544,44 +313,6 @@ export class ServicesService {
         return this.http.get<Service[]>(this.API_GetServicebyID + "/" + id);
     }
 
-    // public addToFavorites(
-    //     property: Service,
-    //     direction: any,
-    //     CustomerID: string
-    // ) {
-    //     this.Favourite_service = new wishList(CustomerID, property.id);
-
-    //     this.http
-    //         .post(this.ApI_Add_to_wishList, this.Favourite_service)
-    //         .subscribe(
-    //             (response) => {
-    //                 // Success: Show a success message using snackbar
-    //                 this.snackBar.open(
-    //                     'The property "' +
-    //                         property.name +
-    //                         '" has been added to favorites.',
-    //                     "×",
-    //                     {
-    //                         verticalPosition: "top",
-    //                         duration: 3000,
-    //                         direction: direction,
-    //                     }
-    //                 );
-    //             },
-    //             (error) => {
-    //                 // Error: Handle the error case here, you can also show an error message
-    //                 this.snackBar.open(
-    //                     "Failed to add the property to favorites.",
-    //                     "×",
-    //                     {
-    //                         verticalPosition: "top",
-    //                         duration: 3000,
-    //                         direction: direction,
-    //                     }
-    //                 );
-    //             }
-    //         );
-    // }
     public openConfirmDialog(title: string, message: string) {
         const dialogData = new ConfirmDialogModel(title, message);
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -638,42 +369,4 @@ export class ServicesService {
             },
         ];
     }
-    // public addToFavoritesInServiceDetails(
-    //     property: ServiceDetails,
-    //     direction: any,
-    //     CustomerID: string
-    // ) {
-    //     this.Favourite_service = new wishList(CustomerID, property.id);
-
-    //     this.http
-    //         .post(this.ApI_Add_to_wishList, this.Favourite_service)
-    //         .subscribe(
-    //             (response) => {
-    //                 // Success: Show a success message using snackbar
-    //                 this.snackBar.open(
-    //                     'The property "' +
-    //                         property.name +
-    //                         '" has been added to favorites.',
-    //                     "×",
-    //                     {
-    //                         verticalPosition: "top",
-    //                         duration: 3000,
-    //                         direction: direction,
-    //                     }
-    //                 );
-    //             },
-    //             (error) => {
-    //                 // Error: Handle the error case here, you can also show an error message
-    //                 this.snackBar.open(
-    //                     "Failed to add the property to favorites.",
-    //                     "×",
-    //                     {
-    //                         verticalPosition: "top",
-    //                         duration: 3000,
-    //                         direction: direction,
-    //                     }
-    //                 );
-    //             }
-    //         );
-    // }
 }
