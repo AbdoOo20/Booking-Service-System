@@ -35,11 +35,9 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let property; columns: displayedColumns;"></tr>
     </table> 
-    <a [routerLink]="bookingStatus === 'pending' ? '/your-target-page' : null">
-      <button mat-raised-button color="primary" [disabled]="bookingStatus !== 'pending'">
-        {{ bookingStatus === 'pending' ? 'Pay' : 'Finshied' }}
+      <button (click)="navigateToPaymentPage()" mat-raised-button color="primary" [disabled]="bookingStatus !== 'Pending'">
+        {{ bookingStatus === 'Pending' ? 'Pay' : 'Finshied' }}
       </button>
-    </a>
     @if (!dataSource?.data.length ) {
         <p class="py-5 mb-0 text-center">No data available</p> 
     }   

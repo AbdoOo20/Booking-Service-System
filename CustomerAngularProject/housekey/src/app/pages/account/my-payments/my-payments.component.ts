@@ -27,7 +27,7 @@ import { CustomerPaymentsService } from '@services/customer-payments.service';
     DatePipe,
     CommonModule,
   ],
-  templateUrl: './my-payments.component.html' 
+  templateUrl: './my-payments.component.html'
 })
 export class MyPymentsComponent implements OnInit {
   displayedColumns: string[] = ['paymentNum', 'paymentDate', 'paymentValue', 'bookingPrice'];
@@ -39,27 +39,28 @@ export class MyPymentsComponent implements OnInit {
   bookingPrice: number;
 
   constructor(
-    public appService: AppService, 
+    public appService: AppService,
     private _customerPaymentsService: CustomerPaymentsService,
     private route: ActivatedRoute,
     private router: Router
-  ){ 
-    
+  ) {
+
   }
 
   ngOnInit() {
     const bookingID = this.route.snapshot.paramMap.get('id');
-    if(bookingID) {
+    if (bookingID) {
       this._customerPaymentsService.getCustomerPayments(+bookingID).subscribe({
-        next:(res) => {
+        next: (res) => {
           this.customerPayments = res;
           if (this.customerPayments.length > 0 && this.customerPayments[0].bookingStatus) {
             this.bookingStatus = this.customerPayments[0].bookingStatus;
             this.bookingPrice = this.customerPayments[0].bookingPrice;
           }
-          this.initDataSource(this.customerPayments);   
+          //console.log(this.customerPayments);
+          this.initDataSource(this.customerPayments);
         },
-        error:(error) => {
+        error: (error) => {
           console.error('Error fetching customer payments', error);
         },
       })
@@ -72,30 +73,30 @@ export class MyPymentsComponent implements OnInit {
     let totalPayments = 0;
 
     for (let index = 0; index < paymentsForBooking.length; index++) {
-        const currentPayment = paymentsForBooking[index];
-        totalPayments += currentPayment.paymentValue;
-        remainingAmount = payment.bookingPrice - totalPayments;
+      const currentPayment = paymentsForBooking[index];
+      totalPayments += currentPayment.paymentValue;
+      remainingAmount = payment.bookingPrice - totalPayments;
 
-        if (currentPayment === payment) {
-            return remainingAmount; 
-        }
+      if (currentPayment === payment) {
+        return remainingAmount;
+      }
     }
 
-    return remainingAmount; 
+    return remainingAmount;
   }
 
-  // navigateToPaymentPage() {
-  //   const bookingID = this.route.snapshot.paramMap.get('id');
-  //   const lastPayment = this.customerPayments[this.customerPayments.length - 1];
-  //   if (lastPayment) {
-  //     const remainingValue = this.calculateResidual(lastPayment); 
-  //     const targetPage = '/your-target-page';
-  //     this.router.navigate([targetPage], { queryParams: { bookingID, remainingValue } });
-  //   } else {
-  //     console.error('No payments available to calculate the remaining value.');
-  //   }
-  // }
-  
+   navigateToPaymentPage() {
+    const bookingID = this.route.snapshot.paramMap.get('id');
+    const lastPayment = this.customerPayments[this.customerPayments.length - 1];
+    if (lastPayment) {
+      const remainingValue = this.calculateResidual(lastPayment); 
+      const targetPage = '/NewPayment';
+      this.router.navigate([targetPage], { queryParams: { bookingID, remainingValue } });
+    } else {
+      console.error('No payments available to calculate the remaining value.');
+    }
+  }
+
 
   public initDataSource(data: CustomerPayments[]) {
     this.dataSource = new MatTableDataSource<CustomerPayments>(data);

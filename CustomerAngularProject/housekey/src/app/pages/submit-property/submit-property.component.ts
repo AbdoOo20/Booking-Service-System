@@ -31,7 +31,7 @@ import { Service } from "../../common/interfaces/service";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { CommonModule } from "@angular/common";
+import { CommonModule, Time } from "@angular/common";
 import { PayPalService } from "@services/pay-pal.service";
 import { DataService } from "@services/data.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -40,6 +40,8 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { AbstractControl, ValidationErrors } from "@angular/forms";
 import { Observable, of } from "rxjs";
 import { delay } from "rxjs/operators";
+import { SharedService } from "@services/shared.service";
+import { _SharedService } from "@services/passing-data.service";
 
 @Component({
   selector: "app-submit-property",
@@ -114,7 +116,10 @@ export class SubmitPropertyComponent implements OnInit {
   public amount: number;
 
   // Booking Data
-  @Input() BookingData: any;
+  bookingData: any;
+  public eventBookingDate: string;
+  public startBookingTime: string;
+  public endBookingTime: string;
 
   constructor(
     public appService: AppService,
@@ -123,8 +128,9 @@ export class SubmitPropertyComponent implements OnInit {
     private domHandlerService: DomHandlerService,
     public bookService: BookingService,
     private PayPal: PayPalService,
-    private dataService: DataService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sharedService: SharedService,
+    private NewBooking: _SharedService
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -157,21 +163,11 @@ export class SubmitPropertyComponent implements OnInit {
     this.submitForm = this.fb.group({
       booking: this.fb.group({
         service: [""],
-        //desc: [this.service.details],
-        //priceDollar: null,
         priceEuro: [""],
         eventDate: ["", Validators.required],
         startTime: ["", Validators.required],
         endTime: ["", Validators.required],
-        quantity: [
-          "",
-          Validators.required,
-          Validators.min(1),
-          Validators.max(100000000000000000000000000000),
-        ],
-        //propertyType: [null, Validators.required],
-        //propertyStatus: null,
-        //gallery: null,
+        quantity: ["", Validators.required, Validators.min(1), Validators.max(100000000000000000000000000000),],
       }),
       payment: this.fb.group({
         amount: [0, Validators.required],
@@ -222,6 +218,38 @@ export class SubmitPropertyComponent implements OnInit {
       ?.valueChanges.subscribe((startTime) => {
         this.updateEndTimeOptions(startTime);
       });
+
+  }
+
+  shareData(): void {
+    // Convert booking form data
+    const selectedDate = this.submitForm.get('booking.eventDate').value;
+    const convertedStartTime = this.convertTo24HourFormat(this.submitForm.get('booking.startTime').value);
+    const convertedEndTime = this.convertTo24HourFormat(this.submitForm.get('booking.endTime').value);
+
+    this.bookingData = {
+      eventDate: selectedDate,
+      startTime: convertedStartTime,
+      endTime: convertedEndTime,
+      initialPaymentPercentage: 20,
+      status: 'Pending',
+      quantity: Number(this.submitForm.get('booking.quantity').value),
+      price: parseFloat(this.submitForm.get('booking.priceEuro').value),
+      cashOrCashByHandOrInstallment: 'Cash',
+      bookDate: new Date().toISOString(),
+      type: 'Service',
+      customerId: "529d93df-bcdd-4b22-8f71-dd355f994798",
+      serviceId: this.serviceID,
+      paymentIncomeId: null,
+    };
+
+    // Save data in local storage
+    localStorage.setItem('bookingData', JSON.stringify(this.bookingData));
+
+    // Set data in SharedService
+    this.sharedService.setData(this.bookingData);
+    console.log('Booking data shared:', this.bookingData);
+    this.NewBooking.setData(this.bookingData);
   }
 
   convertTo24HourFormat(time: string): string {
@@ -241,49 +269,6 @@ export class SubmitPropertyComponent implements OnInit {
       .toString()
       .padStart(2, "0")}:00`;
     return formattedTime;
-  }
-
-  createBook() {
-    // Convert Data
-    const selectedDate = this.submitForm.get("booking.eventDate").value;
-    const date = new Date(selectedDate);
-    const localDate = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
-    );
-    const formattedDate = localDate.toISOString();
-    const convertedStartTime = this.convertTo24HourFormat(
-      this.submitForm.get("booking.startTime").value
-    );
-    const convertedEndTime = this.convertTo24HourFormat(
-      this.submitForm.get("booking.endTime").value
-    );
-
-    //set Booking Opject
-    const bookingData = {
-      eventDate: formattedDate,
-      startTime: convertedStartTime,
-      endTime: convertedEndTime,
-      initialPaymentPercentage: 20,
-      status: "Pending",
-      quantity: Number(this.submitForm.get("booking.quantity").value),
-      price: parseFloat(this.submitForm.get("booking.priceEuro").value),
-      cashOrCashByHandOrInstallment: "Cash",
-      bookDate: new Date().toISOString(),
-      type: "Service",
-      customerId: this.customerID,
-      serviceId: this.serviceID,
-      paymentIncomeId: null,
-    };
-    this.bookService
-      .addBooking(JSON.stringify(bookingData, null, 2))
-      .subscribe({
-        next: (response) => {
-          console.log("Booking successful:", response);
-        },
-        error: (error) => {
-          console.error("Error during booking:", error);
-        },
-      });
   }
 
   openContractDialog(): void {
@@ -318,6 +303,10 @@ export class SubmitPropertyComponent implements OnInit {
   }
 
   CreatePayment() {
+    // Share the booking data before proceeding with payment
+    this.shareData(); // Call shareData here to share the booking data
+
+    alert("stile here");
     // Get total value from the form
     const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
 
@@ -361,7 +350,7 @@ export class SubmitPropertyComponent implements OnInit {
     for (let hour = this.startHour; hour <= this.endHour; hour++) {
       const amPm = hour >= 12 ? "PM" : "AM";
       const displayHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
-      console.log(`${displayHour} ${amPm}`);
+      //console.log(`${displayHour} ${amPm}`);
       if (!this.timeBooked.includes(`${displayHour} ${amPm}`)) {
         this.timeOptions.push(`${displayHour} ${amPm}`);
       }
