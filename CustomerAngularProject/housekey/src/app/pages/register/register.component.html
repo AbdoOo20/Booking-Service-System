@@ -97,7 +97,7 @@
 
 
 
-
+<!-- 
 <div class="p-3">
     <div class="theme-container">  
         <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
@@ -108,7 +108,6 @@
                 </div>
                 <form [formGroup]="registerForm" (ngSubmit)="onRegisterFormSubmit()"> 
                     
-                    <!-- Username -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
                         <mat-label>Username</mat-label>
@@ -117,7 +116,6 @@
                         <mat-error *ngIf="registerForm.controls.username.hasError('minlength')">Minimum 6 characters required</mat-error>
                     </mat-form-field>
 
-                    <!-- Name -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">badge</mat-icon>
                         <mat-label>Name</mat-label>
@@ -127,7 +125,6 @@
                         <mat-error *ngIf="registerForm.controls.name.hasError('maxlength')">Name must be less than 30 characters</mat-error>
                     </mat-form-field>
 
-                    <!-- Email -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">email</mat-icon>
                         <mat-label>Email</mat-label>
@@ -136,7 +133,6 @@
                         <mat-error *ngIf="registerForm.controls.email.hasError('email')">Invalid email address</mat-error>
                     </mat-form-field>
 
-                    <!-- Phone -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
                         <mat-label>Phone</mat-label>
@@ -144,7 +140,6 @@
                         <mat-error *ngIf="registerForm.controls.phone.hasError('pattern')">Invalid Saudi phone number</mat-error>
                     </mat-form-field>
 
-                    <!-- Alternative Phone -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
                         <mat-label>Alternative Phone</mat-label>
@@ -152,7 +147,6 @@
                         <mat-error *ngIf="registerForm.controls.alternativePhone.hasError('pattern')">Invalid Saudi phone number</mat-error>
                     </mat-form-field>
 
-                    <!-- SSN -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">fingerprint</mat-icon>
                         <mat-label>SSN</mat-label>
@@ -160,7 +154,6 @@
                         <mat-error *ngIf="registerForm.controls.ssn.hasError('pattern')">Invalid Saudi SSN</mat-error>
                     </mat-form-field>
 
-                    <!-- City -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">location_city</mat-icon>
                         <mat-label>City</mat-label>
@@ -170,7 +163,6 @@
                         <mat-error *ngIf="registerForm.controls.city.hasError('required')">City is required</mat-error>
                     </mat-form-field>
 
-                    <!-- Password -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
                         <mat-label>Password</mat-label>
@@ -181,7 +173,6 @@
                         </button>
                     </mat-form-field>
 
-                    <!-- Confirm Password -->
                     <mat-form-field appearance="outline" class="w-100 mt-2">
                         <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
                         <mat-label>Confirm Password</mat-label>
@@ -201,4 +192,445 @@
             </mat-card>
         </div>  
     </div>
-</div>
+</div> -->
+
+
+
+
+<!-- 
+<div class="container">
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <mat-card class="register-card">
+        <h1 class="text-center">Register</h1>
+  
+        <form [formGroup]="registerForm" (ngSubmit)="onRegisterFormSubmit()" class="register-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" required>
+            <mat-error *ngIf="registerForm.controls.username.invalid && registerForm.controls.username.touched">
+              {{ getErrorMessage('username') }}
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" required>
+            <mat-error *ngIf="registerForm.controls.email.invalid && registerForm.controls.email.touched">
+              {{ getErrorMessage('email') }}
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone" required>
+            <mat-error *ngIf="registerForm.controls.phone.invalid && registerForm.controls.phone.touched">
+              {{ getErrorMessage('phone') }}
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Alternative Phone</mat-label>
+            <input matInput formControlName="alternativePhone" required>
+            <mat-error *ngIf="registerForm.controls.alternativePhone.invalid && registerForm.controls.alternativePhone.touched">
+              {{ getErrorMessage('alternativePhone') }}
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>SSN</mat-label>
+            <input matInput formControlName="ssn" required>
+            <mat-error *ngIf="registerForm.controls.ssn.invalid && registerForm.controls.ssn.touched">
+              {{ getErrorMessage('ssn') }}
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>City</mat-label>
+            <mat-select formControlName="city" required>
+              <mat-option *ngFor="let city of cities" [value]="city">{{ city }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="registerForm.controls.city.invalid && registerForm.controls.city.touched">
+              {{ getErrorMessage('city') }}
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required>
+            <button mat-icon-button matSuffix (click)="hide = !hide" type="button">
+              <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="registerForm.controls.password.invalid && registerForm.controls.password.touched">
+              {{ getErrorMessage('password') }}
+            </mat-error>
+          </mat-form-field>
+  
+          <button mat-raised-button color="primary" class="full-width" type="submit">Register</button>
+        </form>
+      </mat-card>
+    </div>
+  </div>
+   -->
+
+
+   <!-- <div class="p-3">
+    <div class="theme-container">  
+        <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
+            <mat-card [style.max-width.px]="500" class="p-3">
+                <div fxLayout="column" fxLayoutAlign="center center" class="text-center">  
+                    <h1 class="uppercase">Create Account</h1>  
+                    <a mat-button routerLink="/login" color="accent" class="w-100">
+                        Already have an account? Sign in!
+                    </a>  
+                </div>
+                <form [formGroup]="registerForm" (ngSubmit)="onRegisterFormSubmit()"> 
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
+                        <mat-label>Name</mat-label>
+                        <input matInput placeholder="Name" formControlName="username" required>
+                        <mat-error>
+                            {{ getErrorMessage('username') }}
+                        </mat-error> 
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">email</mat-icon>
+                        <mat-label>Email</mat-label>
+                        <input matInput placeholder="Email" formControlName="email" required>
+                        <mat-error>
+                            {{ getErrorMessage('email') }}
+                        </mat-error> 
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+                        <mat-label>Phone</mat-label>
+                        <input matInput placeholder="Phone" formControlName="phone" required>
+                        <mat-error>
+                            {{ getErrorMessage('phone') }}
+                        </mat-error> 
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+                        <mat-label>Alternative Phone</mat-label>
+                        <input matInput placeholder="Alternative Phone" formControlName="alternativePhone" required>
+                        <mat-error>
+                            {{ getErrorMessage('alternativePhone') }}
+                        </mat-error> 
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">badge</mat-icon>
+                        <mat-label>SSN</mat-label>
+                        <input matInput placeholder="SSN" formControlName="ssn" required>
+                        <mat-error>
+                            {{ getErrorMessage('ssn') }}
+                        </mat-error> 
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="w-100 mt-2">
+                        <mat-icon matPrefix class="mr-1 text-muted">location_city</mat-icon>
+                        <mat-label>City</mat-label>
+                        <mat-select formControlName="city" placeholder="Select your city">
+                            <mat-option *ngFor="let city of cities" [value]="city">
+                                {{ city }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>
+                            {{ getErrorMessage('city') }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="w-100 mt-1">
+                        <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+                        <mat-label>Password</mat-label>
+                        <input matInput placeholder="Password" formControlName="password" required [type]="hide ? 'password' : 'text'">
+                        <button mat-icon-button matSuffix (click)="hide = !hide" type="button" class="text-muted">
+                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
+                        <mat-error>
+                            {{ getErrorMessage('password') }}
+                        </mat-error> 
+                    </mat-form-field> 
+
+                    <div class="text-center mt-2"> 
+                        <button mat-raised-button color="accent" class="uppercase" type="submit">
+                            Create an Account
+                        </button>
+                    </div> 
+                </form>
+            </mat-card>
+        </div>  
+    </div>
+</div> -->
+
+
+
+<!-- 
+<div class="p-3">
+    <div class="theme-container">  
+      <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
+        <mat-card [style.max-width.px]="500" class="p-3">
+          <div fxLayout="column" fxLayoutAlign="center center" class="text-center">  
+            <h1 class="uppercase">Create Account</h1>  
+            <a mat-button routerLink="/login" color="accent" class="w-100">
+              Already have an account? Sign in!
+            </a>  
+          </div>
+          <form [formGroup]="registerForm" (ngSubmit)="onRegisterFormSubmit()"> 
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
+              <mat-label>Name</mat-label>
+              <input matInput placeholder="Name" formControlName="username" required>
+              <mat-error>{{ getErrorMessage('username') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">email</mat-icon>
+              <mat-label>Email</mat-label>
+              <input matInput placeholder="Email" formControlName="email" required>
+              <mat-error>{{ getErrorMessage('email') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+              <mat-label>Phone</mat-label>
+              <input matInput placeholder="Phone" formControlName="phone" required>
+              <mat-error>{{ getErrorMessage('phone') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+              <mat-label>Alternative Phone</mat-label>
+              <input matInput placeholder="Alternative Phone" formControlName="alternativePhone" required>
+              <mat-error>{{ getErrorMessage('alternativePhone') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">badge</mat-icon>
+              <mat-label>SSN</mat-label>
+              <input matInput placeholder="SSN" formControlName="ssn" required>
+              <mat-error>{{ getErrorMessage('ssn') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">location_city</mat-icon>
+              <mat-label>City</mat-label>
+              <mat-select formControlName="city" placeholder="Select your city">
+                <mat-option *ngFor="let city of cities" [value]="city">{{ city }}</mat-option>
+              </mat-select>
+              <mat-error>{{ getErrorMessage('city') }}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-1">
+              <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+              <mat-label>Password</mat-label>
+              <input matInput placeholder="Password" formControlName="password" required [type]="hide ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="hide = !hide" type="button" class="text-muted">
+                <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getErrorMessage('password') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-1">
+              <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+              <mat-label>Confirm Password</mat-label>
+              <input matInput placeholder="Confirm Password" formControlName="confirmPassword" required [type]="hide ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="hide = !hide" type="button" class="text-muted">
+                <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error> 
+            </mat-form-field>
+  
+            <div class="text-center mt-2"> 
+              <button mat-raised-button color="accent" class="uppercase" type="submit">
+                Create an Account
+              </button>
+            </div> 
+          </form>
+        </mat-card>
+      </div>  
+    </div>
+  </div>
+   -->
+
+
+
+<!-- 
+   <div class="p-3">
+    <div class="theme-container">  
+      <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
+        <mat-card [style.max-width.px]="500" class="p-3">
+          <div fxLayout="column" fxLayoutAlign="center center" class="text-center">  
+            <h1 class="uppercase">Create Account</h1>  
+            <a mat-button routerLink="/login" color="accent" class="w-100">
+              Already have an account? Sign in!
+            </a>  
+          </div>
+          <form [formGroup]="registerForm" (ngSubmit)="onRegisterFormSubmit()"> 
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
+              <mat-label>Name</mat-label>
+              <input matInput placeholder="Name" formControlName="username" required>
+              <mat-error>{{ getErrorMessage('username') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">email</mat-icon>
+              <mat-label>Email</mat-label>
+              <input matInput placeholder="Email" formControlName="email" required>
+              <mat-error>{{ getErrorMessage('email') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+              <mat-label>Phone</mat-label>
+              <input matInput placeholder="Phone" formControlName="phone" required>
+              <mat-error>{{ getErrorMessage('phone') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+              <mat-label>Alternative Phone</mat-label>
+              <input matInput placeholder="Alternative Phone" formControlName="alternativePhone" required>
+              <mat-error>{{ getErrorMessage('alternativePhone') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">badge</mat-icon>
+              <mat-label>SSN</mat-label>
+              <input matInput placeholder="SSN" formControlName="ssn" required>
+              <mat-error>{{ getErrorMessage('ssn') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">location_city</mat-icon>
+              <mat-label>City</mat-label>
+              <input matInput placeholder="Enter your city" formControlName="city" required>
+              <mat-error>{{ getErrorMessage('city') }}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-1">
+              <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+              <mat-label>Password</mat-label>
+              <input matInput placeholder="Password" formControlName="password" required [type]="hidePassword ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" class="text-muted">
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getErrorMessage('password') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+              <mat-label>Confirm Password</mat-label>
+              <input matInput placeholder="Confirm Password" formControlName="confirmPassword" required [type]="hideConfirmPassword ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button" class="text-muted">
+                <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error> 
+            </mat-form-field>
+  
+            <div class="text-center mt-2">
+              <button mat-raised-button color="accent" class="uppercase" type="submit">
+                Create an Account
+              </button>
+            </div>
+          </form>
+        </mat-card>
+      </div>
+    </div>
+  </div> -->
+  
+
+  <div class="p-3">
+    <div class="theme-container">  
+      <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
+        <mat-card [style.max-width.px]="500" class="p-3">
+          <div fxLayout="column" fxLayoutAlign="center center" class="text-center">  
+            <h1 class="uppercase">Create Account</h1>  
+            <a mat-button routerLink="/login" color="accent" class="w-100">
+              Already have an account? Sign in!
+            </a>  
+          </div>
+          <form [formGroup]="registerForm" (ngSubmit)="onRegisterFormSubmit()"> 
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
+              <mat-label>Name</mat-label>
+              <input matInput placeholder="Full Name" formControlName="name" required>
+              <mat-error>{{ getErrorMessage('name') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">person</mat-icon>
+              <mat-label>Username</mat-label>
+              <input matInput placeholder="Username" formControlName="username" required>
+              <mat-error>{{ getErrorMessage('username') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">email</mat-icon>
+              <mat-label>Email</mat-label>
+              <input matInput placeholder="Email" formControlName="email" required>
+              <mat-error>{{ getErrorMessage('email') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+              <mat-label>Phone</mat-label>
+              <input matInput placeholder="Phone" formControlName="phone" required>
+              <mat-error>{{ getErrorMessage('phone') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">phone</mat-icon>
+              <mat-label>Alternative Phone</mat-label>
+              <input matInput placeholder="Alternative Phone" formControlName="alternativePhone" required>
+              <mat-error>{{ getErrorMessage('alternativePhone') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">badge</mat-icon>
+              <mat-label>SSN</mat-label>
+              <input matInput placeholder="SSN" formControlName="ssn" required>
+              <mat-error>{{ getErrorMessage('ssn') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">location_city</mat-icon>
+              <mat-label>City</mat-label>
+              <input matInput placeholder="Enter your city" formControlName="city" required>
+              <mat-error>{{ getErrorMessage('city') }}</mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-1">
+              <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+              <mat-label>Password</mat-label>
+              <input matInput placeholder="Password" formControlName="password" required [type]="hidePassword ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" class="text-muted">
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getErrorMessage('password') }}</mat-error> 
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline" class="w-100 mt-2">
+              <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
+              <mat-label>Confirm Password</mat-label>
+              <input matInput placeholder="Confirm Password" formControlName="confirmPassword" required [type]="hideConfirmPassword ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button" class="text-muted">
+                <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error> 
+            </mat-form-field>
+  
+            <div class="text-center mt-2">
+              <button mat-raised-button color="accent" class="uppercase" type="submit">
+                Create an Account
+              </button>
+            </div>
+          </form>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+  
