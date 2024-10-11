@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SendGrid.Helpers.Mail;
 
@@ -36,6 +37,7 @@ namespace CusromerProject.Controllers
             customerData.Phone = customer.IdentityUser.PhoneNumber;
             customerData.AlternativePhone = customer.AlternativePhone;
             customerData.City = customer.City;
+            customerData.BankAccount = customer.BankAccount;
             return customerData;
         }
         [HttpPut("{id}")]
@@ -58,10 +60,11 @@ namespace CusromerProject.Controllers
                 customer.AlternativePhone = customerData.AlternativePhone;
                 customer.City = customerData.City;
                 customer.SSN = customerData.SSN;
+                customer.BankAccount = customerData.BankAccount;
                 context.SaveChanges();
-                return Ok();
+                return Ok(new {Message = "Updated Successfully"});
             }
-            else return BadRequest();
+            else return BadRequest(ModelState);
         }
 
         [HttpPut("block{id}")]

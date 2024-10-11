@@ -17,7 +17,22 @@ export class PropertiesSearchResultsFiltersComponent implements OnInit {
     ngOnInit() {}
 
     public remove(field) {
+        // this.homeCmp.getServ(
+        //     this.searchFields.propertyType.name,
+        //     this.searchFields.city.name_en,
+        //     this.searchFields.price.from,
+        //     this.searchFields.price.to
+        // );
+        // console.log(
+        //     this.homeCmp.getServ(
+        //         this.searchFields.propertyType.name,
+        //         this.searchFields.city.name_en,
+        //         this.searchFields.price.from,
+        //         this.searchFields.price.to
+        //     )
+        // );
         this.homeCmp.getServices();
+
         this.onRemoveSearchField.emit(field);
     }
 }

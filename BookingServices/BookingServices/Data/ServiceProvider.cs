@@ -26,6 +26,9 @@ namespace BookingServices.Data
         [Range(0.0, 5.0)]
         public decimal Rate { get; set; }
 
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]
+        public string? BankAccount { get; set; }
+
         public bool? IsBlocked { get; set; } = false;
         public virtual IdentityUser? IdentityUser { get; set; }
         

@@ -98,15 +98,13 @@ namespace CusromerProject.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerDataDTO customerData)
         {
-            if (customerData == null ||
-                string.IsNullOrEmpty(customerData.Username) ||
-                string.IsNullOrEmpty(customerData.Password) ||
-                string.IsNullOrEmpty(customerData.Name) ||
-                string.IsNullOrEmpty(customerData.AlternativePhone) ||
-                string.IsNullOrEmpty(customerData.SSN) ||
-                string.IsNullOrEmpty(customerData.City))
+            if (customerData == null)
             {
-                return BadRequest();
+                return NotFound(new { message = "Customer Not Found" });
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { Message = ModelState });
             }
             var user = new IdentityUser
             {
@@ -118,7 +116,7 @@ namespace CusromerProject.Controllers
             var result = await _userManager.CreateAsync(user, customerData.Password);
             if (!result.Succeeded)
             {
-                return BadRequest();
+                return BadRequest(result.Errors);
             }
 
             var customer = new Customer
@@ -129,13 +127,15 @@ namespace CusromerProject.Controllers
                 SSN = customerData.SSN,
                 City = customerData.City,
                 IsOnlineOrOfflineUser = true,
-                IsBlocked = false
+                IsBlocked = false , 
+                BankAccount = null
             };
 
             context.Customers.Add(customer);
             await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok("Customer Created Successfully");
+
         }
 
         [HttpPost("ForgotPassword")]

@@ -23,6 +23,9 @@ namespace BookingServices.Data
         ErrorMessage = "Please enter a valid Saudi phone number.")]
         public string? AlternativePhone { get; set; }
 
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]
+        public string? BankAccount { get; set; }
+
         [Required]
         [RegularExpression(@"^[12]\d{9}$")]
         public required string SSN { get; set; }
