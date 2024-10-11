@@ -11,7 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { FlexLayoutModule } from '@ngbracket/ngx-layout';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { response } from 'express';
 
 @Component({
   selector: 'app-register',
@@ -77,7 +76,6 @@ export class RegisterComponent implements OnInit {
   
       this.http.post('http://localhost:5285/api/Account/Register', formData).subscribe(
         (response) => {
-          // Success handling
           console.log('Registration successful:', response);
           this.snackBar.open('You registered successfully!', '×', {
             panelClass: 'success',
@@ -87,7 +85,6 @@ export class RegisterComponent implements OnInit {
           this.router.navigate(['/login']);
         },
         (error: HttpErrorResponse) => {
-          // Error handling
           console.error('API Error:', error);
           if (error.status === 400 && error.error && error.error.errors) {
             // Log validation errors for debugging
