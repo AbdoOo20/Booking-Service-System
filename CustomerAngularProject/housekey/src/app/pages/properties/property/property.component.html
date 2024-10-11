@@ -358,19 +358,14 @@
                             </form>
                         </div>
 
-                        <div fxLayout="column" class="widget">
-                            <h3 class="widget-title bg-primary">
-                                Featured Properties
-                            </h3>
+                        <!-- <div fxLayout="column" class="widget">
+                            <h3 class="widget-title bg-primary">Featured Properties</h3>
                             @for (prop of featuredProperties; track $index) {
-                            <div class="mb-3">
-                                <app-property-item
-                                    [property]="prop"
-                                    [viewType]="'grid'"
-                                ></app-property-item>
-                            </div>
-                            }
-                        </div>
+                                <div class="mb-3">
+                                    <app-property-item [property]="prop" [viewType]="'grid'"></app-property-item> 
+                                </div> 
+                            }                        
+                        </div>-->
                     </mat-card>
                 </ng-scrollbar>
             </mat-sidenav>
@@ -383,7 +378,7 @@
                 >
                     <div>
                         <h2 class="uppercase" ngClass.xs="text-center">
-                            {{ property?.name }}
+                            {{ service?.name }}
                         </h2>
                         <p
                             fxLayout="row"
@@ -391,7 +386,7 @@
                             class="address mb-0"
                         >
                             <mat-icon class="text-muted">location_on</mat-icon>
-                            <span>{{ property?.location }}</span>
+                            <span>{{ service?.location }}</span>
                         </p>
                     </div>
                     <div
@@ -399,77 +394,62 @@
                         fxLayoutAlign.xs="center center"
                         class="mx-3"
                     >
-                        <!-- @if (settings.currency == 'USD') {
                         <h2 class="primary-color price">
-                            @if (property?.priceDollar.sale) {
-                            <span>{{
-                                property?.priceDollar.sale
-                                    | currency : "USD" : "symbol" : "1.0"
-                            }}</span>
-                            } @if (property?.priceDollar.rent) {
-                            <span
-                                >{{
-                                    property?.priceDollar.rent
-                                        | currency : "USD" : "symbol" : "1.0"
-                                }}
-                                /month</span
-                            >
-                            }
-                        </h2>
-                        }  -->
-                        <!-- @if (settings.currency == 'EUR') {
-                        <h2 class="primary-color price">
-                            @if (property?.priceEuro.sale) {
-                            <span>{{
-                                property?.priceEuro.sale
-                                    | currency : "EUR" : "symbol" : "1.0"
-                            }}</span>
-                            }  -->
-                        <!-- @if (property?.priceEuro.rent) {
-                            <span
-                                >{{
-                                    property?.priceEuro.rent
-                                        | currency : "EUR" : "symbol" : "1.0"
-                                }}
-                                /month</span
-                            >
-                            } -->
-                        <!-- </h2> -->
-                        <!-- } -->
-                        <!-- <app-rating
-                            [ratingsCount]="property?.ratingsCount"
-                            [ratingsValue]="property?.ratingsValue"
-                        ></app-rating> -->
+                            <span>{{ service?.priceForTheCurrentDay }}</span>
+                            <!--   @if (settings.currency == 'USD') {
+                            <h2 class="primary-color price">
+                                @if (property?.priceDollar.sale) {
+                                    <span>{{property?.priceDollar.sale | currency : 'USD' : 'symbol' : '1.0'}}</span>
+                                }
+                                @if (property?.priceDollar.rent) {
+                                    <span>{{property?.priceDollar.rent | currency : 'USD' : 'symbol' : '1.0'}} /month</span>
+                                }                           
+                            </h2>
+                        }
+                        @if (settings.currency == 'EUR') {
+                            <h2 class="primary-color price">
+                                @if (property?.priceEuro.sale) {
+                                    <span>{{property?.priceEuro.sale | currency : 'EUR' : 'symbol' : '1.0'}}</span>
+                                }
+                                @if (property?.priceEuro.rent) {
+                                    <span>{{property?.priceEuro.rent | currency : 'EUR' : 'symbol' : '1.0'}} /month</span>
+                                }                          
+                            </h2>
+                        }  
+                        <app-rating [ratingsCount]="property?.ratingsCount" [ratingsValue]="property?.ratingsValue"></app-rating> 
                     </div>
                     @if (!sidenavOpen) {
-                    <button mat-icon-button (click)="sidenav.toggle()">
-                        <mat-icon>more_vert</mat-icon>
-                    </button>
-                    }
+                        <button mat-icon-button (click)="sidenav.toggle()">
+                            <mat-icon>more_vert</mat-icon>
+                        </button> 
+                    }   -->
+                        </h2>
+                    </div>
                 </mat-card>
 
                 <mat-card class="p-3 mt-3">
                     <div class="main-carousel mb-3">
-                        @if (property) {
-                        <div class="control-icons">
-                            <!-- <button
-                                mat-button
-                                [disabled]="onFavorites()"
-                                (click)="addToFavorites()"
-                                matTooltip="Add To Favorite"
-                            >
-                                <mat-icon class="m-0">favorite_border</mat-icon>
-                            </button> -->
-                            <!-- <button
-                                mat-button
-                                [disabled]="onCompare()"
-                                (click)="addToCompare()"
-                                matTooltip="Add To Compare"
-                            >
-                                <mat-icon class="m-0">compare_arrows</mat-icon>
-                            </button> -->
+                        <!-- Use *ngIf instead of @if for conditional rendering in Angular -->
+                        <div *ngIf="service">
+                            <div class="control-icons">
+                                <button
+                                    mat-button
+                                    [disabled]="onFavorites()"
+                                    (click)="addToFavorites()"
+                                    matTooltip="Add To Favorite"
+                                >
+                                    <mat-icon class="m-0"
+                                        >favorite_border</mat-icon
+                                    >
+                                </button>
+                                <!-- Uncomment the button below if you want to use it -->
+                                <!--
+                                <button mat-button [disabled]="onCompare()" (click)="addToCompare()" matTooltip="Add To Compare">
+                                    <mat-icon class="m-0">compare_arrows</mat-icon>
+                                </button>
+                                -->
+                            </div>
                         </div>
-                        }
                         <div
                             id="main-carousel"
                             class="swiper-container"
@@ -477,15 +457,19 @@
                             (indexChange)="onIndexChange($event)"
                         >
                             <div class="swiper-wrapper">
-                                @for (image of property?.image; track $index) {
-                                <div class="swiper-slide">
+                                <div
+                                    class="swiper-slide"
+                                    *ngFor="
+                                        let image of service?.image;
+                                        let i = index
+                                    "
+                                >
                                     <img
                                         [attr.data-src]="image.big"
                                         class="swiper-lazy"
                                     />
                                     <div class="swiper-lazy-preloader"></div>
                                 </div>
-                                }
                             </div>
                             <button
                                 mat-mini-fab
@@ -510,10 +494,12 @@
                             [swiper]="config2"
                         >
                             <div class="swiper-wrapper">
-                                @for (image of property?.image; track $index;
-                                let i = $index;) {
                                 <div
                                     class="swiper-slide"
+                                    *ngFor="
+                                        let image of service?.image;
+                                        let i = index
+                                    "
                                     [ngClass]="'thumb-' + i"
                                     [class.active-thumb]="i == 0"
                                 >
@@ -524,13 +510,12 @@
                                     />
                                     <div class="swiper-lazy-preloader"></div>
                                 </div>
-                                }
                             </div>
                         </div>
                     </div>
                 </mat-card>
 
-                @if (property) {
+                <!-- @if (service) { -->
                 <mat-card class="p-3 mt-3">
                     <mat-card-header
                         class="pt-0 pb-2"
@@ -547,8 +532,8 @@
                             fxLayout="row"
                             class="item"
                         >
-                            <span>Property Type:</span>
-                            <span>{{ property.category }}</span>
+                            <span>service Type:</span>
+                            <span>{{ service.category }}</span>
                         </div>
                         <!-- <div fxFlex="100" fxFlex.gt-xs="50" fxLayout="row" class="item">
                                 <span>Property startTime:</span>
@@ -565,7 +550,7 @@
                         class="item"
                     >
                         <span>Start Time:</span>
-                        <span>{{ property.startTime }}</span>
+                        <span>{{ service.startTime }}</span>
                     </div>
                     <div
                         fxFlex="100"
@@ -574,7 +559,7 @@
                         class="item"
                     >
                         <span>End Time:</span>
-                        <span>{{ property.endTime }}</span>
+                        <span>{{ service.endTime }}</span>
                     </div>
                     <!--  <div fxFlex="100" fxFlex.gt-xs="50" fxLayout="row" class="item">
                                 <span>Neighborhood:</span>
@@ -599,7 +584,7 @@
                         class="item"
                     >
                         <span>Price :</span>
-                        <span>{{ property.priceForTheCurrentDay }}</span>
+                        <span>{{ service.priceForTheCurrentDay }}</span>
                     </div>
                     <div
                         fxFlex="100"
@@ -608,7 +593,7 @@
                         class="item"
                     >
                         <span>Quantity:</span>
-                        <span>{{ property.quantity }}</span>
+                        <span>{{ service.quantity }}</span>
                     </div>
                     <!--  <div fxFlex="100" fxFlex.gt-xs="50" fxLayout="row" class="item">
                                 <span>Garages:</span>
@@ -624,8 +609,8 @@
                             </div>
                         </div>-->
                 </mat-card>
-                }
-
+                <!--}
+-->
                 <!--    <mat-card class="p-3 mt-3"> 
                     <mat-card-header class="pt-0" fxLayoutAlign="center center"> 
                         <mat-card-title class="uppercase">Features</mat-card-title> 
@@ -665,9 +650,7 @@
                         >
                     </mat-card-header>
                     <mat-card-content class="p-0 pt-2">
-                        <p>{{ property?.details }}</p>
-                        <p>{{ property?.details }}</p>
-                        <p>{{ property?.details }}</p>
+                        <p>{{ service?.details }}</p>
                     </mat-card-content>
                 </mat-card>
 
@@ -742,23 +725,21 @@
                     <span>Views:<span class="fw-500 mx-2">{{property?.views}}</span></span> 
                 </mat-card>-->
 
-                @if (property) {
-                <app-comments [propertyId]="property.id"></app-comments>
-                }
+                <!--     <div *ngIf="service">
+                    <app-comments [propertyId]="Service.id"></app-comments>
+                </div>-->
             </mat-sidenav-content>
         </mat-sidenav-container>
     </div>
-</div>
 
-<div class="section mt-3">
-    <div class="px-3">
-        <div class="theme-container">
-            <h1 class="section-title">Related properties</h1>
-            <!-- <app-properties-carousel
-                [properties]="{{property?.RelatedServices}}"
-            ></app-properties-carousel> -->
+    <div class="section mt-3">
+        <div class="px-3">
+            <div class="theme-container">
+                <h1 class="section-title">Related service</h1>
+                <!--  <app-properties-carousel [properties]="service?.RelatedServices"></app-properties-carousel>-->
+            </div>
         </div>
     </div>
-</div>
 
-<app-get-in-touch></app-get-in-touch>
+    <app-get-in-touch></app-get-in-touch>
+</div>

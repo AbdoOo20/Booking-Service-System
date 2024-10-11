@@ -168,6 +168,8 @@ export class PropertiesSearchComponent implements OnInit {
     }
 
     public reset() {
+        this.catTest = null;
+        this.locTest = null;
         this.form.reset({
             propertyType: null,
             categoryType: null,
@@ -202,8 +204,6 @@ export class PropertiesSearchComponent implements OnInit {
             },
             features: this.features,
         });
-        this.catTest = null;
-        this.locTest = null;
     }
 
     public search() {
