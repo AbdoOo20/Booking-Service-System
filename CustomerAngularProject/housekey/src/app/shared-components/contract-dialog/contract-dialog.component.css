@@ -1,0 +1,77 @@
+/* contract-dialog.component.css */
+
+/* Title styles */
+.dialog-title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.contract-container {
+    max-height: 60vh;
+    /* Adjust height as necessary */
+    overflow-y: auto;
+    /* Allows for scrolling */
+    padding: 0 10px;
+    /* Optional padding */
+}
+
+/* Individual contract section */
+.contract {
+    margin-bottom: 20px;
+}
+
+/* Title of each contract */
+.contract-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Scrollable area for contract details */
+.contract-details-scroll {
+    max-height: 300px;
+    /* Can adjust this for desired height */
+    overflow-y: auto;
+    /* Scrolls within this area */
+    padding-right: 10px;
+}
+
+/* Accept section styles */
+.accept-section {
+    margin-top: 20px;
+}
+
+/* Footer styles for the dialog */
+.dialog-footer {
+    margin-top: 20px;
+}
+
+.accept-section {
+    margin-top: 20px;
+    /* Space above the section */
+}
+
+mat-checkbox {
+    margin-right: 10px;
+    /* Space between checkbox and button */
+}
+
+
+
+.custom-button {
+    background-color: #007bff;
+    color: white;
+        padding: 10px 20px;
+            border-radius: 5px;
+}
+
+.custom-button:disabled {
+    background-color: gray;
+    color: white;
+    cursor: not-allowed;
+}
+
+.custom-button:not(:disabled):hover {
+    background-color: #0056b3;
+}

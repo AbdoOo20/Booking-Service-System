@@ -6,7 +6,8 @@
             >cancel</mat-icon
         >
     </mat-chip-option>
-    } @if (searchFields?.propertyStatus && searchFields?.propertyStatus.length)
+    }
+    <!-- @if (searchFields?.propertyStatus && searchFields?.propertyStatus.length)
     {
     <mat-chip-option selectable="false">
         @for (type of searchFields?.propertyStatus; track $index; let last =
@@ -22,7 +23,8 @@
             >cancel</mat-icon
         >
     </mat-chip-option>
-    } @if (searchFields?.price.from) {
+    }  -->
+    @if (searchFields?.price.from) {
     <mat-chip-option selectable="false">
         Price > {{ searchFields?.price.from }}
         <mat-icon color="warn" matChipRemove (click)="remove('price.from')"
@@ -38,7 +40,7 @@
     </mat-chip-option>
     } @if (searchFields?.city) {
     <mat-chip-option selectable="false">
-        {{ searchFields?.city.name }}
+        {{ searchFields?.city.name_en }}
         <mat-icon color="warn" matChipRemove (click)="remove('city')"
             >cancel</mat-icon
         >

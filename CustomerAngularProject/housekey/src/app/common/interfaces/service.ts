@@ -11,4 +11,12 @@ export interface Service {
   category: string;
   image: string;
   quantity: number;
+  _AdminContract: Contract;
+  _ProviderContract: Contract;
+}
+
+export interface Contract {
+  id: number;
+  name: string;
+  details: string;
 }

@@ -4,32 +4,6 @@
     fxLayoutAlign="space-between center"
     class="w-100 p-2 filter-row mat-elevation-z1 text-muted"
 >
-    @if (showSidenavToggle) {
-    <button mat-icon-button (click)="sidenavToggle()">
-        <mat-icon>more_vert</mat-icon>
-    </button>
-    }
-    <div>
-        <a
-            mat-button
-            [matMenuTriggerFor]="sortMenu"
-            #sortMenuTrigger="matMenuTrigger"
-        >
-            {{ sort
-            }}<mat-icon class="mat-icon-sm caret" iconPositionEnd
-                >arrow_drop_down</mat-icon
-            >
-        </a>
-        <mat-menu #sortMenu="matMenu" xPosition="before" overlapTrigger="true">
-            <span (mouseleave)="sortMenuTrigger.closeMenu()">
-                @for (sort of sortings; track $index) {
-                <button mat-menu-item (click)="changeSorting(sort)">
-                    {{ sort }}
-                </button>
-                }
-            </span>
-        </mat-menu>
-    </div>
     <div
         fxLayout="row"
         fxLayoutAlign="start center"
@@ -104,3 +78,30 @@
         }
     </div>
 </mat-card>
+
+<!-- @if (showSidenavToggle) {
+    <button mat-icon-button (click)="sidenavToggle()">
+        <mat-icon>more_vert</mat-icon>
+    </button>
+    } -->
+<!-- <div>
+        <a
+            mat-button
+            [matMenuTriggerFor]="sortMenu"
+            #sortMenuTrigger="matMenuTrigger"
+        >
+            {{ sort
+            }}<mat-icon class="mat-icon-sm caret" iconPositionEnd
+                >arrow_drop_down</mat-icon
+            >
+        </a>
+        <mat-menu #sortMenu="matMenu" xPosition="before" overlapTrigger="true">
+            <span (mouseleave)="sortMenuTrigger.closeMenu()">
+                @for (sort of sortings; track $index) {
+                <button mat-menu-item (click)="changeSorting(sort)">
+                    {{ sort }}
+                </button>
+                }
+            </span>
+        </mat-menu>
+    </div> -->

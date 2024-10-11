@@ -1,6 +1,6 @@
 ﻿namespace CustomerProject.DTO.Services
 {
-    public class Contract
+    public class ContractDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

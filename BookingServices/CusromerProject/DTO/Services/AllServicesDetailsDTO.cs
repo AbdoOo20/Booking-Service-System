@@ -14,7 +14,9 @@ namespace CusromerProject.DTO.Services
         public string PriceForTheCurrentDay { get; set; }
         public string Image { get; set; }
 
-        public Contract? _AdminContract { get; set; }
-        public Contract? _ProviderContract { get; set; }
+        public ContractDTO? _AdminContract { get; set; }
+        public ContractDTO? _ProviderContract { get; set; }
+
+        public ProviderDTO Provider {  get; set; }
     }
 }
