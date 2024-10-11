@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CustomerProject.Services;
-using PayPal.Api;
-using System.Linq;
 
 namespace CustomerProject.Controllers
 {
@@ -17,9 +15,9 @@ namespace CustomerProject.Controllers
         }
 
         [HttpGet("payment/{paymentId}")]
-        public IActionResult GetPayment(string paymentId)
+        public async Task<IActionResult> GetPayment(string paymentId)
         {
-            var payment = _payPalService.GetPayment(paymentId);
+            var payment = await _payPalService.GetPaymentAsync(paymentId);
 
             if (payment == null)
                 return NotFound("Payment not found or error occurred.");
@@ -28,9 +26,9 @@ namespace CustomerProject.Controllers
         }
 
         [HttpPost("create-payment")]
-        public IActionResult CreatePayment([FromBody] PaymentRequest request)
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentRequest request)
         {
-            var payment = _payPalService.CreatePayment(request.Total, request.Currency, request.Description, request.ReturnUrl, request.CancelUrl);
+            var payment = await _payPalService.CreatePaymentAsync(request.Total, request.Currency, request.Description, request.ReturnUrl, request.CancelUrl);
 
             if (payment == null)
                 return BadRequest("Failed to create payment. Check the PayPal settings or parameters.");
@@ -42,8 +40,39 @@ namespace CustomerProject.Controllers
 
             return Ok(new { approvalUrl });
         }
+
+        // New: Async Payout Endpoint for Providers
+        [HttpPost("payout")]
+        public async Task<IActionResult> PayoutToProvider([FromBody] PayoutRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.ServiceProviderEmail))
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            try
+            {
+                var payoutBatch = await _payPalService.CreatePayoutAsync(request.ServiceProviderEmail, request.TotalAmount, request.PlatformPercentage);
+
+                if (payoutBatch == null)
+                    return BadRequest("Failed to create payout. Check PayPal settings or parameters.");
+
+                return Ok(new
+                {
+                    message = "Payout successful!",
+                    payoutBatchId = payoutBatch.batch_header.payout_batch_id,
+                    payoutStatus = payoutBatch.batch_header.batch_status
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception during payout: {ex.Message}");
+                return StatusCode(500, "Internal server error during payout.");
+            }
+        }
     }
 
+    // Existing PaymentRequest Class
     public class PaymentRequest
     {
         public decimal Total { get; set; }
@@ -52,4 +81,13 @@ namespace CustomerProject.Controllers
         public string ReturnUrl { get; set; }
         public string CancelUrl { get; set; }
     }
+
+    // New PayoutRequest Class
+    public class PayoutRequest
+    {
+        public string ServiceProviderEmail { get; set; } // This should be the PayPal email of the provider
+        public decimal TotalAmount { get; set; } // The total amount paid by the customer
+        public decimal PlatformPercentage { get; set; } // The platform's commission percentage
+    }
+
 }
