@@ -65,13 +65,40 @@
                                 </mat-form-field>
                             </div>
 
+                            @if(hasQuantity){
+                            <div fxFlex="100" class="px-2">
+                                <mat-form-field appearance="outline" class="w-100">
+                                    <mat-label>Quantity</mat-label>
+                                    <input
+                                        matInput
+                                        placeholder="Quantity"
+                                        formControlName="quantity"
+                                        autocomplete="off"
+                                        required
+                                        type="number"
+                                        min="1" 
+                                        max="{{service.quantity}}" 
+                                    />
+                                    
+                                </mat-form-field>
+                            </div>
+                            }
+
                             <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center">
-                                <button mat-raised-button color="primary" matStepperNext fxLayout="row"
-                                    fxLayoutAlign="center center" type="button">
+                                
+                            </div>
+                            
+                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center">
+                                <button mat-raised-button class="mr-3" color="primary" fxLayout="row" fxLayoutAlign="center center" (click)="openContractDialog()">
+                                    <span class="mx-1 uppercase">Contract</span>
+                                </button>
+                                <button mat-raised-button color="primary" matStepperNext fxLayout="row" fxLayoutAlign="center center" type="button">
                                     <span class="mx-1 uppercase">Next</span>
                                     <mat-icon iconPositionEnd>navigate_next</mat-icon>
                                 </button>
                             </div>
+
+                            
 
                         </form>
 
