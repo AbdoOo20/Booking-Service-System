@@ -52,9 +52,10 @@ export class ServicesService {
         private domHandlerService: DomHandlerService
     ) {}
 
-    // getServiceById(id: number) {
-    //     return this.http.get("http://localhost:18105/api/Services/" + id)
-    // }
+
+  /*  getServiceById(id: number) {
+        return this.http.get("http://localhost:18105/api/Services/" + id)
+    }*/
 
     // GetAllLocations(): Observable<Location[]> {
     //     return this.http.get<Location[]>(this.LOCATION_URL);
@@ -238,82 +239,56 @@ export class ServicesService {
     }
 
     // Basma Code
-    public addToFavorites(
-        property: Service,
-        direction: any,
-        CustomerID: string
-    ) {
-        this.Favourite_service = new wishList(CustomerID, property.id);
-
-        this.http
-            .post(this.ApI_Add_to_wishList, this.Favourite_service)
-            .subscribe(
-                (response) => {
-                    // Success: Show a success message using snackbar
-                    this.snackBar.open(
-                        'The property "' +
-                            property.name +
-                            '" has been added to favorites.',
-                        "×",
-                        {
-                            verticalPosition: "top",
-                            duration: 3000,
-                            direction: direction,
-                        }
-                    );
-                },
-                (error) => {
-                    // Error: Handle the error case here, you can also show an error message
-                    this.snackBar.open(
-                        "Failed to add the property to favorites.",
-                        "×",
-                        {
-                            verticalPosition: "top",
-                            duration: 3000,
-                            direction: direction,
-                        }
-                    );
-                }
-            );
-    }
-    public addToFavoritesInServiceDetails(
-        property: ServiceDetails,
-        direction: any,
-        CustomerID: string
-    ) {
-        this.Favourite_service = new wishList(CustomerID, property.id);
-
-        this.http
-            .post(this.ApI_Add_to_wishList, this.Favourite_service)
-            .subscribe(
-                (response) => {
-                    // Success: Show a success message using snackbar
-                    this.snackBar.open(
-                        'The property "' +
-                            property.name +
-                            '" has been added to favorites.',
-                        "×",
-                        {
-                            verticalPosition: "top",
-                            duration: 3000,
-                            direction: direction,
-                        }
-                    );
-                },
-                (error) => {
-                    // Error: Handle the error case here, you can also show an error message
-                    this.snackBar.open(
-                        "Failed to add the property to favorites.",
-                        "×",
-                        {
-                            verticalPosition: "top",
-                            duration: 3000,
-                            direction: direction,
-                        }
-                    );
-                }
-            );
-    }
+    public addToFavorites(property: Service, direction: any ,CustomerID : string) {
+        this.Favourite_service = new wishList (CustomerID,property.id)
+           
+        this.http.post(this.ApI_Add_to_wishList, this.Favourite_service)
+        .subscribe(
+          (response) => {
+            // Success: Show a success message using snackbar
+            this.snackBar.open('The property "' + property.name + '" has been added to favorites.', '×', {
+              verticalPosition: 'top',
+              duration: 3000,
+              direction: direction
+            });
+          },
+          (error) => {
+            // Error: Handle the error case here, you can also show an error message
+            this.snackBar.open('Failed to add the property to favorites.', '×', {
+              verticalPosition: 'top',
+              duration: 3000,
+              direction: direction
+            });
+          }
+        );
+          
+         }
+ 
+         public addToFavoritesInServiceDetails(property: ServiceDetails, direction: any ,CustomerID : string) {
+             this.Favourite_service = new wishList (CustomerID,property.id)
+                
+             this.http.post(this.ApI_Add_to_wishList, this.Favourite_service)
+             .subscribe(
+               (response) => {
+                 // Success: Show a success message using snackbar
+                 this.snackBar.open('The property "' + property.name + '" has been added to favorites.', '×', {
+                   verticalPosition: 'top',
+                   duration: 3000,
+                   direction: direction
+                 });
+               },
+               (error) => {
+                 // Error: Handle the error case here, you can also show an error message
+                 this.snackBar.open('Failed to add the property to favorites.', '×', {
+                   verticalPosition: 'top',
+                   duration: 3000,
+                   direction: direction
+                 });
+               }
+             );
+               
+              }
+              
     getPropertyById(id: number): Observable<ServiceDetails> {
         return this.http.get<ServiceDetails>(
             this.API_GetServicebyID + "/" + id
