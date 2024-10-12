@@ -30,121 +30,174 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
+
 export class RegisterComponent implements OnInit {
-  public registerForm: FormGroup;
-  public hidePassword = true;
-  public hideConfirmPassword = true;
-  public cities: string[] = [
-    'Riyadh', 'Jeddah', 'Mecca', 'Medina', 'Dammam', 'Khobar', 'Tabuk', 'Abha', 'Najran'
-  ];
+  registerForm: FormGroup;
+  hidePassword = true;
+  hideConfirmPassword = true;
+  errorMessage: string = '';
+  successMessage: string = '';  // Added success message
+  serverValidationErrors: any = {};
 
   constructor(
-    public fb: FormBuilder,
-    public router: Router,
-    public snackBar: MatSnackBar,
-    private http: HttpClient
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.registerForm = this.fb.group({
-      CustomerId:'eslam',
-      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
-      email: ['', [Validators.required, emailValidator]],
-      phone: ['', [Validators.required, Validators.pattern(/^05\d{8}$/)]],
-      alternativePhone: ['', [Validators.required, Validators.pattern(/^05\d{8}$/)]],
-      ssn: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-      city: ['', Validators.required],
-      password: [
+      name: [
         '',
         [
           Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
-        ],
+          Validators.minLength(3),
+          Validators.maxLength(75)
+        ]
       ],
-      confirmPassword: ['', Validators.required],
-    }, { validator: matchingPasswords('password', 'confirmPassword') });
+      username: [
+        '',
+        Validators.required
+      ],
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+        ]
+      ],
+      phone: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/)
+        ]
+      ],
+      alternativePhone: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/)
+        ]
+      ],
+      ssn: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[12]\d{9}$/)
+        ]
+      ],
+      city: [
+        '',
+        Validators.required
+      ],
+      password: [
+        '',
+        Validators.required
+      ],
+      confirmPassword: [
+        '',
+        Validators.required
+      ]
+    }, { validator: this.passwordMatchValidator });
   }
 
+  passwordMatchValidator(form: FormGroup) {
+    return form.controls['password'].value === form.controls['confirmPassword'].value
+      ? null : { 'mismatchedPasswords': true };
+  }
+
+  getErrorMessage(field: string) {
+    const control = this.registerForm.get(field);
+
+    if (this.serverValidationErrors[field]) {
+      return this.serverValidationErrors[field];
+    }
+
+    if (control?.hasError('required')) {
+      return `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+    }
+    if (control?.hasError('minlength')) {
+      return `Minimum length for ${field} is ${control.errors?.minlength.requiredLength} characters`;
+    }
+    if (control?.hasError('maxlength')) {
+      return `Maximum length for ${field} is ${control.errors?.maxlength.requiredLength} characters`;
+    }
+    if (control?.hasError('pattern')) {
+      if (field === 'email') return 'Invalid email address';
+      if (field === 'phone' || field === 'alternativePhone') return 'Invalid Saudi phone number';
+      if (field === 'ssn') return 'Invalid Saudi SSN number';
+    }
+    if (field === 'confirmPassword' && control?.hasError('mismatchedPasswords')) {
+      return 'Passwords do not match';
+    }
+    return '';
+  }
+
+
+
+
   onRegisterFormSubmit(): void {
-    if (this.registerForm.valid) {
-      const formData = this.registerForm.value;
-  
-      console.log('Form data being sent:', formData);
-      //debugger; // Debugging tool to inspect form data
-  
-      this.http.post('http://localhost:5285/api/Account/Register', formData).subscribe(
-        (response) => {
-          console.log('Registration successful:', response);
-          this.snackBar.open('You registered successfully!', '×', {
-            panelClass: 'success',
-            verticalPosition: 'top',
-            duration: 3000
-          });
-          this.router.navigate(['/login']);
-        },
-        (error: HttpErrorResponse) => {
-          console.error('API Error:', error);
-          if (error.status === 400 && error.error && error.error.errors) {
-            // Log validation errors for debugging
-            const validationErrors = error.error.errors;
-            console.error('Validation errors:', validationErrors);
-  
-            // Show specific validation error messages to the user
-            let errorMessage = 'Registration failed. Please check the following fields:\n';
-            Object.keys(validationErrors).forEach((field) => {
-              errorMessage += `${field}: ${validationErrors[field].join(', ')}\n`;
-            });
-            this.snackBar.open(errorMessage, '×', {
-              panelClass: 'error',
-              verticalPosition: 'top',
-              duration: 5000
-            });
-          } else {
-            // General error handling
-            this.snackBar.open('Registration failed. Please try again.', '×', {
-              panelClass: 'error',
-              verticalPosition: 'top',
-              duration: 3000
-            });
-          }
-        }
-      );
-    } else {
-      // Form is invalid, show an error message
+    if (this.registerForm.invalid) {
+      // If form is invalid, show error message
       this.snackBar.open('Please fill in all required fields correctly.', '×', {
         panelClass: 'error',
         verticalPosition: 'top',
         duration: 3000
       });
+      return;
     }
-  }
-  
 
-  // Error message handling for validation
-  getErrorMessage(field: string): string {
-    const control = this.registerForm.get(field);
-    if (control?.hasError('required')) {
-      return `${field} is required`;
-    }
-    if (control?.hasError('minlength')) {
-      return `${field} must be at least ${control.errors?.['minlength'].requiredLength} characters`;
-    }
-    if (control?.hasError('maxlength')) {
-      return `${field} must be less than ${control.errors?.['maxlength'].requiredLength} characters`;
-    }
-    if (control?.hasError('pattern')) {
-      if (field === 'phone' || field === 'alternativePhone') {
-        return 'Invalid Saudi phone number';
+    const registerData = {
+      Name: this.registerForm.value.name,
+      Username: this.registerForm.value.username,
+      Email: this.registerForm.value.email,
+      Phone: this.registerForm.value.phone,
+      AlternativePhone: this.registerForm.value.alternativePhone,
+      SSN: this.registerForm.value.ssn,
+      City: this.registerForm.value.city,
+      Password: this.registerForm.value.password
+    };
+
+    this.http.post('http://localhost:5285/api/Account/Register', registerData).subscribe(
+      (response) => {
+        // Successful registration message
+        console.log('Registration successful:', response);
+        this.snackBar.open('You registered successfully! Please login now.', '×', {
+          panelClass: 'success',
+          verticalPosition: 'top',
+          duration: 3000
+        });
+        setTimeout(() => {
+          this.router.navigate(['/login']);  // Redirect after a delay
+        }, 3000); // 3 seconds delay
+      },
+      (error: HttpErrorResponse) => {
+        console.error('API Error:', error);
+        if (error.status === 400 && error.error && error.error.errors) {
+          // Handle validation errors from the server
+          const validationErrors = error.error.errors;
+          console.error('Validation errors:', validationErrors);
+
+          let errorMessage = 'Registration failed. Please check the following fields:\n';
+          Object.keys(validationErrors).forEach((field) => {
+            errorMessage += `${field}: ${validationErrors[field].join(', ')}\n`;
+          });
+          this.snackBar.open(errorMessage, '×', {
+            panelClass: 'error',
+            verticalPosition: 'top',
+            duration: 5000
+          });
+        } else {
+          // General error message if other error occurs
+          this.snackBar.open('Registration failed. Please try again.', '×', {
+            panelClass: 'error',
+            verticalPosition: 'top',
+            duration: 3000
+          });
+        }
       }
-      if (field === 'ssn') {
-        return 'Invalid SSN, must be a 10-digit Saudi number';
-      }
-      if (field === 'password') {
-        return 'Password must contain at least 1 uppercase, 1 lowercase, 1 digit, and 1 special character';
-      }
-    }
-    return '';
+    );
   }
 }
