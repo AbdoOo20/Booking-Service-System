@@ -419,19 +419,35 @@
 
 
 
-
 <mat-drawer-container class="landing-page">
     <div class="header-bar">
+        <!-- Logo section on the left -->
         <div class="logo-section">
             <img src="https://lily-night.com/wp-content/uploads/2024/08/%D9%84%D9%8A%D9%84%D9%8A%D9%87-.png" alt="Logo" class="logo">
         </div>
-
+    
+        <!-- Dropdowns for Customer and Provider on the right -->
         <div class="nav-buttons">
-            <button mat-raised-button class="custom-button login-btn" (click)="navigateToLogin()">Login</button>
-    <button mat-raised-button class="custom-button register-btn" (click)="navigateToRegister()">Register</button>
+            <!-- Customer Dropdown -->
+            <div class="dropdown">
+                <button mat-raised-button class="custom-button">Customer</button>
+                <div class="dropdown-content">
+                    <button mat-button (click)="navigateToCustomerLogin()">Login</button>
+                    <button mat-button (click)="navigateToCustomerRegister()">Register</button>
+                </div>
+            </div>
+    
+            <!-- Provider Dropdown -->
+            <div class="dropdown">
+                <button mat-raised-button class="custom-button">Provider</button>
+                <div class="dropdown-content">
+                    <button mat-button (click)="navigateToProviderLogin()">Login</button>
+                    <button mat-button (click)="navigateToProviderRegister()">Register</button>
+                </div>
+            </div>
         </div>
-    </div>
-
+    </div>    
+    
     <div class="video-section">
         <video autoplay muted loop class="fullscreen-video">
             <source src="https://videos.files.wordpress.com/im1QP0gk/pexels-edtor-e385a4-13145342-1440p.mp4" type="video/mp4">
