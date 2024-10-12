@@ -43,8 +43,10 @@ export class ConfirmationComponent implements OnInit {
       this.paymentId = queryParams['paymentId'];
       console.log('Payment ID retrieved:', this.paymentId); // Log the payment ID
 
+      
       this.BookingIdFromPayInstallment = localStorage.getItem('bookingID');
-      console.log(this.BookingIdFromPayInstallment);
+      if (this.BookingIdFromPayInstallment)
+        console.log(this.BookingIdFromPayInstallment);
 
       // Retrieve booking data from local storage if available
       const savedBookingData = localStorage.getItem('bookingData');
@@ -94,7 +96,7 @@ export class ConfirmationComponent implements OnInit {
                 console.error('Error adding booking:', err); // Log booking error
               }
             });
-            localStorage.clear();
+            localStorage.removeItem('bookingData');
           }
           else {
             console.log();
@@ -111,7 +113,7 @@ export class ConfirmationComponent implements OnInit {
                 console.error('Error adding payment:', err); // Log payment error
               }
             });
-            localStorage.clear();
+            localStorage.removeItem('bookingID');
           }
         }
       },
