@@ -60,11 +60,13 @@ export const routes: Routes = [
                     ),
             },
             {
+                // path: "register",
+                // loadComponent: () =>
+                //     import("./register/register.component").then(
+                //         (c) => c.RegisterComponent
+                //     ),
                 path: "register",
-                loadComponent: () =>
-                    import("./register/register.component").then(
-                        (c) => c.RegisterComponent
-                    ),
+                component: RegisterComponent,
             },
             {
                 path: "pricing",

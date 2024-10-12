@@ -36,6 +36,7 @@
         fxLayout="column"
         fxLayoutAlign="start stretch"
     >
+        @if(!isRegisterPage()){
         <header
             [ngClass]="'toolbar-' + settings.toolbar"
             [class.has-bg-image]="settings.headerBgImage"
@@ -48,6 +49,7 @@
             <app-toolbar2 (onMenuIconClick)="sidenav.toggle()"></app-toolbar2>
             }
         </header>
+        }
 
         <main [class.content-offset-to-top]="settings.contentOffsetToTop">
             <router-outlet></router-outlet>
@@ -55,7 +57,9 @@
 
         <div class="sticky-footer-helper" fxFlex="grow"></div>
 
+        @if(!isRegisterPage()){
         <app-footer></app-footer>
+        }
 
         <!-- <div
             fxLayout="row"
