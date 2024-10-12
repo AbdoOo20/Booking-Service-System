@@ -1,11 +1,14 @@
-﻿using BookingServices.Data;
+﻿using Azure;
+using BookingServices.Data;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using ServiceProvider = BookingServices.Data.ServiceProvider;
 
 namespace BookingServices.Controllers
 {
@@ -40,7 +43,8 @@ namespace BookingServices.Controllers
                 Rate = provider.Rate,
                 Balance = provider.Balance,
                 ReservedBalance = provider.ReservedBalance,
-                ServiceDetails = provider.ServiceDetails
+                ServiceDetails = provider.ServiceDetails,
+                BankAccount = provider.BankAccount,
             };
             return View(providerDataVM);
         }
@@ -62,16 +66,14 @@ namespace BookingServices.Controllers
                     provider.Name = providerDataVM.Name;
                     provider.ServiceDetails = providerDataVM.ServiceDetails;
                     user.PhoneNumber = providerDataVM.Phone;
-
+                    provider.BankAccount = providerDataVM.BankAccount;
                     context.ServiceProviders.Update(provider);
                     await _userManager.UpdateAsync(user);
                     await context.SaveChangesAsync();
                 }
-
                 return RedirectToAction(nameof(Index));
             }
-
-            return RedirectToAction("Index");
+            return View("Index", providerDataVM);
         }
 
 
@@ -118,8 +120,18 @@ namespace BookingServices.Controllers
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Payout()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            string userIdFromManager = user?.Id ?? "";
+            var provider = context.ServiceProviders.Find(userIdFromManager);
+            provider.Balance = 0;
+            context.SaveChanges();
+            return Json(new { success = true, message = "Withdrawal successful!", newBalance = provider?.Balance });
         }
     }
 }

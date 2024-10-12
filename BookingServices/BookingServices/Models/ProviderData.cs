@@ -21,6 +21,9 @@ namespace BookingServices.Models
 
         public string? Email { get; set; }
 
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]
+        public string? BankAccount { get; set; }
+
         [Required]
         [RegularExpression(@"^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$",
         ErrorMessage = "Please enter a valid Saudi phone number.")]

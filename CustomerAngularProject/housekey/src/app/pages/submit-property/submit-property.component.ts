@@ -89,7 +89,7 @@ export class SubmitPropertyComponent implements OnInit {
   };
 
   ///////////////////////////////////////////////////////////////////////
-  serviceID: number = 1;
+  serviceID: number = 1; //221d4d90-d8f5-423f-920a-196a0a8c12d8
   customerID: string = "221d4d90-d8f5-423f-920a-196a0a8c12d8";
   service: Service;
   minDate: Date;
@@ -106,6 +106,8 @@ export class SubmitPropertyComponent implements OnInit {
   isContractAccepted: boolean = false;
   hasQuantity: boolean = false;
   acceptContract: boolean = false;
+  bookedQuantity = 0;
+  maxQuantity = 0;
 
   // //Payment
   public payment: FormGroup;
@@ -126,9 +128,6 @@ export class SubmitPropertyComponent implements OnInit {
     private dataService: DataService,
     private dialog: MatDialog
   ) {
-    this.minDate = new Date();
-    this.maxDate = new Date();
-    this.maxDate.setMonth(this.maxDate.getMonth() + 3);
     // this.total = 0;
   }
 
@@ -179,8 +178,14 @@ export class SubmitPropertyComponent implements OnInit {
         maxValue: 0,
       }),
     });
-
-    //call service (bookService) for get the Service Data
+    const today = new Date();
+    this.minDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 5
+    );
+    this.maxDate = new Date();
+    this.maxDate.setMonth(this.maxDate.getMonth() + 3);
     this.bookService.getService(this.serviceID).subscribe({
       next: (data) => {
         this.hasQuantity = false;
@@ -402,6 +407,7 @@ export class SubmitPropertyComponent implements OnInit {
     this.timeBooked = [];
     this.services = [];
     this.date = "";
+    this.bookedQuantity = 0;
     this.submitForm.get("booking.startTime")?.setValue("");
     this.submitForm.get("booking.endTime")?.setValue("");
     const month = (selectedDate.getMonth() + 1).toString().padStart(2, "0");
@@ -421,7 +427,9 @@ export class SubmitPropertyComponent implements OnInit {
               const displayHour = hour > 12 ? hour - 12 : hour;
               this.timeBooked.push(`${displayHour} ${amPm}`);
             }
+            this.bookedQuantity += service.quantity;
           }
+          this.maxQuantity = this.service.quantity - this.bookedQuantity;
           this.initializeTimeOptions();
         },
         error: (error) => {

@@ -1,0 +1,17 @@
+﻿#loadingOverlay {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    text-align: center;
+    padding-top: 20%;
+}
+
+    #loadingOverlay .loading-message {
+        color: white;
+        font-size: 20px;
+    }

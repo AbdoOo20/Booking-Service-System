@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using CusromerProject.DTO.Book;
 using CusromerProject.DTO.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 
 namespace CusromerProject.Controllers
 {
@@ -13,11 +16,13 @@ namespace CusromerProject.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly BookRepository _bookRepository;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public BookController(ApplicationDbContext context, BookRepository bookRepository)
+        public BookController(ApplicationDbContext context, BookRepository bookRepository, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _bookRepository = bookRepository;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet]
@@ -45,7 +50,7 @@ namespace CusromerProject.Controllers
             List<Book> books = new List<Book>();
             var bookings = await (from b in _context.Bookings
                                   from s in _context.BookingServices
-                                  where s.ServiceId == id && b.BookingId == s.BookingId && b.EventDate == date
+                                  where s.ServiceId == id && b.BookingId == s.BookingId && b.EventDate.Date == date.Date
                                   select b).ToListAsync();
             foreach (var item in bookings)
             {
@@ -177,18 +182,37 @@ namespace CusromerProject.Controllers
 
         [HttpDelete("{id}")]
         //[Authorize]
-        public IActionResult DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
+            decimal sumPayment = 0;
+            decimal total = 0;
+
             var getBook = _context.Bookings.Find(id);
             if (getBook == null)
                 return NotFound("No Book With This ID");
+            var customer = _context.Customers.Find(getBook.CustomerId);
+            var allPayment = await _context.Payments.Where(p => p.BookingId == getBook.BookingId).ToListAsync();
+            var paymentMethod = _context.PaymentIncomes.Find(getBook.PaymentIncomeId);
+
+            if (customer == null)
+                return NotFound("No Customer With This ID");
+            if (paymentMethod == null)
+                return NotFound("No Payment Method With This ID");
+
+            foreach (var payment in allPayment) 
+            {
+                sumPayment += payment.PaymentValue;
+            }
+            total = sumPayment - (sumPayment * ((paymentMethod.Percentage + 10) / 100));
             if (ModelState.IsValid)
             {
                 try
                 {
+                    //_bookRepository.CancelBook(customer.BankAccount, total);
+                    var result = await _bookRepository.CancelBook(customer.BankAccount, total);
                     getBook.Status = "Canceled";
                     _context.SaveChanges();
-                    return Ok($"Deleted Successfully");
+                    return Ok(result);
                 }
                 catch (Exception e)
                 {
