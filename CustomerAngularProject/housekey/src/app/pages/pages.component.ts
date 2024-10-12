@@ -66,6 +66,9 @@ export class PagesComponent implements OnInit {
         this.headerTypeOption = this.settings.header;
         this.searchPanelVariantOption = this.settings.searchPanelVariant;
     }
+    isRegisterPage(): boolean {
+        return this.router.url === "/register";
+    }
 
     public changeTheme(theme: string) {
         this.settings.theme = theme;

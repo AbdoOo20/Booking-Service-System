@@ -43,8 +43,6 @@ export class ServicesService {
     API_getAgents = "";
     Favourite_service: wishList;
 
-    
-
     constructor(
         private http: HttpClient,
         private bottomSheet: MatBottomSheet,

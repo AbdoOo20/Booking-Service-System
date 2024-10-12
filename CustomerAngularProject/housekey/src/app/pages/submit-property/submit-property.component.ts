@@ -42,6 +42,8 @@ import { Observable, of } from "rxjs";
 import { delay } from "rxjs/operators";
 import { SharedService } from "@services/shared.service";
 import { _SharedService } from "@services/passing-data.service";
+import { DecodingTokenService } from "@services/decoding-token.service";
+import { log } from "console";
 
 @Component({
   selector: "app-submit-property",
@@ -122,6 +124,7 @@ export class SubmitPropertyComponent implements OnInit {
   public eventBookingDate: string;
   public startBookingTime: string;
   public endBookingTime: string;
+  CustomerIDFromToken: any;
 
   constructor(
     public appService: AppService,
@@ -132,7 +135,8 @@ export class SubmitPropertyComponent implements OnInit {
     private PayPal: PayPalService,
     private dialog: MatDialog,
     private sharedService: SharedService,
-    private NewBooking: _SharedService
+    private NewBooking: _SharedService,
+    private decodingService: DecodingTokenService,
   ) {
     // this.total = 0;
   }
@@ -158,6 +162,7 @@ export class SubmitPropertyComponent implements OnInit {
     this.minDate = new Date();
     const currentDate = new Date();
     this.maxDate = new Date(currentDate.setMonth(currentDate.getMonth() + 3));
+    this.CustomerIDFromToken = this.decodingService.getUserIdFromToken();
 
     this.submitForm = this.fb.group({
       booking: this.fb.group({
@@ -231,6 +236,7 @@ export class SubmitPropertyComponent implements OnInit {
     const selectedDate = this.submitForm.get('booking.eventDate').value;
     const convertedStartTime = this.convertTo24HourFormat(this.submitForm.get('booking.startTime').value);
     const convertedEndTime = this.convertTo24HourFormat(this.submitForm.get('booking.endTime').value);
+    console.log(selectedDate);
 
     this.bookingData = {
       eventDate: selectedDate,
@@ -243,7 +249,7 @@ export class SubmitPropertyComponent implements OnInit {
       cashOrCashByHandOrInstallment: 'Cash',
       bookDate: new Date().toISOString(),
       type: 'Service',
-      customerId: "529d93df-bcdd-4b22-8f71-dd355f994798",
+      customerId: this.CustomerIDFromToken,
       serviceId: this.serviceID,
       paymentIncomeId: null,
     };

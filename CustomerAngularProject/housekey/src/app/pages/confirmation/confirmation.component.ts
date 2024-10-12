@@ -3,6 +3,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PaymentsService } from '@services/payments.service';
 import { PayPalService } from '@services/pay-pal.service';
 import { BookingService } from '@services/booking.service';
+import { DecodingTokenService } from '@services/decoding-token.service';
+import { log } from 'console';
+import { constrainedMemory } from 'process';
 
 @Component({
   selector: 'app-confirmation',
@@ -23,13 +26,15 @@ export class ConfirmationComponent implements OnInit {
   NewBookingObject: any;
   serviceObject: Object;
   BookingIdFromPayInstallment: any;
+  CustomerID: string;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private paymentsService: PaymentsService,
     private payPal: PayPalService,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private decodeService: DecodingTokenService,
   ) {
     this.confirmationMessage = 'Your Payment has been confirmed!';
     this.confirmationDate = new Date().toLocaleString();
@@ -38,12 +43,14 @@ export class ConfirmationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.decodeService.getUserIdFromToken());
+    this.CustomerID = this.decodeService.getUserIdFromToken();
     // Retrieve the payment ID from query parameters
     this.route.queryParams.subscribe(queryParams => {
       this.paymentId = queryParams['paymentId'];
       console.log('Payment ID retrieved:', this.paymentId); // Log the payment ID
 
-      
+
       this.BookingIdFromPayInstallment = localStorage.getItem('bookingID');
       if (this.BookingIdFromPayInstallment)
         console.log(this.BookingIdFromPayInstallment);
@@ -74,14 +81,18 @@ export class ConfirmationComponent implements OnInit {
           // Check if booking details exist before adding booking
           if (this.bookingData) {
             // Add booking
+            console.log("this in Confirmation and BookingObject:");
+
+            console.log(this.bookingData);
+
             this.bookingService.addBooking(JSON.stringify(this.bookingData, null, 2)).subscribe({
               next: (bookingResponse) => {
                 console.log('Booking added successfully:', bookingResponse); // Log booking response
                 // Add payment
                 this.paymentsService.addPayment({
-                  customerId: this.bookingData.customerId,
+                  customerId: this.CustomerID,
                   bookingId: bookingResponse.id,
-                  paymentDate: new Date().toISOString(),
+                  paymentDate: this.bookingData.selectedDate,
                   paymentValue: response.transactions[0].amount.total
                 }).subscribe({
                   next: (paymentResponse) => {
@@ -101,9 +112,9 @@ export class ConfirmationComponent implements OnInit {
           else {
             console.log();
             this.paymentsService.addPayment({
-              customerId: "529d93df-bcdd-4b22-8f71-dd355f994798",
+              customerId: this.CustomerID,
               bookingId: this.BookingIdFromPayInstallment,
-              paymentDate: new Date().toISOString(),
+              paymentDate: this.bookingData.selectedDate,
               paymentValue: response.transactions[0].amount.total
             }).subscribe({
               next: (paymentResponse) => {
