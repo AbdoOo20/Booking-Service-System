@@ -11,6 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AppService } from '@services/app.service';
 import { CustomerBookings } from '../../../common/interfaces/customer-bookings';
 import { AllBookingsService } from '@services/all-bookings.service';
+import { DecodingTokenService } from '@services/decoding-token.service';
 
 @Component({
   selector: 'app-my-properties',
@@ -37,16 +38,21 @@ export class MyPropertiesComponent implements OnInit {
 
   constructor(
     public appService: AppService, 
-    private _allBookingService: AllBookingsService
+    private _allBookingService: AllBookingsService,
+    private decodeService: DecodingTokenService,
   ){ 
     
   }
 
   ngOnInit() {
-    this._allBookingService.getBookingWithService("850e858a-c6e5-4fbd-b22e-723cc5be91e0").subscribe({
+    const decodedToken = this.decodeService.getUserIdFromToken();
+    console.log(decodedToken);
+    
+    this._allBookingService.getBookingWithService(decodedToken).subscribe({
       next:(res) => {
         this.customerBookings = res;
         this.initDataSource(this.customerBookings);   
+        console.log(res);
       },
       error:(error) => {
         console.error('Error fetching customer bookings', error);

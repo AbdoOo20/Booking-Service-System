@@ -265,7 +265,7 @@ export class LoginComponent implements OnInit {
     };
 
     // Call the API for login
-    this.http.post('http://localhost:5285/api/Account/Login', loginData).subscribe({
+    this.http.post('http://localhost:18105/api/Account/Login', loginData).subscribe({
       next: (response: any) => {
         if (response.token) {
           // Save the token and navigate to the home page
@@ -331,5 +331,5 @@ export class LoginComponent implements OnInit {
 
   get password() {
     return this.loginForm.get('password');
-  }
+  }  
 }
