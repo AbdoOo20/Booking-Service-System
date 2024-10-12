@@ -162,15 +162,13 @@ export class PropertyItemComponent implements OnInit {
     }
 
     public addToFavorites() {
-        this.appService.addToFavorites(
-            this.property,
-            this.settings.rtl ? "rtl" : "ltr"
+        this.myServ.addToFavorites(
+            this.service,
+            this.settings.rtl ? "rtl" : "ltr" , ''     //customerId 
         );
     }
 
     public onFavorites() {
-        return this.appService.Data.favorites.filter(
-            (item) => item.id == this.property.id
-        )[0];
+      //  return this.appService.ApI_Add_to_wishList.(item => item.id == this.service.id)[0];
     }
 }
