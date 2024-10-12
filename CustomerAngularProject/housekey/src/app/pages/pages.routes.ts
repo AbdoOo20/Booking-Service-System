@@ -102,6 +102,13 @@ export const routes: Routes = [
                     ),
             },
             {
+                path: "NewPayment",
+                loadComponent: () =>
+                    import(
+                        "./pay-installments/pay-installments.component"
+                    ).then((c) => c.PayInstallmentsComponent),
+            },
+            {
                 path: "account",
                 loadChildren: () =>
                     import("./account/account.routes").then((p) => p.routes),

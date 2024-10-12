@@ -48,7 +48,7 @@ namespace CusromerProject.Controllers
                 {
                     ModelState.AddModelError("User Blocked", "Plz, connect with the customer service");
 
-                    return BadRequest(ModelState);
+                    return BadRequest(new { Message = ModelState });
                 }
 
                 if (user != null)
@@ -86,13 +86,13 @@ namespace CusromerProject.Controllers
                             expiration = DateTime.Now.AddHours(1),
                         });
                     }
-                    ModelState.AddModelError("Password", "The password invaild");
+                    ModelState.AddModelError("Password", "The name or password invaild");
 
                 }
                 ModelState.AddModelError("UserName", "The name or password invaild");
             }
 
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = ModelState });
         }
 
         [HttpPost("Register")]
@@ -116,7 +116,7 @@ namespace CusromerProject.Controllers
             var result = await _userManager.CreateAsync(user, customerData.Password);
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors);
+                return BadRequest(new { message = "Error creating user", errors = result.Errors });
             }
 
             var customer = new Customer
@@ -134,7 +134,7 @@ namespace CusromerProject.Controllers
             context.Customers.Add(customer);
             await context.SaveChangesAsync();
 
-            return Ok("Customer Created Successfully");
+            return Ok(new { message = "Customer Created Successfully" });
 
         }
 
