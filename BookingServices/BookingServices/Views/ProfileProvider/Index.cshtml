@@ -5,14 +5,26 @@
     Layout = "~/Views/Shared/_LayoutProvider.cshtml";
 }
 
+<head>
+	<link href="~/css/withdraw.css" rel="stylesheet" />
+</head>
+
+<div id="loadingOverlay">
+    <div class="loading-message">Loading...</div>
+</div>
+
+<div id="responseMessage" class="mt-2 mb-2"></div>
+
 <div class="container my-5">
     <h1 class="text-center head-color">Profile</h1>
-    @* Balance *@
+    @* Balance *@ 
     <div class="container-fluid bg-light border border-dark rounded p-4">
+        <input type="hidden" id="serviceProviderEmail" value="@Model.BankAccount" />
+        <input type="hidden" c value="@Model.Balance" />
         <div class="row text-center mb-4">
             <div class="col">
                 <h5>Money can be withdrawn</h5>
-                <p>@Html.DisplayFor(model => model.Balance) $</p>
+                <span id="balanceDisplay">@Html.DisplayFor(model => model.Balance)</span>
             </div>
             <div class="col">
                 <h5>Pending Balance</h5>
@@ -25,10 +37,13 @@
         </div>
         <div class="d-flex justify-content-center align-items-center">
             <p class="mb-0 me-3">You can request your profits from your account by withdrawing from your bank account.</p>
-            <button class="btn btn-outline-primary">Withdraw</button>
-           
+            <button class="btn btn-outline-primary" id="withdrawButton"
+            @(Model.Balance > 0 ? "" : "disabled")>
+                Withdraw
+            </button>
         </div>
     </div>
+
     @* Static Info *@
     <div class="col-12 mt-3">
         <div class="card p-3">
@@ -49,15 +64,24 @@
         <div class="col-12 my-2">
             <h5>Name</h5>
             <input class="form-control" name="Name" value="@Model.Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="col-12 my-2">
             <h5>Details</h5>
             <textarea class="form-control" name="ServiceDetails" rows="4">@Model.ServiceDetails</textarea>
+            <span asp-validation-for="ServiceDetails" class="text-danger"></span>
         </div>
         <div class="col-12 my-2">
             <h5>Phone</h5>
             <input class="form-control" name="Phone" value="@Model.Phone" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
         </div>
+        <div class="col-12 my-2">
+            <h5>Bank Account</h5>
+            <input class="form-control" name="BankAccount" value="@Model.BankAccount" />
+            <span asp-validation-for="BankAccount" class="text-danger"></span>
+        </div>
+
          <br/>
           <br/>
         <button type="submit" class="btn btn-outline-primary btn-lg w-100">Edit</button>
@@ -66,3 +90,8 @@
     </form>
 
 </div>
+
+
+@section Scripts {
+	<script src="~/js/withdraw.js"></script>
+}

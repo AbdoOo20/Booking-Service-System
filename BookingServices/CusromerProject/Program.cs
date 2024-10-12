@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 using CusromerProject.DTO.Categories;
 using CusromerProject.DTO.Review;
 using CustomerProject.Services;
+using BookingServices.ViewModel;
 
 namespace CusromerProject
 {
@@ -30,7 +31,9 @@ namespace CusromerProject
             // Configure Identity
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders();
+
+            builder.Services.AddHttpClient();
 
             // Configure JWT Authentication
             builder.Services.AddAuthentication(options =>

@@ -1,10 +1,10 @@
-﻿using BookingServices.Data;
-using BookingServices.ViewModel;
-using CusromerProject.DTO.Services;
+﻿
+using BookingServices.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace CusromerProject.DTO.Book
 {
@@ -13,11 +13,13 @@ namespace CusromerProject.DTO.Book
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(10);
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public BookRepository(ApplicationDbContext context, IMemoryCache cache)
+        public BookRepository(ApplicationDbContext context, IMemoryCache cache, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _cache = cache;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<List<Book>> GetBookings()
@@ -134,6 +136,28 @@ namespace CusromerProject.DTO.Book
                 _cache.Set(cacheKey, books, cacheOptions);
             }
             return books;
+        }
+
+        [HttpPost]
+        public async Task<string> CancelBook(string email, decimal total)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var payoutData = new
+            {
+                serviceProviderEmail = email,
+                totalAmount = total,
+                platformPercentage = 0
+            };
+            var response = await client.PostAsJsonAsync("http://localhost:18105/api/PayPal/payout", payoutData);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync(); // Return content directly
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error calling external API: {errorContent}"); 
+            }
         }
     }
 }

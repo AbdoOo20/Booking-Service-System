@@ -70,14 +70,14 @@
                                 <mat-form-field appearance="outline" class="w-100">
                                     <mat-label>Quantity</mat-label>
                                     <input
+                                        value="{{hasQuantity}} ? 1 : 0"
                                         matInput
                                         placeholder="Quantity"
                                         formControlName="quantity"
                                         autocomplete="off"
-                                        required
                                         type="number"
                                         min="1" 
-                                        max="{{service.quantity}}" 
+                                        max="{{maxQuantity}}" 
                                     />
                                     
                                 </mat-form-field>
@@ -92,7 +92,8 @@
                                 <button mat-raised-button class="mr-3" color="primary" fxLayout="row" fxLayoutAlign="center center" (click)="openContractDialog()">
                                     <span class="mx-1 uppercase">Contract</span>
                                 </button>
-                                <button mat-raised-button color="primary" matStepperNext fxLayout="row" fxLayoutAlign="center center" type="button">
+                                <button mat-raised-button color="primary" matStepperNext fxLayout="row" fxLayoutAlign="center center" type="button"
+                                    [disabled]="!acceptContract">
                                     <span class="mx-1 uppercase">Next</span>
                                     <mat-icon iconPositionEnd>navigate_next</mat-icon>
                                 </button>

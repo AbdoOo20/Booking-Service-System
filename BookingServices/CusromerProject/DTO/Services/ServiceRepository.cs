@@ -28,7 +28,7 @@ namespace CusromerProject.DTO.Services
             {
                 services = await _context.Services
                     .Where(s => s.IsOnlineOrOffline == true && s.IsBlocked == false &&
-                        s.ServicePrices.Any(sp => sp.PriceDate.Date == DateTime.Now.Date))
+                        s.ServicePrices.Any(sp => sp.PriceDate.Date == DateTime.Now.Date && sp.Price > 0))
                     .Include(s => s.Category)
                     .Include(s => s.ServicePrices)
                     .Include(s => s.ServiceImages)
@@ -78,7 +78,7 @@ namespace CusromerProject.DTO.Services
             {
                 service = await _context.Services
                     .Where(s => s.ServiceId == serviceId && s.IsOnlineOrOffline == true && s.IsBlocked == false &&
-                        s.ServicePrices.Any(sp => sp.PriceDate.Date == DateTime.Now.Date))
+                        s.ServicePrices.Any(sp => sp.PriceDate.Date == DateTime.Now.Date && sp.Price > 0))
                     .Include(s => s.Category)
                     .Include(s => s.ServiceProvider)
                     .Include(s => s.ServicePrices)
@@ -104,7 +104,7 @@ namespace CusromerProject.DTO.Services
                         Images = s.ServiceImages.Select(i => i.URL).ToList(),
                         RelatedServices = s.Relatedservices
                          .Where(rs => rs.IsOnlineOrOffline == true && rs.IsBlocked == false &&
-                                 rs.ServicePrices.Any(sp => sp.PriceDate.Date == DateTime.Now.Date))
+                                 rs.ServicePrices.Any(sp => sp.PriceDate.Date == DateTime.Now.Date && sp.Price > 0))
                          .Select(rs => new AllServicesDetailsDTO
                         {
                             Id = rs.ServiceId,
