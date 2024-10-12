@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,8 @@ import { AppService } from '@services/app.service';
 import { CustomerBookings } from '../../../common/interfaces/customer-bookings';
 import { AllBookingsService } from '@services/all-bookings.service';
 import { DecodingTokenService } from '@services/decoding-token.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertDialogComponent } from '@shared-components/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-my-properties',
@@ -25,12 +27,13 @@ import { DecodingTokenService } from '@services/decoding-token.service';
     MatIconModule,
     MatButtonModule,
     MatPaginatorModule,
-    DatePipe
+    DatePipe,
+    CommonModule
   ],
   templateUrl: './my-properties.component.html' 
 })
 export class MyPropertiesComponent implements OnInit {
-  displayedColumns: string[] = [ 'bookNum', 'serviceImage', 'serviceName', 'bookDate', 'status', 'price', 'paymentDetails'];
+  displayedColumns: string[] = [ 'bookNum', 'serviceImage', 'serviceName', 'bookDate', 'status', 'price', 'actions'];
   dataSource: MatTableDataSource<CustomerBookings>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -40,6 +43,7 @@ export class MyPropertiesComponent implements OnInit {
     public appService: AppService, 
     private _allBookingService: AllBookingsService,
     private decodeService: DecodingTokenService,
+    private dialog: MatDialog
   ){ 
     
   }
@@ -58,6 +62,30 @@ export class MyPropertiesComponent implements OnInit {
         console.error('Error fetching customer bookings', error);
       },
     })
+  }
+
+  deleteBook(id: number): void {
+    const dialogRef= this.dialog.open(AlertDialogComponent, {
+      data: {
+        title: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this book?'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this._allBookingService.deleteBooking(id).subscribe({
+          next: () => {
+            // Remove the deleted item from the local array
+            this.customerBookings = this.customerBookings.filter(item => item.bookId !== id);
+            alert('Item deleted successfully.');
+          },
+          error: (err) => {
+            console.error('Error deleting item', err);
+            alert('Failed to delete item.');
+          }
+        });
+      }
+    });
   }
 
   public initDataSource(data: CustomerBookings[]) {
