@@ -11,6 +11,10 @@ _apiURL = "http://localhost:18105/api";
 
   constructor() { }
 
+  deleteBooking(id: number): Observable<void> {
+    return this._httpClient.delete<void>(`${this._apiURL}/Book/${id}`)
+  }
+
   getBooking(id : string): Observable<any> {
     return this._httpClient.get(`${this._apiURL}/Book/GetBookingsForCustomer/${id}`); 
   }

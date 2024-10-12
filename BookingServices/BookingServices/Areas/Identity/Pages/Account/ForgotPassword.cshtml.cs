@@ -56,8 +56,8 @@ namespace BookingServices.Areas.Identity.Pages.Account
                 var user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return RedirectToPage("./ForgotPasswordConfirmation");
+                    ModelState.AddModelError("Input.Email", "Plz, Insert the correct Email");
+                    return Page();
                 }
 
                 // For more information on how to enable account confirmation and password reset please

@@ -48,12 +48,23 @@
         </ng-container> 
   
         <!-- moreDetails Column -->
-        <ng-container matColumnDef="paymentDetails">
-          <th mat-header-cell *matHeaderCellDef> Payment Details </th>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let property">  
-              <a [routerLink]="['/account/my-properties', property.bookId]"mat-icon-button color="primary">
+              <a [routerLink]="['/account/my-properties', property.service.id]"mat-icon-button color="primary">
                   <mat-icon>info</mat-icon>
               </a>
+           
+              <a 
+                color="primary" 
+                [class.disabled]="property.status !== 'Pending'" 
+                (click)="deleteBook(property.bookId);property.status !== 'Pending' && $event.preventDefault()"
+                [attr.aria-disabled]="property.status !== 'Pending' ? true : null">
+                <mat-icon [ngStyle]="{
+                  color: property.status === 'Pending' ? 'red' : 
+                         property.status === 'Confirmed' ? 'green' : 'inherit'}">
+                         {{ property.status === 'Pending' ? 'cancel' : 'check_circle' }}</mat-icon>
+              </a> 
           </td>
         </ng-container> 
     
