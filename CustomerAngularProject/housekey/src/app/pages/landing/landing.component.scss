@@ -1,89 +1,106 @@
 .landing-page {
-    .header-section {
-        position: relative;
-        overflow: hidden;
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        background-image: url('/images/props/office-2/1-big.jpg');
+  .header-bar {
+      background-color: white;
+      height: 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
 
-        &:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.81);
-        }
+      .logo-section {
+          .logo {
+              width: 120px;
+          }
+      }
 
-        .content {
-            position: relative;
-            z-index: 9;
-            color: #fff;
-            text-align: center;
+      .nav-buttons {
+          display: flex;
+          gap: 10px;
 
-            h1 {
-                font-size: 36px;
-                font-weight: 400;
-            }
+          /* Customer and Provider buttons */
+          .custom-button {
+              border-radius: 25px;
+              padding: 10px 30px;
+              font-size: 16px;
+              font-weight: bold;
+              background-color: #1c7bec;  /* Button background color for Customer and Provider */
+              color: white;  /* White text for buttons */
+              transition: all 0.3s ease;
 
-            h4 {
-                font-size: 16px;
-                font-weight: 300;
-                max-width: 700px;
-                margin: 0 auto;
-            }
-        }
-    }
+              &:hover {
+                  background-color: #0c63cd;  /* Slightly darker shade on hover */
+              }
+          }
 
-    .main-wrapper {
-        margin: -16px;
+          /* Style the dropdown */
+          .dropdown {
+              position: relative;
+              display: inline-block;
 
-        .box {
-            text-align: center;
-            padding: 16px;
-            margin-bottom: 24px;
+              .dropdown-content {
+                  display: none;
+                  position: absolute;
+                  background-color: white;  /* White background for dropdown items */
+                  min-width: 160px;
+                  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                  z-index: 1;
+                  border-radius: 25px;  /* Rounded dropdown edges */
+                  overflow: hidden;
 
-            h2 {
-                padding: 16px 0;
-                font-weight: 500;
-            }
+                  button {
+                      padding: 12px 30px;  /* Match padding of main buttons */
+                      color: #1c7bec;  /* Text color matches main button background */
+                      font-size: 16px;
+                      font-weight: bold;
+                      background-color: white;  /* White background for login/register */
+                      border: none;
+                      width: 100%;
+                      text-align: left;
+                      cursor: pointer;
+                      transition: background-color 0.3s ease;
+                      border-radius: 0;  /* No border radius on items */
+                  }
 
-            .mat-mdc-card {
-                background-size: cover;
-                height: 300px;
-                background-position: top;
-                transition: 5s;
-                box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
-                    0px 3px 4px 0px rgba(0, 0, 0, 0.14),
-                    0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-            }
+                  button:hover {
+                      background-color: #f0f0f0;  /* Light gray hover for items */
+                  }
+              }
 
-            &:hover {
-                .mat-mdc-card {
-                    background-position: bottom;
-                }
+              &:hover .dropdown-content {
+                  display: block;
+              }
+          }
+      }
+  }
 
-            }
-        }
-    }
+  .video-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
 
-    p {
-        font-size: 16px;
-    }
+      .fullscreen-video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+      }
 
-    .copyright {
-        margin-top: 36px;
-        height: 64px;
+      .overlay-content {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          color: white;
+          background-color: rgba(0, 0, 0, 0.5);
+          padding: 20px;
+          border-radius: 10px;
 
-        p {
-            font-size: 13px;
-            font-weight: 400;
-            margin-bottom: 0;
-            line-height: 1.2;
-        }
-    }
+          .landing-message {
+              font-size: 24px;
+              font-weight: 600;
+              line-height: 1.5;
+              max-width: 700px;
+          }
+      }
+  }
 }

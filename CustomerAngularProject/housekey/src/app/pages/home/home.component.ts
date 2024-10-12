@@ -88,7 +88,10 @@ export class HomeComponent implements OnInit {
     public locations: Location[];
     public settings: Settings;
     // My Property
+    public AllServices: Service[];
     public ServicesItems: Service[];
+    public itemsToShow = 8;
+    public step = 8;
     public SrvBookingRec: Service[];
     public CatsItems: Category[];
     public resultView: number;
@@ -282,7 +285,21 @@ export class HomeComponent implements OnInit {
     public removeSearchField(field: any) {
         this.message = null;
         this.removedSearchField = field;
-        console.log(field + "Any");
+        console.log(field);
+        if (field == "propertyType") this.catTest = null;
+        else if (field == "city") this.locTest = null;
+        else if (field == "price.from") this.fromTest = null;
+        else if (field == "price.to") this.toTest = null;
+        else {
+            this.catTest = null;
+            this.locTest = null;
+            this.fromTest = null;
+            this.toTest = null;
+        }
+        console.log(this.catTest);
+        console.log(this.locTest);
+        console.log(this.fromTest);
+        console.log(this.toTest);
     }
 
     public changeCount(count: number) {
@@ -310,16 +327,18 @@ export class HomeComponent implements OnInit {
 
     public ServiceCatName: any;
     // Test
+    showMore(): void {
+        this.itemsToShow += this.step;
+        this.ServicesItems = this.AllServices.slice(0, this.itemsToShow);
+    }
     public getServ(cat: string, loc: string, from: number, to: number) {
         this.myServ.GetAllFilterion(cat, loc, from, to).subscribe({
             next: (data) => {
-                console.log("test");
-                console.log(data);
-                console.log(cat);
-                console.log(loc);
-                console.log(from);
-                console.log(to);
-                this.ServicesItems = data;
+                this.AllServices = data;
+                this.ServicesItems = this.AllServices.slice(
+                    0,
+                    this.itemsToShow
+                );
             },
             error: (error) => {
                 console.log(error);
@@ -327,30 +346,30 @@ export class HomeComponent implements OnInit {
         });
     }
     //[1]
-    public getServiceCategories(catName) {
-        this.myServ.GetAllServicesByCatName(catName).subscribe({
-            next: (data) => {
-                this.ServicesItems = data;
-                console.log(data);
-            },
-            error: (err) => {
-                console.log(err);
-            },
-        });
-    }
+    // public getServiceCategories(catName) {
+    //     this.myServ.GetAllServicesByCatName(catName).subscribe({
+    //         next: (data) => {
+    //             this.ServicesItems = data;
+    //             console.log(data);
+    //         },
+    //         error: (err) => {
+    //             console.log(err);
+    //         },
+    //     });
+    // }
 
     //[2]
-    public getServiceLocation(locName) {
-        this.myServ.GetAllServicesByLocation(locName).subscribe({
-            next: (data) => {
-                this.ServicesItems = data;
-                console.log(data);
-            },
-            error: (err) => {
-                console.log(err);
-            },
-        });
-    }
+    // public getServiceLocation(locName) {
+    //     this.myServ.GetAllServicesByLocation(locName).subscribe({
+    //         next: (data) => {
+    //             this.ServicesItems = data;
+    //             console.log(data);
+    //         },
+    //         error: (err) => {
+    //             console.log(err);
+    //         },
+    //     });
+    // }
     // [3]
     public GetRecSrvForBooking() {
         this.myServ.GetRecomenditionServicesForBooking().subscribe({
@@ -364,23 +383,22 @@ export class HomeComponent implements OnInit {
         });
     }
     //[4]
-    public getServicePrice(from: number, to: number) {
-        this.myServ.GetAllServicesPrice(from, to).subscribe({
-            next: (data) => {
-                this.ServicesItems = data;
-                console.log(data);
-            },
-            error: (err) => {
-                console.log(err);
-            },
-        });
-    }
+    // public getServicePrice(from: number, to: number) {
+    //     this.myServ.GetAllServicesPrice(from, to).subscribe({
+    //         next: (data) => {
+    //             this.ServicesItems = data;
+    //             console.log(data);
+    //         },
+    //         error: (err) => {
+    //             console.log(err);
+    //         },
+    //     });
+    // }
     // My Function
     public getServices() {
         this.myServ.GetAllServices().subscribe({
             next: (data) => {
                 this.ServicesItems = data as Service[];
-                console.log(data);
             },
             error: (err) => {
                 console.log(err);

@@ -1,7 +1,6 @@
 import {
     Component,
     HostListener,
-    Input,
     OnInit,
     QueryList,
     ViewChild,
@@ -42,9 +41,10 @@ import { PropertiesCarouselComponent } from "@shared-components/properties-carou
 import { GetInTouchComponent } from "@shared-components/get-in-touch/get-in-touch.component";
 import { MatButtonModule } from "@angular/material/button";
 import { FlexLayoutModule } from "@ngbracket/ngx-layout";
-import { ServicesService } from "@services/services.service";
 import { ServiceDetails } from "../../../common/interfaces/ServiceDetails";
+import { ServicesService } from "@services/services.service";
 import { Service } from "../../../common/interfaces/service";
+import { provider } from "../../../common/interfaces/Provider";
 
 @Component({
     selector: "app-property",
@@ -74,25 +74,29 @@ import { Service } from "../../../common/interfaces/service";
     ],
     templateUrl: "./property.component.html",
     styleUrl: "./property.component.scss",
-    providers: [EmbedVideoService, ServicesService], //ServicesService
+    providers: [EmbedVideoService],
 })
 export class PropertyComponent implements OnInit {
-    @Input() property: ServiceDetails;
     @ViewChild("sidenav") sidenav: any;
     @ViewChildren(SwiperDirective) swipers: QueryList<SwiperDirective>;
     public sidenavOpen: boolean = true;
     public config: SwiperConfigInterface = {};
     public config2: SwiperConfigInterface = {};
     private sub: any;
+    private subService: any;
+    public property: Property;
     public service: ServiceDetails;
     public settings: Settings;
     public embedVideo: any;
+    public relatedProperties: Property[];
     public relatedServices: Service[];
     public featuredProperties: Property[];
     public agent: any;
+    public baseUrlImage = "http://localhost:30480";
     public mortgageForm: FormGroup;
     public monthlyPayment: any;
     public contactForm: FormGroup;
+    public provider: provider;
     mapOptions: google.maps.MapOptions = {
         mapTypeControl: true,
         fullscreenControl: true,
@@ -102,9 +106,10 @@ export class PropertyComponent implements OnInit {
 
     constructor(
         public settingsService: SettingsService,
-        public appService: ServicesService,
+        public appService: AppService,
+        private myServ: ServicesService,
         private activatedRoute: ActivatedRoute,
-        //private embedService: EmbedVideoService,
+        private embedService: EmbedVideoService,
         public fb: FormBuilder,
         private domHandlerService: DomHandlerService
     ) {
@@ -112,11 +117,18 @@ export class PropertyComponent implements OnInit {
     }
 
     ngOnInit() {
+        // this.sub = this.activatedRoute.params.subscribe((params) => {
+        //     this.getPropertyById(params["id"]);
+        // });
         this.sub = this.activatedRoute.params.subscribe((params) => {
-            this.getPropertyById(params["id"]);
+            this.getSericeById(params["id"]);
+        });
+        this.subService = this.activatedRoute.params.subscribe((params) => {
+            this.getSericeById(params["id"]);
         });
         this.getRelatedProperties();
-        //this.getFeaturedProperties();
+        // this.getRelatedServices();
+        this.getFeaturedProperties();
         this.getAgent(1);
         if (this.domHandlerService.window?.innerWidth < 960) {
             this.sidenavOpen = false;
@@ -143,6 +155,7 @@ export class PropertyComponent implements OnInit {
 
     ngOnDestroy() {
         this.sub.unsubscribe();
+        this.subService.unsubscribe();
     }
 
     @HostListener("window:resize")
@@ -154,9 +167,12 @@ export class PropertyComponent implements OnInit {
 
     public getPropertyById(id: number) {
         this.appService.getPropertyById(id).subscribe((data) => {
-            this.service = data;
-            this.lat = +this.service.location;
-            this.lng = +this.service?.location;
+            this.property = data;
+            this.embedVideo = this.embedService.embed(
+                this.property.videos[1].link
+            );
+            this.lat = +this.property.location.lat;
+            this.lng = +this.property?.location.lng;
             if (this.domHandlerService.isBrowser) {
                 this.config.observer = false;
                 this.config2.observer = false;
@@ -170,6 +186,17 @@ export class PropertyComponent implements OnInit {
                     });
                 });
             }
+        });
+    }
+    public getSericeById(id) {
+        this.myServ.getServiceById(id).subscribe({
+            next: (data) => {
+                this.service = data;
+                console.log(data.provider.providerId);
+            },
+            error: (err) => {
+                console.log(err);
+            },
         });
     }
 
@@ -249,47 +276,49 @@ export class PropertyComponent implements OnInit {
         });
     }
 
-    // public addToCompare() {
-    //     this.appService.addToCompare(
-    //         this.property,
-    //         CompareOverviewComponent,
-    //         this.settings.rtl ? "rtl" : "ltr"
-    //     );
-    // }
-
-    // public onCompare() {
-    //     return this.appService.Data.compareList.filter(
-    //         (item) => item.id == this.property.id
-    //     )[0];
-    // }
-
-    // public addToFavorites() {
-    //     this.appService.addToFavoritesInServiceDetails(
-    //         this.service,
-    //         this.settings.rtl ? "rtl" : "ltr",
-    //         ""
-    //     );
-    // }
-
-    // public onFavorites() {
-    //     return this.appService.Data.favorites.filter(
-    //         (item) => item.id == this.property.id
-    //     )[0];
-    // }
-
-    public getRelatedProperties() {
-        this.appService
-            .getRelatedProperties(this.service.id)
-            .subscribe((services) => {
-                this.relatedServices = this.service.RelatedServices;
-            });
+    public addToCompare() {
+        this.appService.addToCompare(
+            this.property,
+            CompareOverviewComponent,
+            this.settings.rtl ? "rtl" : "ltr"
+        );
     }
 
-    // public getFeaturedProperties() {
-    //     this.appService.getFeaturedProperties().subscribe((properties) => {
-    //         this.featuredProperties = properties.slice(0, 3);
+    public onCompare() {
+        return this.appService.Data.compareList.filter(
+            (item) => item.id == this.property.id
+        )[0];
+    }
+
+    public addToFavorites() {
+        this.appService.addToFavorites(
+            this.property,
+            this.settings.rtl ? "rtl" : "ltr"
+        );
+    }
+
+    public onFavorites() {
+        return this.appService.Data.favorites.filter(
+            (item) => item.id == this.property.id
+        )[0];
+    }
+
+    public getRelatedProperties() {
+        this.appService.getRelatedProperties().subscribe((data) => {
+            this.relatedProperties = data;
+        });
+    }
+    // public getRelatedServices() {
+    //     this.myServ.getRelatedServices(id).subscribe((data) => {
+    //         this.relatedServices = data;
     //     });
     // }
+
+    public getFeaturedProperties() {
+        this.appService.getFeaturedProperties().subscribe((properties) => {
+            this.featuredProperties = properties.slice(0, 3);
+        });
+    }
 
     public getAgent(agentId: number = 1) {
         var ids = [1, 2, 3, 4, 5]; //agent ids

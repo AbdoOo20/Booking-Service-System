@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PaymentsService } from '@services/payments.service';
 import { PayPalService } from '@services/pay-pal.service';
 import { BookingService } from '@services/booking.service';
-import { DataService } from '@services/data.service';
+
 @Component({
   selector: 'app-confirmation',
   standalone: true,
@@ -17,88 +17,115 @@ export class ConfirmationComponent implements OnInit {
   transactionId: string;
   amount: string;
   paymentId: string;
-  paymentDetails: any; // Store payment details here
-  BookingDeyails: any;
-
+  paymentDetails: any;
+  bookingDetails: any;
+  bookingData: any;
+  NewBookingObject: any;
+  serviceObject: Object;
+  BookingIdFromPayInstallment: any;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private paymentsService: PaymentsService, // Inject PaymentsService
-    private payPal: PayPalService, // Inject PayPalService
-    private Booking: BookingService, // Inject BookingService
-    private dataService: DataService, // Inject DataService
+    private paymentsService: PaymentsService,
+    private payPal: PayPalService,
+    private bookingService: BookingService
   ) {
     this.confirmationMessage = 'Your Payment has been confirmed!';
-    this.confirmationDate = new Date().toLocaleString(); // Current date and time
-    this.transactionId = this.paymentId; // Example transaction ID
-    this.amount = ''; // Example amount
+    this.confirmationDate = new Date().toLocaleString();
+    this.transactionId = '';
+    this.amount = '';
   }
 
   ngOnInit(): void {
-    // Access paymentId from query parameters
-    this.dataService.data$.subscribe((data) => {
-      this.BookingDeyails = data;
-    });
+    // Retrieve the payment ID from query parameters
     this.route.queryParams.subscribe(queryParams => {
-      this.paymentId = queryParams['paymentId']; // Fetch the paymentId from URL
-      console.log('Payment ID from URL:', this.paymentId);
+      this.paymentId = queryParams['paymentId'];
+      console.log('Payment ID retrieved:', this.paymentId); // Log the payment ID
 
-      // Call the service to get payment details
+      
+      this.BookingIdFromPayInstallment = localStorage.getItem('bookingID');
+      if (this.BookingIdFromPayInstallment)
+        console.log(this.BookingIdFromPayInstallment);
+
+      // Retrieve booking data from local storage if available
+      const savedBookingData = localStorage.getItem('bookingData');
+      if (savedBookingData) {
+        this.bookingData = JSON.parse(savedBookingData);
+        console.log('Booking data retrieved:', this.bookingData); // Log the booking data
+      }
+
       if (this.paymentId) {
         this.transactionId = this.paymentId;
-        this.getPaymentDetails(this.paymentId);
+        this.getPaymentDetails(this.paymentId);  // Fetch payment details
       }
     });
-
   }
 
-  // Method to get payment details by ID
   getPaymentDetails(paymentId: string): void {
-    this.payPal.getPaymentsById(paymentId).subscribe(
-      {
-        next: (response) => {
-          console.log('PayPal payment response:', response);
-          if (response.state === "created") {
-            this.amount = response.transactions[0].amount.total;
-            console.log("Payment state is 'created'. Proceeding with addPayment.");
-            this.paymentsService.addPayment({
-              customerId: "244d9e75-8919-457c-ae3b-9c473167f1dc", // Example customerId
-              bookingId: 113, // Example bookingId
-              paymentDate: new Date().toISOString(), // Current date/time in ISO format
-              paymentValue: response.transactions[0].amount.total // Extract payment value from PayPal response
-            }).subscribe(
-              {
-                next: (paymentResponse) => {
-                  console.log("Payment added successfully:", paymentResponse);
-                },
-                error: (err) => {
-                  console.log("Error while adding payment:", err);
-                }
-              }
-            );
-            this.Booking.addBooking(this.BookingDeyails).subscribe({
-              next: (BookingResponse) => {
-                console.log("Booking AddSuccessfully", BookingResponse);
+    console.log('Fetching payment details for ID:', paymentId); // Log fetching details
+    this.payPal.getPaymentsById(paymentId).subscribe({
+      next: (response) => {
+        console.log('Payment details response:', response); // Log the response
+        if (response.state === 'created') {
+          this.amount = response.transactions[0].amount.total;
+          console.log('Payment amount:', this.amount); // Log the payment amount
+
+          // Check if booking details exist before adding booking
+          if (this.bookingData) {
+            // Add booking
+            this.bookingService.addBooking(JSON.stringify(this.bookingData, null, 2)).subscribe({
+              next: (bookingResponse) => {
+                console.log('Booking added successfully:', bookingResponse); // Log booking response
+                // Add payment
+                this.paymentsService.addPayment({
+                  customerId: this.bookingData.customerId,
+                  bookingId: bookingResponse.id,
+                  paymentDate: new Date().toISOString(),
+                  paymentValue: response.transactions[0].amount.total
+                }).subscribe({
+                  next: (paymentResponse) => {
+                    console.log('Payment added successfully:', paymentResponse); // Log payment response
+                  },
+                  error: (err) => {
+                    console.error('Error adding payment:', err); // Log payment error
+                  }
+                });
               },
               error: (err) => {
-                console.log("Error while adding Booking:", err);
+                console.error('Error adding booking:', err); // Log booking error
               }
-            })
-          } else {
-            console.log("Payment state is not 'created'. State:", response.state);
+            });
+            localStorage.removeItem('bookingData');
           }
-        },
-        error: (err) => {
-          console.log("Error fetching payment details:", err);
+          else {
+            console.log();
+            this.paymentsService.addPayment({
+              customerId: "529d93df-bcdd-4b22-8f71-dd355f994798",
+              bookingId: this.BookingIdFromPayInstallment,
+              paymentDate: new Date().toISOString(),
+              paymentValue: response.transactions[0].amount.total
+            }).subscribe({
+              next: (paymentResponse) => {
+                console.log('Payment added successfully:', paymentResponse); // Log payment response
+              },
+              error: (err) => {
+                console.error('Error adding payment:', err); // Log payment error
+              }
+            });
+            localStorage.removeItem('bookingID');
+          }
         }
+      },
+      error: (err) => {
+        console.error('Error fetching payment details:', err); // Log error fetching payment details
       }
-    );
+    });
   }
-
 
   // Redirect to home page
   goToHome(): void {
+    console.log('Navigating to home page'); // Log navigation action
     this.router.navigate(['/home']);
   }
 
@@ -108,11 +135,11 @@ export class ConfirmationComponent implements OnInit {
     const originalContents = document.body.innerHTML;
 
     if (printContents) {
+      console.log('Printing confirmation'); // Log print action
       document.body.innerHTML = printContents;
       window.print();
       document.body.innerHTML = originalContents;
-      window.location.reload(); // Reload the page to restore the content
+      window.location.reload();
     }
   }
-
 }
