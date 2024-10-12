@@ -280,6 +280,18 @@
     </div>
 </div>
 
+@if(rev==null){
+    <div>
+    <app-review-form [service]="service"></app-review-form>
+    </div>
+}
+@else{
+    <div>
+        <app-reviews [service]="service"></app-reviews>
+        </div> 
+}
+
+
 @if(service.relatedServices.length != 0){
 <div class="section mt-3">
     <div class="px-3">

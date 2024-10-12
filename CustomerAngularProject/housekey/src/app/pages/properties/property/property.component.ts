@@ -44,7 +44,11 @@ import { FlexLayoutModule } from "@ngbracket/ngx-layout";
 import { ServiceDetails } from "../../../common/interfaces/ServiceDetails";
 import { ServicesService } from "@services/services.service";
 import { Service } from "../../../common/interfaces/service";
-import { provider } from "../../../common/interfaces/Provider";
+import { provider } from "../../../common/interfaces/provider";
+import { AllBookingsService } from "@services/all-bookings.service";
+import { ReviewServiceService } from "@services/review-service.service";
+import { ReviewFormComponent } from "../ReviewForm/review-form.component";
+import { ReviewsComponent } from "../Reviews/reviews.component";
 
 @Component({
     selector: "app-property",
@@ -70,11 +74,11 @@ import { provider } from "../../../common/interfaces/Provider";
         PropertiesCarouselComponent,
         GetInTouchComponent,
         MatButtonModule,
-        FlexLayoutModule,
+        FlexLayoutModule,ReviewFormComponent,ReviewsComponent
     ],
     templateUrl: "./property.component.html",
     styleUrl: "./property.component.scss",
-    providers: [EmbedVideoService],
+    providers: [EmbedVideoService,AllBookingsService,ReviewServiceService],
 })
 export class PropertyComponent implements OnInit {
     @ViewChild("sidenav") sidenav: any;
@@ -97,13 +101,15 @@ export class PropertyComponent implements OnInit {
     public monthlyPayment: any;
     public contactForm: FormGroup;
     public provider: provider;
+    public allBookings:any[];
+    public rev :any;
     mapOptions: google.maps.MapOptions = {
         mapTypeControl: true,
         fullscreenControl: true,
     };
     lat: number = 0;
     lng: number = 0;
-
+     
     constructor(
         public settingsService: SettingsService,
         public appService: AppService,
@@ -111,7 +117,10 @@ export class PropertyComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         private embedService: EmbedVideoService,
         public fb: FormBuilder,
-        private domHandlerService: DomHandlerService
+        private domHandlerService: DomHandlerService,   
+        public bookservice:AllBookingsService,          //bookingService
+        public ReviewService:ReviewServiceService       //ReviewService
+
     ) {
         this.settings = this.settingsService.settings;
     }
@@ -291,17 +300,13 @@ export class PropertyComponent implements OnInit {
     }
 
     public addToFavorites() {
-        this.appService.addToFavorites(
-            this.property,
-            this.settings.rtl ? "rtl" : "ltr"
-        );
-    }
-
-    public onFavorites() {
-        return this.appService.Data.favorites.filter(
-            (item) => item.id == this.property.id
-        )[0];
-    }
+        this.myServ.addToFavoritesInServiceDetails(this.service, (this.settings.rtl) ? 'rtl' : 'ltr',"");
+      }
+    
+      public onFavorites() {
+       // return this.appService.ApI_Add_to_wishList.(item => item.id == this.service.id)[0];
+      }
+    
 
     public getRelatedProperties() {
         this.appService.getRelatedProperties().subscribe((data) => {
@@ -359,4 +364,19 @@ export class PropertyComponent implements OnInit {
             (1 - Math.pow(1 + interestRate, -period))
         );
     }
+
+
+    checkForReview(){
+      this.allBookings.push(this.bookservice.getBooking('customerId'));   //customerID must be added from token
+      for (const booking of this.allBookings) {
+        console.log(booking); 
+        if(booking.serviceId==this.service.id){
+            this.rev= this.ReviewService.getReview(booking.id,'customerId');     //customerId from token
+           
+         }
+
+    }
+}
+
+
 }
