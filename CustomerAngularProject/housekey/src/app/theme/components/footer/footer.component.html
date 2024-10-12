@@ -1,9 +1,7 @@
-<footer>       
-
+<footer>
     <div class="px-3">
         <div class="theme-container">
-
-            <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="center center" class="content border-lighter py-5">
+            <!-- <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign.gt-sm="center center" class="content border-lighter py-5">
                 <div fxFlex="100" fxFlex.gt-sm="40" fxLayout="column" fxLayoutAlign="center center"> 
                     <h2 class="uppercase">Subscribe our Newsletter</h2>
                     <p class="desc mb-1">Stay up to date with our latest news and properties</p>
@@ -16,80 +14,159 @@
                         <button mat-flat-button type="submit" class="subscribe-btn" color="primary">Subscribe</button>
                     </form>
                 </div> 
-            </div>
+            </div> -->
 
             <div class="py-5 content border-lighter">
-
-                <div fxLayout="row wrap" fxLayoutAlign="space-between"> 
-                    <div fxFlex="100" fxFlex.gt-sm="30" fxFlex.sm="45"> 
+                <div fxLayout="row wrap" fxLayoutAlign="space-between">
+                    <div fxFlex="100" fxFlex.gt-sm="30" fxFlex.sm="45">
                         <a class="logo" routerLink="/"><app-logo></app-logo></a>
-                        <p class="mt-5 mb-3 desc">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nostrum perspiciatis cupiditate numquam odio explicabo accusantium deserunt incidunt.</p>
-                        <p fxLayout="row" fxLayoutAlign="start center" class="mt-2">
+                        <p class="mt-5 mb-3 desc">
+                            We make it easy for you to access the places and
+                            services you need to hold your event with ease.
+                        </p>
+                        <p
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            class="mt-2"
+                        >
                             <mat-icon color="primary">location_on</mat-icon>
-                            <span class="mx-2">2903 Avenue Z, Brooklyn, NY</span>
+                            <span class="mx-2">Egypt - El-Minia</span>
                         </p>
-                        <p fxLayout="row" fxLayoutAlign="start center" class="mt-1">
+                        <p
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            class="mt-1"
+                        >
                             <mat-icon color="primary">call</mat-icon>
-                            <span class="mx-2">(+100) 123 456 7890</span>
+                            <span class="mx-2">(+20) 123 456 7890</span>
                         </p>
-                        <p fxLayout="row" fxLayoutAlign="start center" class="mt-1">
+                        <p
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            class="mt-1"
+                        >
                             <mat-icon color="primary">mail_outline</mat-icon>
-                            <span class="mx-2">contact&#64;housekey.com</span>
+                            <span class="mx-2">contact&#64;iti.com</span>
                         </p>
-                        <p fxLayout="row" fxLayoutAlign="start center" class="mt-1">
+                        <p
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            class="mt-1"
+                        >
                             <mat-icon color="primary">schedule</mat-icon>
-                            <span class="mx-2">Mon - Sun / 9:00AM - 8:00PM</span>
+                            <span class="mx-2">{{ formattedDate }}</span>
                         </p>
-                        <app-social-icons [iconSize]="'lg'" fxLayout="row" fxLayoutAlign="start center" class="desc"></app-social-icons>                    
+                        <app-social-icons
+                            [iconSize]="'lg'"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            class="desc"
+                        ></app-social-icons>
                     </div>
 
-                    <div fxFlex="100" fxFlex.gt-sm="30" fxFlex.sm="45" ngClass.xs="pt-5" class=""> 
+                    <div
+                        fxFlex="100"
+                        fxFlex.gt-sm="30"
+                        fxFlex.sm="45"
+                        ngClass.xs="pt-5"
+                        class=""
+                    >
                         <h2 class="uppercase">Feedback</h2>
-                        <p class="desc">We want your feedback about everything</p>
-                        <form [formGroup]="feedbackForm" (ngSubmit)="onFeedbackFormSubmit(feedbackForm.value)" class="custom-form pt-2">                            
+                        <p class="desc">
+                            We want your feedback about everything
+                        </p>
+                        <form
+                            [formGroup]="feedbackForm"
+                            (ngSubmit)="
+                                onFeedbackFormSubmit(feedbackForm.value)
+                            "
+                            class="custom-form pt-2"
+                        >
                             <mat-form-field appearance="outline" class="w-100">
-                                <mat-label>E-mail</mat-label> 
-                                <input matInput autocomplete="off" formControlName="email">
+                                <mat-label>E-mail</mat-label>
+                                <input
+                                    matInput
+                                    autocomplete="off"
+                                    formControlName="email"
+                                />
                                 <mat-error>
-                                    @if (feedbackForm.controls.email.errors?.required) {
-                                        Email is required
-                                    }
-                                    @if (feedbackForm.controls.email.hasError('invalidEmail')) {
-                                        Invalid email address
-                                    }
-                                </mat-error> 
+                                    @if
+                                    (feedbackForm.controls.email.errors?.required)
+                                    { Email is required } @if
+                                    (feedbackForm.controls.email.hasError('invalidEmail'))
+                                    { Invalid email address }
+                                </mat-error>
                             </mat-form-field>
                             <mat-form-field appearance="outline" class="w-100">
-                                <mat-label>Message for us</mat-label> 
-                                <textarea matInput formControlName="message" rows="6"></textarea> 
-                                @if (feedbackForm.controls.message.errors?.required) {
-                                    <mat-error>Message is required</mat-error>
-                                } 
+                                <mat-label>Message for us</mat-label>
+                                <textarea
+                                    matInput
+                                    formControlName="message"
+                                    rows="6"
+                                ></textarea>
+                                @if
+                                (feedbackForm.controls.message.errors?.required)
+                                {
+                                <mat-error>Message is required</mat-error>
+                                }
                             </mat-form-field>
                             <div class="w-100 text-center">
-                                <button mat-flat-button color="primary" class="uppercase" type="submit">Submit</button> 
-                            </div> 
-                        </form> 
+                                <button
+                                    mat-flat-button
+                                    color="primary"
+                                    class="uppercase"
+                                    type="submit"
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
                     </div>
- 
-                    <div fxFlex="100" fxFlex.gt-sm="30" ngClass.lt-md="pt-5" class=""> 
-                        <h2 class="uppercase mb-3">Our location</h2>
-                        <google-map [center]="center" [zoom]="zoom" [options]="mapOptions" height="308px" width="100%">
-                            @for (markerPosition of markerPositions; track $index) {
-                                <map-marker [position]="markerPosition" [options]="markerOptions"></map-marker>
-                            }                           
-                        </google-map>
+
+                    <div
+                        fxFlex="100"
+                        fxFlex.gt-sm="30"
+                        ngClass.lt-md="pt-5"
+                        class=""
+                    >
+                        <!-- <h2 class="uppercase mb-3">Our location</h2>
+                        <google-map
+                            [center]="center"
+                            [zoom]="zoom"
+                            [options]="mapOptions"
+                            height="308px"
+                            width="100%"
+                        >
+                            @for (markerPosition of markerPositions; track
+                            $index) {
+                            <map-marker
+                                [position]="markerPosition"
+                                [options]="markerOptions"
+                            ></map-marker>
+                            }
+                        </google-map> -->
                     </div>
-                </div> 
-              
-            </div>
-            
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" class="copyright">
-                <p ngClass.xs="mt-1">Copyright © 2024 All Rights Reserved</p>
-                <p>Designed & Developed by <a mat-button href="http://themeseason.com/" target="_blank" color="warn">ThemeSeason</a></p>
+                </div>
             </div>
 
+            <div
+                fxLayout="row"
+                fxLayout.xs="column"
+                fxLayoutAlign="space-between center"
+                class="copyright"
+            >
+                <p ngClass.xs="mt-1">Copyright © 2024 All Rights Reserved</p>
+                <p>
+                    Designed & Developed by
+                    <a
+                        mat-button
+                        href="http://themeseason.com/"
+                        target="_blank"
+                        color="warn"
+                        >ThemeSeason</a
+                    >
+                </p>
+            </div>
         </div>
-    </div>                  
-                
+    </div>
 </footer>

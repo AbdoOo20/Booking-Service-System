@@ -38,7 +38,7 @@ export class ServicesService {
         "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
     Booking_SRV_URL = "http://localhost:18105/api/Book";
     // Basma Code
-    API_GetServicebyID = "http://localhost:18105/api/services";
+    API_GetServicebyID = "http://localhost:18105/api/Services/";
     ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
     API_getAgents = "";
     Favourite_service: wishList;
@@ -70,6 +70,14 @@ export class ServicesService {
                 )
             );
     }
+    public getServiceById(id: number): Observable<ServiceDetails> {
+        return this.http.get<ServiceDetails>(this.API_GetServicebyID + id);
+    }
+    // public getRelatedServices(id: number): Observable<Service[]> {
+    //     return this.http
+    //         .get<any[]>(this.API_GetServicebyID + id)
+    //         .pipe(map((services) => services.filter((item) => item.id == id)));
+    // }
     GetAllCategoriesItems(): Observable<Category[]> {
         return this.http.get<Category[]>(this.CAT_URL);
     }
@@ -162,16 +170,22 @@ export class ServicesService {
     ): Observable<Service[]> {
         return this.http.get<Service[]>(this.API_URL).pipe(
             map((services) =>
-                services.filter((item) => {
-                    const price = Number(item.priceForTheCurrentDay);
-                    return (
-                        (cat == null || cat === item.category) &&
-                        (loc == null || loc === item.location) &&
-                        (frm == null || price >= frm) &&
-                        (to == null || price <= to) &&
-                        item.priceForTheCurrentDay != null
-                    );
-                })
+                services
+                    .filter((item) => {
+                        const price = Number(item.priceForTheCurrentDay);
+                        return (
+                            (cat == null ||
+                                cat == undefined ||
+                                cat === item.category) &&
+                            (loc == null ||
+                                loc == undefined ||
+                                loc === item.location) &&
+                            (frm == null || frm == undefined || price >= frm) &&
+                            (to == null || to == undefined || price <= to) &&
+                            item.priceForTheCurrentDay != null
+                        );
+                    })
+                    .reverse()
             )
         );
     }

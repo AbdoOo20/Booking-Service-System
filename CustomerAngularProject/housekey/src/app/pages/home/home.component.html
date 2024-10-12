@@ -90,7 +90,20 @@
                     [viewColChanged]="viewCol"
                 ></app-property-item>
             </div>
-            } }@if (ServicesItems?.length) {
+            } } @if(itemsToShow < AllServices.length){
+            <div fxFlex="100" fxLayoutAlign="center center" class="p-2 mt-2">
+                <button
+                    class="uppercase load-more-btn"
+                    mat-raised-button
+                    color="primary"
+                    (click)="showMore()"
+                >
+                    Load More
+                </button>
+            </div>
+
+            }
+            <!-- @if (ServicesItems?.length) {
             <div fxFlex="100" fxLayoutAlign="center center" class="p-2 mt-2">
                 <app-load-more [step]="2"></app-load-more>
             </div>
@@ -116,7 +129,7 @@
                 <mat-spinner></mat-spinner>
                 }
             </div>
-            }
+            } -->
             <!-- End My Code-->
 
             <!-- Recomendition For Book Start-->
