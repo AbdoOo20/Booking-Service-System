@@ -286,7 +286,7 @@ export class PropertiesSearchComponent implements OnInit {
             this.fromTest = value;
             console.log(this.fromTest + " " + this.toTest);
             this.homeCmp.getServ(
-                this.homeCmp.catTest,
+                this.catTest,
                 this.locTest,
                 this.fromTest,
                 this.toTest
