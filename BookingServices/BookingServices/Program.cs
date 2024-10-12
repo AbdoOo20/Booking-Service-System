@@ -40,6 +40,13 @@ namespace BookingServices
                 options.LoginPath = "/Identity/Account/Login";
             });
 
+            // Configure CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+
             builder.Services.Configure<FormOptions>(options =>
             {
                 options.MultipartBodyLengthLimit = 2097152; // 2 MB limit

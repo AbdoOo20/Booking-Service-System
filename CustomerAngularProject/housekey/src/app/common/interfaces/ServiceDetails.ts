@@ -1,3 +1,4 @@
+import { provider } from "./Provider";
 import { Service } from "./service";
 export interface ServiceDetails {
     id: number;
@@ -9,7 +10,9 @@ export interface ServiceDetails {
     providerName: string;
     priceForTheCurrentDay: number;
     category: string;
-    image: string[];
+    images: string[];
     quantity: number;
-    RelatedServices: Service[];
+    relatedServices: Service[];
+    initialPayment: number;
+    provider: provider;
 }
