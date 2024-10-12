@@ -90,7 +90,7 @@ export const routes: Routes = [
                     ).then((c) => c.TermsConditionsComponent),
             },
             {
-                path: "submit-property",
+                path: "Book/:id",
                 loadComponent: () =>
                     import("./submit-property/submit-property.component").then(
                         (c) => c.SubmitPropertyComponent
