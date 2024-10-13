@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -40,6 +41,12 @@ namespace CusromerProject.Controllers
             if (ModelState.IsValid)
             {
                 IdentityUser user = await _userManager.FindByNameAsync(loginDTO.UserName);
+                if (user == null) return NotFound(new {message= "User Not Found"});
+                if (!await _userManager.IsInRoleAsync(user,"Customer"))
+                {
+                    ModelState.AddModelError("User Role", "User Not Authorized");
+                    return BadRequest(ModelState);
+                }
 
                 bool isBlocked = (from C in context.Customers
                                   where C.CustomerId == user.Id

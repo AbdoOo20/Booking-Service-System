@@ -80,6 +80,25 @@ namespace BookingServices.Controllers
             return View(category);
         }
 
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                errorViewModel = new ErrorViewModel { Message = "Need ID For Category", Controller = "Category", Action = "Index" };
+                return View("Error", errorViewModel);
+            }
+            var category = context.Categories.FirstOrDefault(c => c.CategoryId == id);
+            if (category == null)
+            {
+                errorViewModel = new ErrorViewModel { Message = "Category Not Exist", Controller = "Category", Action = "Index" };
+                return View("Error", errorViewModel);
+            }
+
+            return View(category);
+        }
+
+        [HttpPost]
         public ActionResult Delete(int id)
         {
             var category = context.Categories.Find(id);
@@ -87,6 +106,15 @@ namespace BookingServices.Controllers
             {
                 errorViewModel = new ErrorViewModel { Message = "Category Not Exist", Controller = "Category", Action = "Index" };
                 return View("Error", errorViewModel);
+            }
+            var services = context.Services;
+            foreach (var service in services)
+            {
+                if (service.CategoryId == category.CategoryId)
+                {
+                    service.CategoryId = null;
+                    context.SaveChanges();
+                }
             }
             context.Categories.Remove(category);
             try
@@ -96,7 +124,7 @@ namespace BookingServices.Controllers
             }
             catch (Exception e)
             {
-                errorViewModel = new ErrorViewModel { Message = e.Message, Controller = "Category", Action = "Index" };
+                errorViewModel = new ErrorViewModel { Message = "", Controller = "Category", Action = "Index" };
                 return View("Error", errorViewModel);
             }
         }

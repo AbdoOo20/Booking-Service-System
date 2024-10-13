@@ -58,12 +58,14 @@
               <a 
                 color="primary" 
                 [class.disabled]="property.status !== 'Pending'" 
-                (click)="deleteBook(property.bookId);property.status !== 'Pending' && $event.preventDefault()"
+                [style.cursor]="property.status === 'Pending' ? 'pointer' : 'default'"
+                (click)="property.status === 'Pending' ? deleteBook(property.bookId) : $event.preventDefault()"
                 [attr.aria-disabled]="property.status !== 'Pending' ? true : null">
                 <mat-icon [ngStyle]="{
                   color: property.status === 'Pending' ? 'red' : 
                          property.status === 'Confirmed' ? 'green' : 'inherit'}">
-                         {{ property.status === 'Pending' ? 'cancel' : 'check_circle' }}</mat-icon>
+                         {{ property.status === 'Pending' ? 'cancel' : 'check_circle' }}
+                </mat-icon>
               </a> 
           </td>
         </ng-container> 

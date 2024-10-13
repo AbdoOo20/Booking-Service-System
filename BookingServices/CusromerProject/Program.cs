@@ -12,7 +12,6 @@ using System.Text.Json.Serialization;
 using CusromerProject.DTO.Categories;
 using CusromerProject.DTO.Review;
 using CustomerProject.Services;
-using BookingServices.ViewModel;
 
 namespace CusromerProject
 {
@@ -101,8 +100,9 @@ namespace CusromerProject
             }
 
             // Middleware Configuration
-            app.UseAuthorization();
             app.UseCors("AllowAllOrigins");
+            app.UseAuthorization();
+
 
             // Map Controllers
             app.MapControllers();

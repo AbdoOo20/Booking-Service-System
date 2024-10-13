@@ -32,11 +32,7 @@
                         <div class="widget">
                             @if (service.provider) {
                             <mat-card>
-                                <img
-                                    mat-card-image
-                                    [src]="agent.image"
-                                    [alt]="service.provider.name"
-                                />
+                                <img src="images/avatars/av-provider.png" />
                                 <mat-card-content class="p-3">
                                     <h2 class="fw-600">
                                         Provider : {{ service?.provider.name }}
@@ -102,14 +98,14 @@
                     <div class="main-carousel mb-3">
                         @if (property) {
                         <div class="control-icons">
-                            <button
+                            <!-- <button
                                 mat-button
                                 [disabled]="onFavorites()"
                                 (click)="addToFavorites()"
                                 matTooltip="Add To Favorite"
                             >
                                 <mat-icon class="m-0">favorite_border</mat-icon>
-                            </button>
+                            </button> -->
                             <!-- <button
                                 mat-button
                                 [disabled]="onCompare()"
