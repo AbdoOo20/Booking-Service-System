@@ -44,6 +44,7 @@ import { SharedService } from "@services/shared.service";
 import { _SharedService } from "@services/passing-data.service";
 import { DecodingTokenService } from "@services/decoding-token.service";
 import { ActivatedRoute } from "@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
     selector: "app-submit-property",
@@ -137,7 +138,8 @@ export class SubmitPropertyComponent implements OnInit {
         private sharedService: SharedService,
         private NewBooking: _SharedService,
         private decodingService: DecodingTokenService,
-        private activatedRoute: ActivatedRoute
+        private activatedRoute: ActivatedRoute,
+        private router: Router
     ) {
         // this.total = 0;
     }
@@ -158,6 +160,11 @@ export class SubmitPropertyComponent implements OnInit {
     }
 
     ngOnInit() {
+        if (!localStorage.getItem('token')) {
+            const targetPage = '/login';
+            this.router.navigate([targetPage]);
+
+        }
         this.activatedRoute.paramMap.subscribe((params) => {
             this.serviceID = Number(params.get("id")); // استقبال الـ id
             console.log(this.serviceID); // طباعة الـ id
