@@ -1,4 +1,4 @@
-import { provider } from "./Provider";
+import { provider } from "./provider";
 import { Service } from "./service";
 export interface ServiceDetails {
     id: number;

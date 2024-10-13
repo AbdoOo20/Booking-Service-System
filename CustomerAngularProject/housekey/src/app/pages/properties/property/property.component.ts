@@ -44,7 +44,7 @@ import { FlexLayoutModule } from "@ngbracket/ngx-layout";
 import { ServiceDetails } from "../../../common/interfaces/ServiceDetails";
 import { ServicesService } from "@services/services.service";
 import { Service } from "../../../common/interfaces/service";
-import { provider } from "../../../common/interfaces/Provider";
+import { provider } from "../../../common/interfaces/provider";
 
 @Component({
     selector: "app-property",
@@ -85,7 +85,7 @@ export class PropertyComponent implements OnInit {
     private sub: any;
     private subService: any;
     public property: Property;
-    public service: ServiceDetails;
+    public service: any;
     public settings: Settings;
     public embedVideo: any;
     public relatedProperties: Property[];
@@ -192,7 +192,7 @@ export class PropertyComponent implements OnInit {
         this.myServ.getServiceById(id).subscribe({
             next: (data) => {
                 this.service = data;
-                console.log(data.provider.providerId);
+                //console.log(data.provider.providerId);
             },
             error: (err) => {
                 console.log(err);
