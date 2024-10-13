@@ -3,7 +3,7 @@
         <div fxLayout="row" fxLayoutAlign="center center" class="my-3">
             <mat-card [style.max-width.px]="500" class="p-3">
                 <div fxLayout="column" fxLayoutAlign="center center" class="text-center">  
-                    <h1 class="uppercase">Sign In</h1>  
+                    <h1 class="uppercase">Welcome Back</h1>  
                     <a mat-button routerLink="/register" color="accent" class="w-100">Don't have an account? Sign up now!</a>    
                 </div>
                 <form [formGroup]="loginForm" (ngSubmit)="onLoginFormSubmit()">
@@ -16,26 +16,35 @@
                                 Username is required
                             }
                             @if (loginForm.controls.username.hasError('minlength')) {
-                                Username isn't long enough, minimum of 6 characters
+                                Username isn't long enough, minimum of 3 characters
+                            }
+                            @if (loginForm.controls.username.hasError('maxlength')) {
+                                Username is too long, maximum of 50 characters allowed
                             }
                         </mat-error> 
                     </mat-form-field>
                     <mat-form-field appearance="outline" class="w-100 mt-1">
                         <mat-icon matPrefix class="mr-1 text-muted">lock</mat-icon>
-                        <mat-label>Password</mat-label>
-                        <input matInput placeholder="Password" formControlName="password" required [type]="hide ? 'password' : 'text'">
-                        <mat-error>
-                            @if (loginForm.controls.password.errors?.required) {
+                            <mat-label>Password</mat-label>
+                            <input matInput placeholder="Password" formControlName="password" required [type]="hide ? 'password' : 'text'">
+                            <mat-error>
+                                @if (loginForm.controls.password.errors?.required) {
                                 Password is required
-                            }
-                            @if (loginForm.controls.password.hasError('minlength')) {
-                                Password isn't long enough, minimum of 6 characters
-                            }
-                        </mat-error> 
-                        <button mat-icon-button matSuffix (click)="hide = !hide" type="button" class="text-muted">
-                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                        </button>
-                    </mat-form-field> 
+                                }
+                                @else if (loginForm.controls.password.hasError('minlength')) {
+                                Password must be at least 6 characters long
+                                }
+                                @else if (loginForm.controls.password.hasError('pattern')) {
+                                Password must contain uppercase, lowercase letters, digits, and special characters
+                                }
+                            </mat-error>
+                            <button mat-icon-button matSuffix (click)="hide = !hide" type="button" class="text-muted">
+                                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                            </button>
+                    </mat-form-field>
+
+                    <div class="extra-space"></div>
+                    
                     <mat-slide-toggle formControlName="rememberMe" class="my-2">Keep me signed in</mat-slide-toggle>
                     <div class="text-center mt-2"> 
                         <button mat-raised-button color="accent" class="uppercase" type="submit">

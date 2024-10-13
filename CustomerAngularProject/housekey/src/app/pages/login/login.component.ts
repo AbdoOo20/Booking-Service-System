@@ -47,20 +47,27 @@ export class LoginComponent implements OnInit {
         private authService: AuthServiceService
     ) {}
 
-    ngOnInit(): void {
-        // Initialize login form
-        this.loginForm = this.fb.group({
-            username: [
-                "",
-                [
-                    Validators.required,
-                    Validators.maxLength(50),
-                    Validators.minLength(3),
-                ],
-            ],
-            password: ["", [Validators.required, Validators.minLength(6)]],
-            rememberMe: [false],
-        });
+  ngOnInit(): void {
+    // Initialize login form
+    this.loginForm = this.fb.group({
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(100),
+          Validators.minLength(3)
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/)
+        ]
+      ],
+      rememberMe: [false]
+    });
 
         // Check if there's already a token in localStorage (user might be logged in)
         // const existingToken = localStorage.getItem('token');
