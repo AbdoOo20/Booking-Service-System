@@ -1,25 +1,38 @@
 <div class="p-3">
     <div class="theme-container">
-
         <mat-card ngClass.lt-lg="p-0" [formGroup]="submitForm">
-
-            <mat-stepper #horizontalStepper orientation="horizontal" linear="true" class="submit-property"
-                (selectionChange)="onSelectionChange($event)">
-
-                <mat-step [stepControl]="submitForm.get('booking')" label="Booking">
+            <mat-stepper
+                #horizontalStepper
+                orientation="horizontal"
+                linear="true"
+                class="submit-property"
+                (selectionChange)="onSelectionChange($event)"
+            >
+                <mat-step
+                    [stepControl]="submitForm.get('booking')"
+                    label="Booking"
+                >
                     <div class="step-content">
-
                         <form formGroupName="booking" fxLayout="row wrap">
-
                             <div fxFlex="100" class="p-3">
-                                <h1 class="fw-500 text-center">Booking Information</h1>
+                                <h1 class="fw-500 text-center">
+                                    Booking Information
+                                </h1>
                             </div>
 
                             <div fxFlex="100" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-100"
+                                >
                                     <mat-label>Service</mat-label>
-                                    <input matInput placeholder="Service" formControlName="service" readonly="true"
-                                        autocomplete="off">
+                                    <input
+                                        matInput
+                                        placeholder="Service"
+                                        formControlName="service"
+                                        readonly="true"
+                                        autocomplete="off"
+                                    />
                                     <!-- @if (submitForm.get('basic')['controls'].title.errors?.required) {
                                         <mat-error>Title is required</mat-error>
                                     }                             -->
@@ -27,138 +40,249 @@
                             </div>
 
                             <div fxFlex="100" fxFlex.gt-xs="50" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-100"
+                                >
                                     <mat-label>Price ($)</mat-label>
-                                    <input matInput placeholder="Price" readonly="true" formControlName="priceEuro"
-                                        autocomplete="off">
+                                    <input
+                                        matInput
+                                        placeholder="Price"
+                                        readonly="true"
+                                        formControlName="priceEuro"
+                                        autocomplete="off"
+                                    />
                                 </mat-form-field>
                             </div>
 
                             <div fxFlex="100" fxFlex.gt-xs="50" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-100"
+                                >
                                     <mat-label>Event Date</mat-label>
-                                    <input matInput [matDatepicker]="picker" placeholder="Event Date"
-                                        formControlName="eventDate" [min]="minDate" [max]="maxDate" autocomplete="off"
-                                        (dateChange)="onTimeSelected($event.value)">
-                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <input
+                                        matInput
+                                        [matDatepicker]="picker"
+                                        placeholder="Event Date"
+                                        formControlName="eventDate"
+                                        [min]="minDate"
+                                        [max]="maxDate"
+                                        autocomplete="off"
+                                        (dateChange)="
+                                            onTimeSelected($event.value)
+                                        "
+                                    />
+                                    <mat-datepicker-toggle
+                                        matSuffix
+                                        [for]="picker"
+                                    ></mat-datepicker-toggle>
                                     <mat-datepicker #picker></mat-datepicker>
                                 </mat-form-field>
                             </div>
 
                             <div fxFlex="100" fxFlex.gt-xs="50" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-100"
+                                >
                                     <mat-label>Start Time</mat-label>
-                                    <mat-select formControlName="startTime" placeholder="Select Start Time">
-                                        <mat-option *ngFor="let time of timeOptions" [value]="time">{{ time
-                                            }}</mat-option>
+                                    <mat-select
+                                        formControlName="startTime"
+                                        placeholder="Select Start Time"
+                                    >
+                                        <mat-option
+                                            *ngFor="let time of timeOptions"
+                                            [value]="time"
+                                            >{{ time }}</mat-option
+                                        >
                                     </mat-select>
                                 </mat-form-field>
                             </div>
 
                             <div fxFlex="100" fxFlex.gt-xs="50" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-100"
+                                >
                                     <mat-label>End Time</mat-label>
-                                    <mat-select formControlName="endTime" placeholder="Select End Time">
-                                        <mat-option *ngFor="let time of endTimeOptions" [value]="time">{{ time
-                                            }}</mat-option>
+                                    <mat-select
+                                        formControlName="endTime"
+                                        placeholder="Select End Time"
+                                    >
+                                        <mat-option
+                                            *ngFor="let time of endTimeOptions"
+                                            [value]="time"
+                                            >{{ time }}</mat-option
+                                        >
                                     </mat-select>
                                 </mat-form-field>
                             </div>
 
                             @if(hasQuantity){
                             <div fxFlex="100" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-100"
+                                >
                                     <mat-label>Quantity</mat-label>
                                     <input
-                                        value="{{hasQuantity}} ? 1 : 0"
+                                        value="{{ hasQuantity }} ? 1 : 0"
                                         matInput
                                         placeholder="Quantity"
                                         formControlName="quantity"
                                         autocomplete="off"
                                         type="number"
-                                        min="1" 
-                                        max="{{maxQuantity}}" 
+                                        min="1"
+                                        max="{{ maxQuantity }}"
                                     />
-                                    
                                 </mat-form-field>
                             </div>
                             }
 
-                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center">
-                                
-                            </div>
-                            
-                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center">
-                                <button mat-raised-button class="mr-3" color="primary" fxLayout="row" fxLayoutAlign="center center" (click)="openContractDialog()">
+                            <div
+                                fxFlex="100"
+                                class="mt-3 p-2"
+                                fxLayoutAlign="end center"
+                            ></div>
+
+                            <div
+                                fxFlex="100"
+                                class="mt-3 p-2"
+                                fxLayoutAlign="end center"
+                            >
+                                <button
+                                    mat-raised-button
+                                    class="mr-3"
+                                    color="primary"
+                                    fxLayout="row"
+                                    fxLayoutAlign="center center"
+                                    (click)="openContractDialog()"
+                                >
                                     <span class="mx-1 uppercase">Contract</span>
                                 </button>
-                                <button mat-raised-button color="primary" matStepperNext fxLayout="row" fxLayoutAlign="center center" type="button"
-                                    [disabled]="!acceptContract">
+                                <button
+                                    mat-raised-button
+                                    color="primary"
+                                    matStepperNext
+                                    fxLayout="row"
+                                    fxLayoutAlign="center center"
+                                    type="button"
+                                    [disabled]="!acceptContract"
+                                >
                                     <span class="mx-1 uppercase">Next</span>
-                                    <mat-icon iconPositionEnd>navigate_next</mat-icon>
+                                    <mat-icon iconPositionEnd
+                                        >navigate_next</mat-icon
+                                    >
                                 </button>
                             </div>
-
-                            
-
                         </form>
-
                     </div>
                 </mat-step>
-
-                <mat-step [stepControl]="submitForm.get('payment')" label="Payment">
+                <mat-step
+                    [stepControl]="submitForm.get('payment')"
+                    label="Payment"
+                >
                     <div class="step-content">
-
                         <form formGroupName="payment" fxLayout="row wrap">
                             <div fxFlex="100" class="p-3">
                                 <h1 class="fw-500 text-center">Payment</h1>
                             </div>
 
-                            <div fxFlex="100" fxFlex.gt-xs="33.3" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                            <!-- Horizontal Group for Initial Payment & Booking Price -->
+                            <div
+                                fxFlex="100"
+                                fxLayout="row"
+                                fxLayoutGap="20px"
+                                fxLayoutAlign="space-around start"
+                                class="px-2"
+                            >
+                                <mat-form-field
+                                    appearance="outline"
+                                    fxFlex="45"
+                                >
                                     <mat-label>Initial Payment</mat-label>
-                                    <input matInput placeholder="Initial Payment" autocomplete="off"
-                                        formControlName="minValue" onlyNumber maxlength="5" readonly>
+                                    <input
+                                        matInput
+                                        placeholder="Initial Payment"
+                                        autocomplete="off"
+                                        formControlName="amount"
+                                        onlyNumber
+                                        maxlength="5"
+                                        readonly
+                                    />
                                 </mat-form-field>
-                            </div>
 
-                            <div fxFlex="100" fxFlex.gt-xs="33.3" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                                <mat-form-field
+                                    appearance="outline"
+                                    fxFlex="45"
+                                >
                                     <mat-label>Booking Price</mat-label>
-                                    <input matInput placeholder="Booking Price" autocomplete="off"
-                                        formControlName="maxValue" onlyNumber maxlength="5" readonly>
+                                    <input
+                                        matInput
+                                        placeholder="Booking Price"
+                                        autocomplete="off"
+                                        formControlName="maxValue"
+                                        onlyNumber
+                                        maxlength="5"
+                                        readonly
+                                    />
                                 </mat-form-field>
                             </div>
 
-                            <div fxFlex="100" fxFlex.gt-xs="33.3" class="px-2">
-                                <mat-form-field appearance="outline" class="w-100">
+                            <!-- Amount for Payment (Separate Row) -->
+                            <div fxFlex="100" class="px-2">
+                                <mat-form-field
+                                    appearance="outline"
+                                    class="w-100"
+                                >
                                     <mat-label>Amount For Payment</mat-label>
-                                    <input matInput placeholder="Amount" autocomplete="off" formControlName="amount"
-                                        onlyNumber maxlength="5">
+                                    <input
+                                        matInput
+                                        placeholder="Amount"
+                                        autocomplete="off"
+                                        formControlName="amount"
+                                        onlyNumber
+                                        maxlength="5"
+                                    />
                                 </mat-form-field>
                             </div>
 
-                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="space-between center">
-                                <button mat-raised-button color="primary" matStepperPrevious fxLayout="row"
-                                    fxLayoutAlign="center center" type="button">
+                            <!-- Action Buttons -->
+                            <div
+                                fxFlex="100"
+                                class="mt-3 p-2"
+                                fxLayoutAlign="space-between center"
+                            >
+                                <button
+                                    mat-raised-button
+                                    color="primary"
+                                    matStepperPrevious
+                                    fxLayout="row"
+                                    fxLayoutAlign="center center"
+                                    type="button"
+                                >
                                     <mat-icon>navigate_before</mat-icon>
                                     <span class="mx-1 uppercase">Back</span>
                                 </button>
-                                <button mat-raised-button color="primary" matStepperNext fxLayout="row"
-                                    fxLayoutAlign="center center" (click)="CreatePayment()">
+                                <button
+                                    mat-raised-button
+                                    color="primary"
+                                    matStepperNext
+                                    fxLayout="row"
+                                    fxLayoutAlign="center center"
+                                    (click)="CreatePayment()"
+                                >
                                     <span class="mx-1 uppercase">Buy Now</span>
-                                    <mat-icon iconPositionEnd>navigate_next</mat-icon>
+                                    <mat-icon iconPositionEnd
+                                        >navigate_next</mat-icon
+                                    >
                                 </button>
                             </div>
                         </form>
-
-
                     </div>
                 </mat-step>
-
             </mat-stepper>
-
         </mat-card>
-
     </div>
 </div>

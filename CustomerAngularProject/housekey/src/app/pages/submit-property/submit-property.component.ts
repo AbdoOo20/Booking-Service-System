@@ -43,7 +43,6 @@ import { delay } from "rxjs/operators";
 import { SharedService } from "@services/shared.service";
 import { _SharedService } from "@services/passing-data.service";
 import { DecodingTokenService } from "@services/decoding-token.service";
-import { log } from "console";
 import { ActivatedRoute } from "@angular/router";
 
 @Component({
@@ -94,8 +93,7 @@ export class SubmitPropertyComponent implements OnInit {
     };
 
     ///////////////////////////////////////////////////////////////////////
-    serviceID: number;
-    sub: any;
+    serviceID: number; //221d4d90-d8f5-423f-920a-196a0a8c12d8
     customerID: string = "221d4d90-d8f5-423f-920a-196a0a8c12d8";
     service: Service;
     minDate: Date;
@@ -184,12 +182,7 @@ export class SubmitPropertyComponent implements OnInit {
                 eventDate: ["", Validators.required],
                 startTime: ["", Validators.required],
                 endTime: ["", Validators.required],
-                quantity: [
-                    "",
-                    Validators.required,
-                    Validators.min(1),
-                    Validators.max(100000000000000000000000000000),
-                ],
+                quantity: [""],
             }),
             payment: this.fb.group({
                 amount: [0, Validators.required],
@@ -239,7 +232,7 @@ export class SubmitPropertyComponent implements OnInit {
             },
             error: (error) => {
                 this.hasQuantity = false;
-                alert(error);
+                alert("Error Fetching Service: " + error);
             },
         });
         this.submitForm
@@ -247,6 +240,8 @@ export class SubmitPropertyComponent implements OnInit {
             ?.valueChanges.subscribe((startTime) => {
                 this.updateEndTimeOptions(startTime);
             });
+        this.initializeTimeOptions();
+        this.calculateTotal();
     }
 
     shareData(): void {
@@ -261,6 +256,7 @@ export class SubmitPropertyComponent implements OnInit {
         console.log(selectedDate);
 
         this.bookingData = {
+            bookId: 0,
             eventDate: selectedDate,
             startTime: convertedStartTime,
             endTime: convertedEndTime,
@@ -273,7 +269,7 @@ export class SubmitPropertyComponent implements OnInit {
             type: "Service",
             customerId: this.CustomerIDFromToken,
             serviceId: this.serviceID,
-            paymentIncomeId: null,
+            paymentIncomeId: 1,
         };
 
         // Save data in local storage
@@ -341,7 +337,6 @@ export class SubmitPropertyComponent implements OnInit {
         // Share the booking data before proceeding with payment
         this.shareData(); // Call shareData here to share the booking data
 
-        alert("stile here");
         // Get total value from the form
         const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
 
@@ -384,12 +379,11 @@ export class SubmitPropertyComponent implements OnInit {
             },
         });
     }
-
     private initializeTimeOptions() {
         this.timeOptions = [];
         this.startHour = parseInt(this.service.startTime.split(":")[0], 10); // Start from 9 AM
         this.endHour = parseInt(this.service.endTime.split(":")[0], 10); // End at 6 PM
-        for (let hour = this.startHour; hour <= this.endHour; hour++) {
+        for (let hour = this.startHour; hour < this.endHour; hour++) {
             const amPm = hour >= 12 ? "PM" : "AM";
             const displayHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
             //console.log(`${displayHour} ${amPm}`);

@@ -41,6 +41,7 @@ export class ServicesService {
     API_GetServicebyID = "http://localhost:18105/api/Services/";
     ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
     API_getAgents = "";
+    API_get_allWishList="http://localhost:18105/api/wishlist/";
     Favourite_service: wishList;
 
     constructor(
@@ -166,6 +167,8 @@ export class ServicesService {
             );
         }
     }
+
+  
     // Test Function
     GetAllFilterion(
         cat: string | null | undefined,
@@ -239,14 +242,14 @@ export class ServicesService {
     }
 
     // Basma Code
-    public addToFavorites(property: Service, direction: any ,CustomerID : string) {
-        this.Favourite_service = new wishList (CustomerID,property.id)
+    public addToFavorites(service:Service, direction: any ,CustomerID : string) {
+        this.Favourite_service = new wishList (service.id,CustomerID);
            
         this.http.post(this.ApI_Add_to_wishList, this.Favourite_service)
         .subscribe(
           (response) => {
             // Success: Show a success message using snackbar
-            this.snackBar.open('The property "' + property.name + '" has been added to favorites.', '×', {
+            this.snackBar.open('The Service ' + service.name + '" has been added to favorites.', '×', {
               verticalPosition: 'top',
               duration: 3000,
               direction: direction
@@ -264,14 +267,14 @@ export class ServicesService {
           
          }
  
-         public addToFavoritesInServiceDetails(property: ServiceDetails, direction: any ,CustomerID : string) {
-             this.Favourite_service = new wishList (CustomerID,property.id)
+         public addToFavoritesInServiceDetails(service: ServiceDetails, direction: any ,CustomerID : string) {
+             this.Favourite_service = new wishList (service.id,CustomerID);
                 
              this.http.post(this.ApI_Add_to_wishList, this.Favourite_service)
              .subscribe(
                (response) => {
                  // Success: Show a success message using snackbar
-                 this.snackBar.open('The property "' + property.name + '" has been added to favorites.', '×', {
+                 this.snackBar.open('The property "' + service.name + '" has been added to favorites.', '×', {
                    verticalPosition: 'top',
                    duration: 3000,
                    direction: direction
@@ -287,6 +290,10 @@ export class ServicesService {
                }
              );
                
+              }
+            //to get services in the wish List
+           getAllServicesInWishList(customerid:string){
+               return this.http.get(this.API_get_allWishList+"/"+customerid);
               }
               
     getPropertyById(id: number): Observable<ServiceDetails> {
