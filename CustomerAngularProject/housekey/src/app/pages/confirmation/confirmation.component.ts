@@ -4,8 +4,6 @@ import { PaymentsService } from '@services/payments.service';
 import { PayPalService } from '@services/pay-pal.service';
 import { BookingService } from '@services/booking.service';
 import { DecodingTokenService } from '@services/decoding-token.service';
-import { log } from 'console';
-import { constrainedMemory } from 'process';
 
 @Component({
   selector: 'app-confirmation',
@@ -84,8 +82,8 @@ export class ConfirmationComponent implements OnInit {
             console.log("this in Confirmation and BookingObject:");
 
             console.log(this.bookingData);
-
             this.bookingService.addBooking(JSON.stringify(this.bookingData, null, 2)).subscribe({
+              
               next: (bookingResponse) => {
                 console.log('Booking added successfully:', bookingResponse); // Log booking response
                 // Add payment
@@ -109,12 +107,12 @@ export class ConfirmationComponent implements OnInit {
             });
             localStorage.removeItem('bookingData');
           }
-          else {
-            console.log();
+          else if (this.BookingIdFromPayInstallment) {
+            console.log("Payment without Book" + this.BookingIdFromPayInstallment);
             this.paymentsService.addPayment({
               customerId: this.CustomerID,
               bookingId: this.BookingIdFromPayInstallment,
-              paymentDate: this.bookingData.selectedDate,
+              paymentDate: new Date().toISOString(),
               paymentValue: response.transactions[0].amount.total
             }).subscribe({
               next: (paymentResponse) => {

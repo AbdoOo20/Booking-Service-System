@@ -275,11 +275,12 @@
                         <p>{{ service?.details }}</p>
                     </mat-card-content>
                 </mat-card>
+                @if(token){
                 <mat-card class="p-3 mt-3">
                     <mat-card-header class="pt-0" fxLayoutAlign="center center">
                         <mat-card-title class="uppercase">
                             <a
-                                [routerLink]="['/', service.id]"
+                                [routerLink]="['/Book', service.id]"
                                 mat-raised-button
                                 color="primary"
                                 class="uppercase mx-1"
@@ -288,24 +289,21 @@
                         </mat-card-title>
                     </mat-card-header>
                 </mat-card>
+                }
             </mat-sidenav-content>
         </mat-sidenav-container>
     </div>
 </div>
 
 @if(rev==null){
-    <div>
+<div>
     <app-review-form [service]="service"></app-review-form>
-    </div>
-}
-@else{
-    <div>
-        <app-reviews [service]="service"></app-reviews>
-        </div> 
-}
-
-
-@if(service.relatedServices.length != 0){
+</div>
+} @else{
+<div>
+    <app-reviews [service]="service"></app-reviews>
+</div>
+} @if(service.relatedServices.length != 0){
 <div class="section mt-3">
     <div class="px-3">
         <div class="theme-container">

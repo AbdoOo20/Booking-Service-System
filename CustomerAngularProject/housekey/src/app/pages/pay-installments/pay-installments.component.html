@@ -6,12 +6,12 @@
         <p>Remaining Value: {{ remainingValue }}</p>
         
         <form (ngSubmit)="submitPayment()">
-          <div class="mb-3">
+          <div class="mb-3 col-6">
             <label for="amount" class="form-label">Enter Amount to Pay Now</label>
             <input type="number" id="amount" class="form-control" [(ngModel)]="amount" name="amount" min="0" max="{{ remainingValue }}" required>
           </div>
           
-          <button type="submit" class="btn btn-primary">Pay Now</button>
+          <button type="submit" class="btn btn-primary mb-3">Pay Now</button>
         </form>
 </div>
       

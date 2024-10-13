@@ -75,11 +75,15 @@ import { DecodingTokenService } from "@services/decoding-token.service";
         PropertiesCarouselComponent,
         GetInTouchComponent,
         MatButtonModule,
-        FlexLayoutModule,ReviewFormComponent,ReviewsComponent
+        FlexLayoutModule,
+        ReviewFormComponent,
+        ReviewsComponent,
     ],
     templateUrl: "./property.component.html",
     styleUrl: "./property.component.scss",
+
     providers: [EmbedVideoService,AllBookingsService,ReviewServiceService,DecodingTokenService],
+
 })
 export class PropertyComponent implements OnInit {
     @ViewChild("sidenav") sidenav: any;
@@ -90,7 +94,7 @@ export class PropertyComponent implements OnInit {
     private sub: any;
     private subService: any;
     public property: Property;
-    public service: ServiceDetails;
+    public service: any;
     public settings: Settings;
     public embedVideo: any;
     public relatedProperties: Property[];
@@ -102,17 +106,20 @@ export class PropertyComponent implements OnInit {
     public monthlyPayment: any;
     public contactForm: FormGroup;
     public provider: provider;
+
     public allBookings:any[];
     public rev :any;
     public Services_WishList :any;
     public customerId:string;
+
     mapOptions: google.maps.MapOptions = {
         mapTypeControl: true,
         fullscreenControl: true,
     };
     lat: number = 0;
     lng: number = 0;
-     
+    token = localStorage.getItem("token");
+
     constructor(
         public settingsService: SettingsService,
         public appService: AppService,
@@ -120,10 +127,12 @@ export class PropertyComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         private embedService: EmbedVideoService,
         public fb: FormBuilder,
+
         private domHandlerService: DomHandlerService,   
         public bookservice:AllBookingsService,          //bookingService
         public ReviewService:ReviewServiceService,       //ReviewService
         public DecodingCustomerID : DecodingTokenService
+
 
     ) {
         this.settings = this.settingsService.settings;
@@ -206,7 +215,7 @@ export class PropertyComponent implements OnInit {
         this.myServ.getServiceById(id).subscribe({
             next: (data) => {
                 this.service = data;
-                console.log(data.provider.providerId);
+                //console.log(data.provider.providerId);
             },
             error: (err) => {
                 console.log(err);
@@ -307,6 +316,7 @@ export class PropertyComponent implements OnInit {
 
 
     public addToFavorites() {
+
         this.myServ.addToFavoritesInServiceDetails(this.service, (this.settings.rtl) ? 'rtl' : 'ltr',this.customerId);
       }
     
@@ -336,6 +346,7 @@ export class PropertyComponent implements OnInit {
         });
       }
     
+
 
     public getRelatedProperties() {
         this.appService.getRelatedProperties().subscribe((data) => {
@@ -395,6 +406,7 @@ export class PropertyComponent implements OnInit {
     }
 
 
+
     checkForReview(){
         this.customerId = this.DecodingCustomerID.getUserIdFromToken();
       // this.customerId="529d93df-bcdd-4b22-8f71-dd355f994798"
@@ -406,8 +418,6 @@ export class PropertyComponent implements OnInit {
            
          }
 
+
     }
-}
-
-
 }
