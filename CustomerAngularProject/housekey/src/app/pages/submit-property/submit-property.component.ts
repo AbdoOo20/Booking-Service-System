@@ -297,6 +297,45 @@ export class SubmitPropertyComponent implements OnInit {
             hours = 0; // Midnight case
         }
 
+        quantityControl?.updateValueAndValidity();
+      },
+      error: (error) => {
+        this.hasQuantity = false;
+        alert("Error Fetching Service: " + error);
+      },
+    });
+    this.submitForm
+      .get("booking.startTime")
+      ?.valueChanges.subscribe((startTime) => {
+        this.updateEndTimeOptions(startTime);
+      });
+
+  }
+
+  shareData(): void {
+    // Convert booking form data
+    const selectedDate = this.submitForm.get('booking.eventDate').value;
+    const convertedStartTime = this.convertTo24HourFormat(this.submitForm.get('booking.startTime').value);
+    const convertedEndTime = this.convertTo24HourFormat(this.submitForm.get('booking.endTime').value);
+    console.log(selectedDate);
+
+    this.bookingData = {
+      bookId:0,
+      eventDate: selectedDate,
+      startTime: convertedStartTime,
+      endTime: convertedEndTime,
+      initialPaymentPercentage: 20,
+      status: 'Pending',
+      quantity: Number(this.submitForm.get('booking.quantity').value),
+      price: parseFloat(this.submitForm.get('booking.priceEuro').value),
+      cashOrCashByHandOrInstallment: 'Cash',
+      bookDate: new Date().toISOString(),
+      type: 'Service',
+      customerId: this.CustomerIDFromToken,
+      serviceId: this.serviceID,
+      paymentIncomeId: 1,
+    };
+
         // Format hours, minutes, and seconds
         const formattedTime = `${hours.toString().padStart(2, "0")}:${(
             minutes || 0
@@ -306,7 +345,15 @@ export class SubmitPropertyComponent implements OnInit {
         return formattedTime;
     }
 
-    openContractDialog(): void {
+
+    // Format hours, minutes, and seconds
+    const formattedTime = `${hours.toString().padStart(2, "0")}:${(minutes || 0)
+      .toString()
+      .padStart(2, "0")}:00`;
+    return formattedTime;
+  }
+
+   openContractDialog(): void {
         const dialogRef = this.dialog.open(ContractDialogComponent, {
             width: "60vw",
             height: "80vh",
@@ -323,6 +370,38 @@ export class SubmitPropertyComponent implements OnInit {
                 this.acceptContract = false;
             }
         });
+
+  // Method to calculate total
+  calculateTotal() {
+    const initialPayment =
+      parseFloat(this.submitForm.get("payment.minValue")?.value) || 0;
+    const priceEuro =
+      parseFloat(this.submitForm.get("payment.maxValue")?.value) || 0;
+    const minPrice = (initialPayment * priceEuro) / 100;
+    this.submitForm
+      .get("payment.amount")
+      ?.setValue(minPrice, { emitEvent: false });
+  }
+
+  CreatePayment() {
+    // Share the booking data before proceeding with payment
+    this.shareData(); // Call shareData here to share the booking data
+
+    // Get total value from the form
+    const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
+
+    // Ensure minValue and maxValue are properly set from the form
+    this.minValue = parseFloat(this.submitForm.get("payment.minValue")?.value);
+    this.maxValue = parseFloat(this.submitForm.get("payment.maxValue")?.value);
+
+    // Check if the total is between minValue and maxValue
+    if (
+      amount < (this.minValue * this.maxValue) / 100 ||
+      amount > this.maxValue ||
+      amount <= 0
+    ) {
+      console.warn("Total must be between minimum and maximum values:", amount);
+      return; // Exit the method if the total is not in the valid range
     }
 
     // Method to calculate total
