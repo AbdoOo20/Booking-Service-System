@@ -80,7 +80,7 @@ namespace BookingServices.Controllers
         [HttpGet]
         public IActionResult ResetPassword()
         {
-            return View("ProviderResetPassword");
+            return View();
         }
 
         [HttpPost]
@@ -88,10 +88,6 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> ResetPassword(Provider_ResetPassowrd model)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
 
             if (ModelState.IsValid)
             {
