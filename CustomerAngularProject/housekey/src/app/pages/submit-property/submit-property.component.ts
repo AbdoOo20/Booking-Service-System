@@ -239,6 +239,7 @@ export class SubmitPropertyComponent implements OnInit {
     console.log(selectedDate);
 
     this.bookingData = {
+      bookId:0,
       eventDate: selectedDate,
       startTime: convertedStartTime,
       endTime: convertedEndTime,
@@ -251,7 +252,7 @@ export class SubmitPropertyComponent implements OnInit {
       type: 'Service',
       customerId: this.CustomerIDFromToken,
       serviceId: this.serviceID,
-      paymentIncomeId: null,
+      paymentIncomeId: 1,
     };
 
     // Save data in local storage
@@ -317,7 +318,6 @@ export class SubmitPropertyComponent implements OnInit {
     // Share the booking data before proceeding with payment
     this.shareData(); // Call shareData here to share the booking data
 
-    alert("stile here");
     // Get total value from the form
     const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
 
