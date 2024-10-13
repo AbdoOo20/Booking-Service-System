@@ -60,11 +60,13 @@ export const routes: Routes = [
                     ),
             },
             {
+                // path: "register",
+                // loadComponent: () =>
+                //     import("./register/register.component").then(
+                //         (c) => c.RegisterComponent
+                //     ),
                 path: "register",
-                loadComponent: () =>
-                    import("./register/register.component").then(
-                        (c) => c.RegisterComponent
-                    ),
+                component: RegisterComponent,
             },
             {
                 path: "pricing",
@@ -88,7 +90,7 @@ export const routes: Routes = [
                     ).then((c) => c.TermsConditionsComponent),
             },
             {
-                path: "submit-property",
+                path: "Book/:id",
                 loadComponent: () =>
                     import("./submit-property/submit-property.component").then(
                         (c) => c.SubmitPropertyComponent
