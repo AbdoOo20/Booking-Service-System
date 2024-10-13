@@ -74,11 +74,13 @@ import { ReviewsComponent } from "../Reviews/reviews.component";
         PropertiesCarouselComponent,
         GetInTouchComponent,
         MatButtonModule,
-        FlexLayoutModule,ReviewFormComponent,ReviewsComponent
+        FlexLayoutModule,
+        ReviewFormComponent,
+        ReviewsComponent,
     ],
     templateUrl: "./property.component.html",
     styleUrl: "./property.component.scss",
-    providers: [EmbedVideoService,AllBookingsService,ReviewServiceService],
+    providers: [EmbedVideoService, AllBookingsService, ReviewServiceService],
 })
 export class PropertyComponent implements OnInit {
     @ViewChild("sidenav") sidenav: any;
@@ -101,15 +103,16 @@ export class PropertyComponent implements OnInit {
     public monthlyPayment: any;
     public contactForm: FormGroup;
     public provider: provider;
-    public allBookings:any[];
-    public rev :any;
+    public allBookings: any[];
+    public rev: any;
     mapOptions: google.maps.MapOptions = {
         mapTypeControl: true,
         fullscreenControl: true,
     };
     lat: number = 0;
     lng: number = 0;
-     
+    token = localStorage.getItem("token");
+
     constructor(
         public settingsService: SettingsService,
         public appService: AppService,
@@ -117,10 +120,9 @@ export class PropertyComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         private embedService: EmbedVideoService,
         public fb: FormBuilder,
-        private domHandlerService: DomHandlerService,   
-        public bookservice:AllBookingsService,          //bookingService
-        public ReviewService:ReviewServiceService       //ReviewService
-
+        private domHandlerService: DomHandlerService,
+        public bookservice: AllBookingsService, //bookingService
+        public ReviewService: ReviewServiceService //ReviewService
     ) {
         this.settings = this.settingsService.settings;
     }
@@ -300,13 +302,16 @@ export class PropertyComponent implements OnInit {
     }
 
     public addToFavorites() {
-        this.myServ.addToFavoritesInServiceDetails(this.service, (this.settings.rtl) ? 'rtl' : 'ltr',"");
-      }
-    
-      public onFavorites() {
-       // return this.appService.ApI_Add_to_wishList.(item => item.id == this.service.id)[0];
-      }
-    
+        this.myServ.addToFavoritesInServiceDetails(
+            this.service,
+            this.settings.rtl ? "rtl" : "ltr",
+            ""
+        );
+    }
+
+    public onFavorites() {
+        // return this.appService.ApI_Add_to_wishList.(item => item.id == this.service.id)[0];
+    }
 
     public getRelatedProperties() {
         this.appService.getRelatedProperties().subscribe((data) => {
@@ -365,18 +370,16 @@ export class PropertyComponent implements OnInit {
         );
     }
 
-
-    checkForReview(){
-      this.allBookings.push(this.bookservice.getBooking('customerId'));   //customerID must be added from token
-      for (const booking of this.allBookings) {
-        console.log(booking); 
-        if(booking.serviceId==this.service.id){
-            this.rev= this.ReviewService.getReview(booking.id,'customerId');     //customerId from token
-           
-         }
-
+    checkForReview() {
+        this.allBookings.push(this.bookservice.getBooking("customerId")); //customerID must be added from token
+        for (const booking of this.allBookings) {
+            console.log(booking);
+            if (booking.serviceId == this.service.id) {
+                this.rev = this.ReviewService.getReview(
+                    booking.id,
+                    "customerId"
+                ); //customerId from token
+            }
+        }
     }
-}
-
-
 }

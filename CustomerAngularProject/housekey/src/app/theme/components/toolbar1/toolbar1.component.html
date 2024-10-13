@@ -21,7 +21,20 @@
         <div fxLayout="row" fxLayoutAlign="end center" class="">
             <!-- <app-currency></app-currency> -->
             <!-- <app-lang></app-lang> -->
+            @if(token){
             <app-user-menu></app-user-menu>
+            }@else {
+            <span fxLayoutAlign="center center" class="item">
+                <span class="px-1">
+                    <a routerLink="/login" class="log-reg-btn">Login</a>
+                </span>
+                |
+                <span class="px-1">
+                    <a routerLink="/register" class="log-reg-btn">Register</a>
+                </span>
+            </span>
+
+            }
         </div>
     </div>
 </mat-toolbar>
