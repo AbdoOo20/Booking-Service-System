@@ -173,29 +173,29 @@ export class PropertyItemComponent implements OnInit {
         );
     }
 
-    public onFavorites() {
-        this.Services_WishList=this.myServ.getAllServicesInWishList(this.customerid) ;
+    // public onFavorites() {
+    //     this.Services_WishList=this.myServ.getAllServicesInWishList(this.customerid) ;
 
-        // Assuming getAllServicesInWishList is asynchronous and returns a Promise or Observable
-        this.myServ.getAllServicesInWishList(this.customerid).subscribe((services) => {
-          this.Services_WishList = services;
+    //     // Assuming getAllServicesInWishList is asynchronous and returns a Promise or Observable
+    //     this.myServ.getAllServicesInWishList(this.customerid).subscribe((services) => {
+    //       this.Services_WishList = services;
       
-          // Check if this.service.id is already in the wishlist
-          const isInWishlist = this.Services_WishList.some(servWish => servWish.Id === this.service.id);
+    //       // Check if this.service.id is already in the wishlist
+    //       const isInWishlist = this.Services_WishList.some(servWish => servWish.Id === this.service.id);
       
-          if (isInWishlist) {
-            // Service is already in the wishlist, handle accordingly (e.g., update UI)
-            console.log('Service is already in wishlist:', this.service.id);
+    //       if (isInWishlist) {
+    //         // Service is already in the wishlist, handle accordingly (e.g., update UI)
+    //         console.log('Service is already in wishlist:', this.service.id);
             
-            // Example: Update UI or set a flag
-          } else {
-            // Service is not in the wishlist
-            console.log('Service is not in wishlist:', this.service.id);
-            // Example: Handle adding to wishlist logic
-          }
-        }, (error) => {
-          console.error('Failed to fetch wishlist services:', error);
-          // Handle error scenario if needed
-        });
-    }
+    //         // Example: Update UI or set a flag
+    //       } else {
+    //         // Service is not in the wishlist
+    //         console.log('Service is not in wishlist:', this.service.id);
+    //         // Example: Handle adding to wishlist logic
+    //       }
+    //     }, (error) => {
+    //       console.error('Failed to fetch wishlist services:', error);
+    //       // Handle error scenario if needed
+    //     });
+    // }
 }
