@@ -4,8 +4,6 @@ import { PaymentsService } from '@services/payments.service';
 import { PayPalService } from '@services/pay-pal.service';
 import { BookingService } from '@services/booking.service';
 import { DecodingTokenService } from '@services/decoding-token.service';
-import { log } from 'console';
-import { constrainedMemory } from 'process';
 
 @Component({
   selector: 'app-confirmation',

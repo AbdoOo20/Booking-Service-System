@@ -43,8 +43,6 @@ import { delay } from "rxjs/operators";
 import { SharedService } from "@services/shared.service";
 import { _SharedService } from "@services/passing-data.service";
 import { DecodingTokenService } from "@services/decoding-token.service";
-import { log } from "console";
-import { ActivatedRoute } from "@angular/router";
 
 @Component({
     selector: "app-submit-property",
@@ -94,8 +92,7 @@ export class SubmitPropertyComponent implements OnInit {
     };
 
     ///////////////////////////////////////////////////////////////////////
-    serviceID: number;
-    sub: any;
+    serviceID: number; //221d4d90-d8f5-423f-920a-196a0a8c12d8
     customerID: string = "221d4d90-d8f5-423f-920a-196a0a8c12d8";
     service: Service;
     minDate: Date;
@@ -139,31 +136,22 @@ export class SubmitPropertyComponent implements OnInit {
         private sharedService: SharedService,
         private NewBooking: _SharedService,
         private decodingService: DecodingTokenService,
-        private activatedRoute: ActivatedRoute
     ) {
         // this.total = 0;
     }
 
     asyncQuantityValidator(serviceQuantity: number) {
-        return (
-            control: AbstractControl
-        ): Observable<ValidationErrors | null> => {
+        return (control: AbstractControl): Observable<ValidationErrors | null> => {
             if (!control.value) {
                 return of(null);
             }
             return of(
-                control.value > serviceQuantity
-                    ? { invalidQuantity: true }
-                    : null
+                control.value > serviceQuantity ? { invalidQuantity: true } : null
             ).pipe(delay(500));
         };
     }
 
     ngOnInit() {
-        this.activatedRoute.paramMap.subscribe((params) => {
-            this.serviceID = Number(params.get("id")); // استقبال الـ id
-            console.log(this.serviceID); // طباعة الـ id
-        });
         this.features = this.appService.getFeatures();
         this.propertyTypes = this.appService.getPropertyTypes();
         this.propertyStatuses = this.appService.getPropertyStatuses();
@@ -172,9 +160,7 @@ export class SubmitPropertyComponent implements OnInit {
         this.streets = this.appService.getStreets();
         this.minDate = new Date();
         const currentDate = new Date();
-        this.maxDate = new Date(
-            currentDate.setMonth(currentDate.getMonth() + 3)
-        );
+        this.maxDate = new Date(currentDate.setMonth(currentDate.getMonth() + 3));
         this.CustomerIDFromToken = this.decodingService.getUserIdFromToken();
 
         this.submitForm = this.fb.group({
@@ -184,12 +170,7 @@ export class SubmitPropertyComponent implements OnInit {
                 eventDate: ["", Validators.required],
                 startTime: ["", Validators.required],
                 endTime: ["", Validators.required],
-                quantity: [
-                    "",
-                    Validators.required,
-                    Validators.min(1),
-                    Validators.max(100000000000000000000000000000),
-                ],
+                quantity: ["", Validators.required, Validators.min(1), Validators.max(100000000000000000000000000000),],
             }),
             payment: this.fb.group({
                 amount: [0, Validators.required],
@@ -212,8 +193,7 @@ export class SubmitPropertyComponent implements OnInit {
                 this.submitForm.patchValue({
                     booking: {
                         service: this.service.name,
-                        priceEuro:
-                            this.service.priceForTheCurrentDay?.toString(),
+                        priceEuro: this.service.priceForTheCurrentDay?.toString(),
                         quantity: null,
                     },
                 });
@@ -239,7 +219,7 @@ export class SubmitPropertyComponent implements OnInit {
             },
             error: (error) => {
                 this.hasQuantity = false;
-                alert(error);
+                alert("Error Fetching Service: " + error);
             },
         });
         this.submitForm
@@ -247,41 +227,39 @@ export class SubmitPropertyComponent implements OnInit {
             ?.valueChanges.subscribe((startTime) => {
                 this.updateEndTimeOptions(startTime);
             });
+
     }
 
     shareData(): void {
         // Convert booking form data
-        const selectedDate = this.submitForm.get("booking.eventDate").value;
-        const convertedStartTime = this.convertTo24HourFormat(
-            this.submitForm.get("booking.startTime").value
-        );
-        const convertedEndTime = this.convertTo24HourFormat(
-            this.submitForm.get("booking.endTime").value
-        );
+        const selectedDate = this.submitForm.get('booking.eventDate').value;
+        const convertedStartTime = this.convertTo24HourFormat(this.submitForm.get('booking.startTime').value);
+        const convertedEndTime = this.convertTo24HourFormat(this.submitForm.get('booking.endTime').value);
         console.log(selectedDate);
 
         this.bookingData = {
+            bookId: 0,
             eventDate: selectedDate,
             startTime: convertedStartTime,
             endTime: convertedEndTime,
             initialPaymentPercentage: 20,
-            status: "Pending",
-            quantity: Number(this.submitForm.get("booking.quantity").value),
-            price: parseFloat(this.submitForm.get("booking.priceEuro").value),
-            cashOrCashByHandOrInstallment: "Cash",
+            status: 'Pending',
+            quantity: Number(this.submitForm.get('booking.quantity').value),
+            price: parseFloat(this.submitForm.get('booking.priceEuro').value),
+            cashOrCashByHandOrInstallment: 'Cash',
             bookDate: new Date().toISOString(),
-            type: "Service",
+            type: 'Service',
             customerId: this.CustomerIDFromToken,
             serviceId: this.serviceID,
-            paymentIncomeId: null,
+            paymentIncomeId: 1,
         };
 
         // Save data in local storage
-        localStorage.setItem("bookingData", JSON.stringify(this.bookingData));
+        localStorage.setItem('bookingData', JSON.stringify(this.bookingData));
 
         // Set data in SharedService
         this.sharedService.setData(this.bookingData);
-        console.log("Booking data shared:", this.bookingData);
+        console.log('Booking data shared:', this.bookingData);
         this.NewBooking.setData(this.bookingData);
     }
 
@@ -297,63 +275,14 @@ export class SubmitPropertyComponent implements OnInit {
             hours = 0; // Midnight case
         }
 
-        quantityControl?.updateValueAndValidity();
-      },
-      error: (error) => {
-        this.hasQuantity = false;
-        alert("Error Fetching Service: " + error);
-      },
-    });
-    this.submitForm
-      .get("booking.startTime")
-      ?.valueChanges.subscribe((startTime) => {
-        this.updateEndTimeOptions(startTime);
-      });
-
-  }
-
-  shareData(): void {
-    // Convert booking form data
-    const selectedDate = this.submitForm.get('booking.eventDate').value;
-    const convertedStartTime = this.convertTo24HourFormat(this.submitForm.get('booking.startTime').value);
-    const convertedEndTime = this.convertTo24HourFormat(this.submitForm.get('booking.endTime').value);
-    console.log(selectedDate);
-
-    this.bookingData = {
-      bookId:0,
-      eventDate: selectedDate,
-      startTime: convertedStartTime,
-      endTime: convertedEndTime,
-      initialPaymentPercentage: 20,
-      status: 'Pending',
-      quantity: Number(this.submitForm.get('booking.quantity').value),
-      price: parseFloat(this.submitForm.get('booking.priceEuro').value),
-      cashOrCashByHandOrInstallment: 'Cash',
-      bookDate: new Date().toISOString(),
-      type: 'Service',
-      customerId: this.CustomerIDFromToken,
-      serviceId: this.serviceID,
-      paymentIncomeId: 1,
-    };
-
         // Format hours, minutes, and seconds
-        const formattedTime = `${hours.toString().padStart(2, "0")}:${(
-            minutes || 0
-        )
+        const formattedTime = `${hours.toString().padStart(2, "0")}:${(minutes || 0)
             .toString()
             .padStart(2, "0")}:00`;
         return formattedTime;
     }
 
-
-    // Format hours, minutes, and seconds
-    const formattedTime = `${hours.toString().padStart(2, "0")}:${(minutes || 0)
-      .toString()
-      .padStart(2, "0")}:00`;
-    return formattedTime;
-  }
-
-   openContractDialog(): void {
+    openContractDialog(): void {
         const dialogRef = this.dialog.open(ContractDialogComponent, {
             width: "60vw",
             height: "80vh",
@@ -370,38 +299,6 @@ export class SubmitPropertyComponent implements OnInit {
                 this.acceptContract = false;
             }
         });
-
-  // Method to calculate total
-  calculateTotal() {
-    const initialPayment =
-      parseFloat(this.submitForm.get("payment.minValue")?.value) || 0;
-    const priceEuro =
-      parseFloat(this.submitForm.get("payment.maxValue")?.value) || 0;
-    const minPrice = (initialPayment * priceEuro) / 100;
-    this.submitForm
-      .get("payment.amount")
-      ?.setValue(minPrice, { emitEvent: false });
-  }
-
-  CreatePayment() {
-    // Share the booking data before proceeding with payment
-    this.shareData(); // Call shareData here to share the booking data
-
-    // Get total value from the form
-    const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
-
-    // Ensure minValue and maxValue are properly set from the form
-    this.minValue = parseFloat(this.submitForm.get("payment.minValue")?.value);
-    this.maxValue = parseFloat(this.submitForm.get("payment.maxValue")?.value);
-
-    // Check if the total is between minValue and maxValue
-    if (
-      amount < (this.minValue * this.maxValue) / 100 ||
-      amount > this.maxValue ||
-      amount <= 0
-    ) {
-      console.warn("Total must be between minimum and maximum values:", amount);
-      return; // Exit the method if the total is not in the valid range
     }
 
     // Method to calculate total
@@ -420,17 +317,12 @@ export class SubmitPropertyComponent implements OnInit {
         // Share the booking data before proceeding with payment
         this.shareData(); // Call shareData here to share the booking data
 
-        alert("stile here");
         // Get total value from the form
         const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
 
         // Ensure minValue and maxValue are properly set from the form
-        this.minValue = parseFloat(
-            this.submitForm.get("payment.minValue")?.value
-        );
-        this.maxValue = parseFloat(
-            this.submitForm.get("payment.maxValue")?.value
-        );
+        this.minValue = parseFloat(this.submitForm.get("payment.minValue")?.value);
+        this.maxValue = parseFloat(this.submitForm.get("payment.maxValue")?.value);
 
         // Check if the total is between minValue and maxValue
         if (
@@ -438,10 +330,7 @@ export class SubmitPropertyComponent implements OnInit {
             amount > this.maxValue ||
             amount <= 0
         ) {
-            console.warn(
-                "Total must be between minimum and maximum values:",
-                amount
-            );
+            console.warn("Total must be between minimum and maximum values:", amount);
             return; // Exit the method if the total is not in the valid range
         }
 
@@ -525,14 +414,8 @@ export class SubmitPropertyComponent implements OnInit {
                 next: (data) => {
                     this.services = data as Service[];
                     for (const service of this.services) {
-                        const startTime = parseInt(
-                            service.startTime.split(":")[0],
-                            10
-                        );
-                        const endTime = parseInt(
-                            service.endTime.split(":")[0],
-                            10
-                        );
+                        const startTime = parseInt(service.startTime.split(":")[0], 10);
+                        const endTime = parseInt(service.endTime.split(":")[0], 10);
                         for (let hour = startTime; hour <= endTime; hour++) {
                             const amPm = hour >= 12 ? "PM" : "AM";
                             const displayHour = hour > 12 ? hour - 12 : hour;
@@ -540,8 +423,7 @@ export class SubmitPropertyComponent implements OnInit {
                         }
                         this.bookedQuantity += service.quantity;
                     }
-                    this.maxQuantity =
-                        this.service.quantity - this.bookedQuantity;
+                    this.maxQuantity = this.service.quantity - this.bookedQuantity;
                     this.initializeTimeOptions();
                 },
                 error: (error) => {
@@ -552,9 +434,7 @@ export class SubmitPropertyComponent implements OnInit {
 
     public onSelectionChange(e: any) {
         if (e.selectedIndex == 2) {
-            this.horizontalStepper._steps.forEach(
-                (step) => (step.editable = false)
-            );
+            this.horizontalStepper._steps.forEach((step) => (step.editable = false));
             console.log(this.submitForm.value);
         }
     }
@@ -631,8 +511,7 @@ export class SubmitPropertyComponent implements OnInit {
         );
         autocomplete.addListener("place_changed", () => {
             this.ngZone.run(() => {
-                let place: google.maps.places.PlaceResult =
-                    autocomplete.getPlace();
+                let place: google.maps.places.PlaceResult = autocomplete.getPlace();
                 if (place.geometry === undefined || place.geometry === null) {
                     return;
                 }
@@ -665,9 +544,7 @@ export class SubmitPropertyComponent implements OnInit {
             if (response["results"].length) {
                 if (response["results"][0]) {
                     let address = response["results"][0].formatted_address;
-                    this.submitForm.controls.address
-                        .get("location")!
-                        .setValue(address);
+                    this.submitForm.controls.address.get("location")!.setValue(address);
                     //this.setAddresses(response["results"][0]);
                 }
             }
@@ -798,15 +675,11 @@ export class SubmitPropertyComponent implements OnInit {
         });
     }
     public addVideo(): void {
-        const videos = this.submitForm.controls.media.get(
-            "videos"
-        ) as FormArray;
+        const videos = this.submitForm.controls.media.get("videos") as FormArray;
         videos.push(this.createVideo());
     }
     public deleteVideo(index) {
-        const videos = this.submitForm.controls.media.get(
-            "videos"
-        ) as FormArray;
+        const videos = this.submitForm.controls.media.get("videos") as FormArray;
         videos.removeAt(index);
     }
 
