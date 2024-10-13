@@ -23,7 +23,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        //[Authorize]
         public ActionResult<CustomerCrudDTO> GetByID(string id) 
         {
             if (id == null) return NotFound();
@@ -41,7 +41,7 @@ namespace CusromerProject.Controllers
             return customerData;
         }
         [HttpPut("{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Update(string id, CustomerCrudDTO customerData)
         {
             if (id == null) return NotFound();
@@ -68,7 +68,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpPut("block{id}")]
-        [Authorize]
+        //[Authorize]
         public IActionResult Block(string id)
         {
             if (id == null) return NotFound();
@@ -85,7 +85,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpPut("changePassword{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> ChangePassword(string id , ChangeCustomerPasswordDTO chPassword) 
         {
             if (id == null) return NotFound();
