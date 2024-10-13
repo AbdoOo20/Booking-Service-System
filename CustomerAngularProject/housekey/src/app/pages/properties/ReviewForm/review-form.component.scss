@@ -1,43 +1,52 @@
 body {
     background-color: #f8f9fa;
-}
-.review-form-container {
+  }
+  
+  .review-form-container {
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 30px;
     margin: 20px 0;
-}
-.form-control {
+  }
+  
+  .form-control {
     border: 2px solid #007bff;
     transition: border-color 0.3s;
-}
-.form-control:focus {
+  }
+  
+  .form-control:focus {
     border-color: #0056b3;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-.rating {
+  }
+  
+  .rating {
     display: flex;
     flex-direction: row-reverse;
     justify-content: flex-start;
-}
-.rating input {
+  }
+  
+  .rating input {
     display: none;
-}
-.rating label {
+  }
+  
+  .rating label {
     font-size: 30px;
     color: #ddd;
     cursor: pointer;
     transition: color 0.2s;
-}
-.rating input:checked ~ label {
+  }
+  
+  .rating input:checked ~ label {
     color: #f39c12; /* Highlight color for filled stars */
-}
-.rating label:hover,
-.rating label:hover ~ label {
+  }
+  
+  .rating label:hover,
+  .rating label:hover ~ label {
     color: #f39c12; /* Color when hovering */
-}
-.btn-submit {
+  }
+  
+  .btn-submit {
     background: linear-gradient(45deg, #007bff, #0056b3);
     border: none;
     color: white;
@@ -45,9 +54,11 @@ body {
     padding: 12px 20px; /* Adjust padding */
     font-size: 16px; /* Increase font size */
     transition: background 0.3s, transform 0.2s, box-shadow 0.3s; /* Smooth transition */
-}
-.btn-submit:hover {
+  }
+  
+  .btn-submit:hover {
     background: linear-gradient(45deg, #0056b3, #003d80); /* Darker gradient on hover */
     transform: scale(1.05); /* Scale effect */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Shadow effect */
-}
+  }
+  
