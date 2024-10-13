@@ -51,7 +51,7 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let property">  
-              <a [routerLink]="['/account/my-properties', property.service.id]"mat-icon-button color="primary">
+              <a [routerLink]="['/account/my-properties', property.bookId]"mat-icon-button color="primary">
                   <mat-icon>info</mat-icon>
               </a>
            

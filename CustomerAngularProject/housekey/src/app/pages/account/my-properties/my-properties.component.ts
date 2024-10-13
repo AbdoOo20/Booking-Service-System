@@ -65,14 +65,13 @@ export class MyPropertiesComponent implements OnInit {
   }
 
   deleteBook(id: number): void {
-    const dialogRef= this.dialog.open(AlertDialogComponent, {
-      data: {
-        title: 'Confirm Deletion',
-        message: 'Are you sure you want to delete this book?'
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+    // const dialogRef= this.dialog.open(AlertDialogComponent, {
+    //   data: {
+    //     title: 'Confirm Deletion',
+    //     message: 'Are you sure you want to delete this book?'
+    //   }
+    // });
+    if (confirm('Are you sure you want to delete this item?')){
         this._allBookingService.deleteBooking(id).subscribe({
           next: () => {
             // Remove the deleted item from the local array
@@ -84,8 +83,7 @@ export class MyPropertiesComponent implements OnInit {
             alert('Failed to delete item.');
           }
         });
-      }
-    });
+    }
   }
 
   public initDataSource(data: CustomerBookings[]) {
