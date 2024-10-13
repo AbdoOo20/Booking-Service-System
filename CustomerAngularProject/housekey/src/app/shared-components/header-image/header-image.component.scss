@@ -1,5 +1,15 @@
 @import "../../theme/styles/variables";
-
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
 .header-image-wrapper {
     position: relative;
     overflow: hidden;
@@ -14,11 +24,13 @@
 
         &.offset-bottom {
             padding-bottom: $main-content-header-offset-to-top;
-            min-height: $header-image-min-height + $main-content-header-offset-to-top;
+            min-height: $header-image-min-height +
+                $main-content-header-offset-to-top;
         }
 
         &.home-page {
-            min-height: $header-image-min-height + $main-content-header-offset-to-top + 80px;
+            min-height: $header-image-min-height +
+                $main-content-header-offset-to-top + 80px;
         }
 
         .title {
@@ -203,11 +215,13 @@
             min-height: $header-image-min-height - 80px;
 
             &.offset-bottom {
-                min-height: $header-image-min-height + $main-content-header-offset-to-top - 80px;
+                min-height: $header-image-min-height +
+                    $main-content-header-offset-to-top - 80px;
             }
 
             &.home-page {
-                min-height: $header-image-min-height + $main-content-header-offset-to-top;
+                min-height: $header-image-min-height +
+                    $main-content-header-offset-to-top;
             }
 
             .title {
@@ -228,11 +242,13 @@
             min-height: $header-image-min-height - 40px;
 
             &.offset-bottom {
-                min-height: $header-image-min-height + $main-content-header-offset-to-top - 40px;
+                min-height: $header-image-min-height +
+                    $main-content-header-offset-to-top - 40px;
             }
 
             &.home-page {
-                min-height: $header-image-min-height + $main-content-header-offset-to-top + 40px;
+                min-height: $header-image-min-height +
+                    $main-content-header-offset-to-top + 40px;
             }
 
             .title {

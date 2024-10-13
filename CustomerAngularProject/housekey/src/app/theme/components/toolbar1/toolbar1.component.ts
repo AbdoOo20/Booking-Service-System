@@ -15,6 +15,7 @@ import { RouterModule } from "@angular/router";
 import { FlexLayoutModule } from "@ngbracket/ngx-layout";
 import { MatButtonModule } from "@angular/material/button";
 import { DecodingTokenService } from "@services/decoding-token.service";
+import { AuthServiceService } from "@services/auth-service.service";
 
 @Component({
     selector: "app-toolbar1",
@@ -40,11 +41,17 @@ import { DecodingTokenService } from "@services/decoding-token.service";
 })
 export class Toolbar1Component implements OnInit {
     token = localStorage.getItem("token");
+    isLoggedIn: boolean = false;
     @Output() onMenuIconClick: EventEmitter<any> = new EventEmitter<any>();
-    constructor(public appService: AppService) {}
+    constructor(
+        public appService: AppService,
+        private authService: AuthServiceService
+    ) {}
 
     ngOnInit() {
-        console.log(this.token);
+        this.authService.isLoggedIn$.subscribe((status) => {
+            this.isLoggedIn = status;
+        });
     }
 
     public sidenavToggle() {
