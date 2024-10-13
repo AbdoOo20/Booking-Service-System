@@ -25,6 +25,7 @@ import { CurrencyPipe, DatePipe } from "@angular/common";
 import { RatingComponent } from "@shared-components/rating/rating.component";
 import { ServicesService } from "@services/services.service";
 import { Service } from "../../common/interfaces/service";
+import { DecodingTokenService } from "@services/decoding-token.service";
 
 @Component({
     selector: "app-property-item",
@@ -40,7 +41,7 @@ import { Service } from "../../common/interfaces/service";
         RatingComponent,
         DatePipe,
     ],
-    providers: [ServicesService],
+    providers: [ServicesService,DecodingTokenService],
     templateUrl: "./property-item.component.html",
     styleUrls: ["./property-item.component.scss"],
 })
@@ -51,6 +52,7 @@ export class PropertyItemComponent implements OnInit {
     @Input() viewColChanged: number = 0;
     @Input() fullWidthPage: boolean = true;
     public column: number = 4;
+    public customerid:string;
     @ViewChild(SwiperDirective) directiveRef: SwiperDirective;
     public config: SwiperConfigInterface = {};
     private pagination: SwiperPaginationInterface = {
@@ -58,13 +60,16 @@ export class PropertyItemComponent implements OnInit {
         clickable: true,
     };
     public settings: Settings;
+    public Services_WishList: any;
     constructor(
         public settingsService: SettingsService,
         public appService: AppService,
         public cdr: ChangeDetectorRef,
-        public myServ: ServicesService
+        public myServ: ServicesService,
+        public decodingCustomerID:DecodingTokenService
     ) {
         this.settings = this.settingsService.settings;
+        this.customerid=this.decodingCustomerID.getUserIdFromToken();
     }
     // My Function
     public getImageUrl(imagePath: string): string {
@@ -164,11 +169,33 @@ export class PropertyItemComponent implements OnInit {
     public addToFavorites() {
         this.myServ.addToFavorites(
             this.service,
-            this.settings.rtl ? "rtl" : "ltr" , ''     //customerId 
+            this.settings.rtl ? "rtl" : "ltr" , this.customerid    //customerId 
         );
     }
 
     public onFavorites() {
-      //  return this.appService.ApI_Add_to_wishList.(item => item.id == this.service.id)[0];
+        this.Services_WishList=this.myServ.getAllServicesInWishList(this.customerid) ;
+
+        // Assuming getAllServicesInWishList is asynchronous and returns a Promise or Observable
+        this.myServ.getAllServicesInWishList(this.customerid).subscribe((services) => {
+          this.Services_WishList = services;
+      
+          // Check if this.service.id is already in the wishlist
+          const isInWishlist = this.Services_WishList.some(servWish => servWish.Id === this.service.id);
+      
+          if (isInWishlist) {
+            // Service is already in the wishlist, handle accordingly (e.g., update UI)
+            console.log('Service is already in wishlist:', this.service.id);
+            
+            // Example: Update UI or set a flag
+          } else {
+            // Service is not in the wishlist
+            console.log('Service is not in wishlist:', this.service.id);
+            // Example: Handle adding to wishlist logic
+          }
+        }, (error) => {
+          console.error('Failed to fetch wishlist services:', error);
+          // Handle error scenario if needed
+        });
     }
 }

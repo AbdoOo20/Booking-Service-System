@@ -2,7 +2,7 @@ export class wishList {
     customerId : string ;
     serviceId: number;
 
-    constructor(CustomerID : string , serviceID : number ){
-        this.customerId = CustomerID ;
+    constructor(serviceID : number , customerId : string ){
+        this.customerId = customerId ;
         this.serviceId = serviceID;
     } }

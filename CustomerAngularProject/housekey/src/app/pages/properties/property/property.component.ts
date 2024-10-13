@@ -49,6 +49,7 @@ import { AllBookingsService } from "@services/all-bookings.service";
 import { ReviewServiceService } from "@services/review-service.service";
 import { ReviewFormComponent } from "../ReviewForm/review-form.component";
 import { ReviewsComponent } from "../Reviews/reviews.component";
+import { DecodingTokenService } from "@services/decoding-token.service";
 
 @Component({
     selector: "app-property",
@@ -78,7 +79,7 @@ import { ReviewsComponent } from "../Reviews/reviews.component";
     ],
     templateUrl: "./property.component.html",
     styleUrl: "./property.component.scss",
-    providers: [EmbedVideoService,AllBookingsService,ReviewServiceService],
+    providers: [EmbedVideoService,AllBookingsService,ReviewServiceService,DecodingTokenService],
 })
 export class PropertyComponent implements OnInit {
     @ViewChild("sidenav") sidenav: any;
@@ -103,6 +104,8 @@ export class PropertyComponent implements OnInit {
     public provider: provider;
     public allBookings:any[];
     public rev :any;
+    public Services_WishList :any;
+    public customerId:string;
     mapOptions: google.maps.MapOptions = {
         mapTypeControl: true,
         fullscreenControl: true,
@@ -119,10 +122,12 @@ export class PropertyComponent implements OnInit {
         public fb: FormBuilder,
         private domHandlerService: DomHandlerService,   
         public bookservice:AllBookingsService,          //bookingService
-        public ReviewService:ReviewServiceService       //ReviewService
+        public ReviewService:ReviewServiceService,       //ReviewService
+        public DecodingCustomerID : DecodingTokenService
 
     ) {
         this.settings = this.settingsService.settings;
+        this.customerId=this.DecodingCustomerID.getUserIdFromToken();;
     }
 
     ngOnInit() {
@@ -299,12 +304,36 @@ export class PropertyComponent implements OnInit {
         )[0];
     }
 
+
+
     public addToFavorites() {
-        this.myServ.addToFavoritesInServiceDetails(this.service, (this.settings.rtl) ? 'rtl' : 'ltr',"");
+        this.myServ.addToFavoritesInServiceDetails(this.service, (this.settings.rtl) ? 'rtl' : 'ltr',this.customerId);
       }
     
       public onFavorites() {
-       // return this.appService.ApI_Add_to_wishList.(item => item.id == this.service.id)[0];
+        this.Services_WishList=this.myServ.getAllServicesInWishList(this.customerId) ;
+
+        // Assuming getAllServicesInWishList is asynchronous and returns a Promise or Observable
+        this.myServ.getAllServicesInWishList(this.customerId).subscribe((services) => {
+          this.Services_WishList = services;
+      
+          // Check if this.service.id is already in the wishlist
+          const isInWishlist = this.Services_WishList.some(servWish => servWish.Id === this.service.id);
+      
+          if (isInWishlist) {
+            // Service is already in the wishlist, handle accordingly (e.g., update UI)
+            console.log('Service is already in wishlist:', this.service.id);
+            
+            // Example: Update UI or set a flag
+          } else {
+            // Service is not in the wishlist
+            console.log('Service is not in wishlist:', this.service.id);
+            // Example: Handle adding to wishlist logic
+          }
+        }, (error) => {
+          console.error('Failed to fetch wishlist services:', error);
+          // Handle error scenario if needed
+        });
       }
     
 
@@ -367,11 +396,13 @@ export class PropertyComponent implements OnInit {
 
 
     checkForReview(){
-      this.allBookings.push(this.bookservice.getBooking('customerId'));   //customerID must be added from token
+        this.customerId = this.DecodingCustomerID.getUserIdFromToken();
+      // this.customerId="529d93df-bcdd-4b22-8f71-dd355f994798"
+      this.allBookings.push(this.bookservice.getBooking(this.customerId));   //customerID must be added from token
       for (const booking of this.allBookings) {
         console.log(booking); 
         if(booking.serviceId==this.service.id){
-            this.rev= this.ReviewService.getReview(booking.id,'customerId');     //customerId from token
+            this.rev= this.ReviewService.getReview(booking.id,this.customerId);     //customerId from token
            
          }
 
