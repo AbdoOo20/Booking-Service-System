@@ -417,48 +417,67 @@
 
 </mat-drawer-container> -->
 
-
-
 <mat-drawer-container class="landing-page">
     <div class="header-bar">
         <!-- Logo section on the left -->
         <div class="logo-section">
-            <img src="https://lily-night.com/wp-content/uploads/2024/08/%D9%84%D9%8A%D9%84%D9%8A%D9%87-.png" alt="Logo" class="logo">
+            <img
+                src="https://lily-night.com/wp-content/uploads/2024/08/%D9%84%D9%8A%D9%84%D9%8A%D9%87-.png"
+                alt="Logo"
+                class="logo"
+            />
         </div>
-    
+
         <!-- Dropdowns for Customer and Provider on the right -->
         <div class="nav-buttons">
             <!-- Customer Dropdown -->
             <div class="dropdown">
-                <button mat-raised-button class="custom-button">Customer</button>
+                <button mat-raised-button class="custom-button">
+                    Customer
+                </button>
                 <div class="dropdown-content">
-                    <button mat-button (click)="navigateToCustomerLogin()">Login</button>
-                    <button mat-button (click)="navigateToCustomerRegister()">Register</button>
+                    <button mat-button (click)="navigateToCustomerLogin()">
+                        Login
+                    </button>
+                    <button mat-button (click)="navigateToCustomerRegister()">
+                        Register
+                    </button>
                 </div>
             </div>
-    
+
             <!-- Provider Dropdown -->
             <div class="dropdown">
-                <button mat-raised-button class="custom-button">Provider</button>
+                <button mat-raised-button class="custom-button">
+                    Provider
+                </button>
                 <div class="dropdown-content">
-                    <button mat-button (click)="navigateToProviderLogin()">Login</button>
-                    <button mat-button (click)="navigateToProviderRegister()">Register</button>
+                    <button mat-button (click)="navigateToProviderLogin()">
+                        Login
+                    </button>
+                    <button mat-button (click)="navigateToProviderRegister()">
+                        Register
+                    </button>
                 </div>
             </div>
         </div>
-    </div>    
-    
+    </div>
+
     <div class="video-section">
         <video autoplay muted loop class="fullscreen-video">
-            <source src="https://videos.files.wordpress.com/im1QP0gk/pexels-edtor-e385a4-13145342-1440p.mp4" type="video/mp4">
+            <source
+                src="https://videos.files.wordpress.com/im1QP0gk/pexels-edtor-e385a4-13145342-1440p.mp4"
+                type="video/mp4"
+            />
             Your browser does not support the video tag.
         </video>
 
         <div class="overlay-content">
-            <h1 class="landing-message">We are here to turn every special moment into a cherished, unforgettable memory, creating experiences that last a lifetime.</h1>
+            <h1 class="landing-message">
+                We are here to turn every special moment into a cherished,
+                unforgettable memory, creating experiences that last a lifetime.
+            </h1>
         </div>
     </div>
-
 
     <div id="our-services">
         <app-our-services></app-our-services>
