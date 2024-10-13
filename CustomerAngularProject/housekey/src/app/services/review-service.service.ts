@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AllBookingsService } from './all-bookings.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReviewServiceService {
 private readonly reviews_API="http://localhost:18105/api/Reviews";
-private readonly  API_GetServicebyID = "http://localhost:18105/api/Services/";
+
 
   constructor(public http:HttpClient) { }
 
