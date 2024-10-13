@@ -34,10 +34,16 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let property; columns: displayedColumns;"></tr>
-    </table> 
-      <button (click)="navigateToPaymentPage()" mat-raised-button color="primary" [disabled]="bookingStatus !== 'Pending'">
-        {{ bookingStatus === 'Pending' ? 'Pay' : 'Finshied' }}
+    </table>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <button (click)="navigateToPaymentPage()" mat-raised-button color="primary" 
+      [disabled]="bookingStatus !== 'Pending'"
+      style="width: 200px; height: 50px;">
+      {{ bookingStatus === 'Pending' ? 'Pay' : (bookingStatus === 'Canceled' ? 'Canceled' : 'Finished') }}
       </button>
+    </div>
+    
     @if (!dataSource?.data.length ) {
         <p class="py-5 mb-0 text-center">No data available</p> 
     }   
