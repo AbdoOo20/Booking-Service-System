@@ -40,6 +40,11 @@ namespace CusromerProject.Controllers
             if (ModelState.IsValid)
             {
                 IdentityUser user = await _userManager.FindByNameAsync(loginDTO.UserName);
+                if (!User.IsInRole("Customer"))
+                {
+                    ModelState.AddModelError("User Role", "This user not found");
+                    return BadRequest(ModelState);
+                }
 
                 bool isBlocked = (from C in context.Customers
                                   where C.CustomerId == user.Id
