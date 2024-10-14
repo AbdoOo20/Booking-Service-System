@@ -69,42 +69,7 @@ export class LoginComponent implements OnInit {
       rememberMe: [false]
     });
 
-        // Check if there's already a token in localStorage (user might be logged in)
-        // const existingToken = localStorage.getItem('token');
-        // if (existingToken) {
-        //   this.autoLoginWithToken(existingToken);
-        // }
-    }
-
-    // Automatically log in using the token if available
-    // autoLoginWithToken(token: string) {
-    //   // Assuming your API supports checking tokens for existing login
-    //   this.http.post('http://localhost:5285/api/Account/ValidateToken', { token }).subscribe({
-    //     next: (response: any) => {
-    //       if (response.isValid) {
-    //         // If token is valid, navigate to the home page
-    //         this.router.navigate(['/home']);
-    //       } else {
-    //         // If token is invalid, clear it and show message
-    //         localStorage.removeItem('token');
-    //         this.snackBar.open('Your session has expired. Please login again.', '×', {
-    //           panelClass: 'error',
-    //           verticalPosition: 'top',
-    //           duration: 3000
-    //         });
-    //       }
-    //     },
-    //     error: () => {
-    //       localStorage.removeItem('token');
-    //       this.snackBar.open('Failed to validate your session. Please login again.', '×', {
-    //         panelClass: 'error',
-    //         verticalPosition: 'top',
-    //         duration: 3000
-    //       });
-    //     }
-    //   });
-    // }
-
+}
     // Handle form submission
     onLoginFormSubmit() {
         if (this.loginForm.invalid) {
@@ -128,7 +93,7 @@ export class LoginComponent implements OnInit {
 
         // Call the API for login
         this.http
-            .post("http://localhost:18105/api/Account/Login", loginData)
+            .post("http://localhost:5285/api/Account/Login", loginData)
             .subscribe({
                 next: (response: any) => {
                     if (response.token) {
