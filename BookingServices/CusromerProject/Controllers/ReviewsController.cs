@@ -17,11 +17,11 @@ namespace CusromerProject.Controllers
         }
 
         // GET: api/Reviews/{customerId}/{bookingId}
-        [HttpGet("{customerId}/{bookingId}")]
-        [Authorize]
-        public async Task<ActionResult<ReviewDTO>> GetReview(string customerId, int bookingId)
+        [HttpGet("{customerId}")]
+       // [Authorize]
+        public async Task<ActionResult<ReviewDTO>> GetReview(string customerId)
         {
-            var result = await _reviewRepository.GetReviewByIdAsync(customerId, bookingId);
+            var result = await _reviewRepository.GetReviewByIdAsync(customerId);
 
             if (!result.IsSuccess)
             {
@@ -33,7 +33,7 @@ namespace CusromerProject.Controllers
 
         // POST: api/Reviews
         [HttpPost]
-        [Authorize]
+      //  [Authorize]
         public async Task<ActionResult<bool>> PostReview(PostedReviewDTO review)
         {
             var result = await _reviewRepository.AddReviewAsync(review);
