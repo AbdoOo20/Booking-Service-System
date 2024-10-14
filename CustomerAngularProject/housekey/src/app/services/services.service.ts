@@ -37,11 +37,12 @@ export class ServicesService {
     LOCATION_URL =
         "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
     Booking_SRV_URL = "http://localhost:18105/api/Book";
+    CUSTOMER_API = "http://localhost:18105/api/Customer/";
     // Basma Code
     API_GetServicebyID = "http://localhost:18105/api/Services/";
     ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
     API_getAgents = "";
-    API_get_allWishList="http://localhost:18105/api/wishlist/";
+    API_get_allWishList = "http://localhost:18105/api/wishlist/";
     Favourite_service: wishList;
 
     constructor(
@@ -53,8 +54,7 @@ export class ServicesService {
         private domHandlerService: DomHandlerService
     ) {}
 
-
-  /*  getServiceById(id: number) {
+    /*  getServiceById(id: number) {
         return this.http.get("http://localhost:18105/api/Services/" + id)
     }*/
 
@@ -168,7 +168,6 @@ export class ServicesService {
         }
     }
 
-  
     // Test Function
     GetAllFilterion(
         cat: string | null | undefined,
@@ -242,60 +241,88 @@ export class ServicesService {
     }
 
     // Basma Code
-    public addToFavorites(service:Service, direction: any ,CustomerID : string) {
-        this.Favourite_service = new wishList (service.id,CustomerID);
-           
-        this.http.post(this.ApI_Add_to_wishList, this.Favourite_service)
-        .subscribe(
-          (response) => {
-            // Success: Show a success message using snackbar
-            this.snackBar.open('The Service ' + service.name + '" has been added to favorites.', '×', {
-              verticalPosition: 'top',
-              duration: 3000,
-              direction: direction
-            });
-          },
-          (error) => {
-            // Error: Handle the error case here, you can also show an error message
-            this.snackBar.open('Failed to add the property to favorites.', '×', {
-              verticalPosition: 'top',
-              duration: 3000,
-              direction: direction
-            });
-          }
-        );
-          
-         }
- 
-         public addToFavoritesInServiceDetails(service: ServiceDetails, direction: any ,CustomerID : string) {
-             this.Favourite_service = new wishList (service.id,CustomerID);
-                
-             this.http.post(this.ApI_Add_to_wishList, this.Favourite_service)
-             .subscribe(
-               (response) => {
-                 // Success: Show a success message using snackbar
-                 this.snackBar.open('The property "' + service.name + '" has been added to favorites.', '×', {
-                   verticalPosition: 'top',
-                   duration: 3000,
-                   direction: direction
-                 });
-               },
-               (error) => {
-                 // Error: Handle the error case here, you can also show an error message
-                 this.snackBar.open('Failed to add the property to favorites.', '×', {
-                   verticalPosition: 'top',
-                   duration: 3000,
-                   direction: direction
-                 });
-               }
-             );
-               
-              }
-            //to get services in the wish List
-           getAllServicesInWishList(customerid:string){
-               return this.http.get(this.API_get_allWishList+"/"+customerid);
-              }
-              
+    public addToFavorites(
+        service: Service,
+        direction: any,
+        CustomerID: string
+    ) {
+        this.Favourite_service = new wishList(service.id, CustomerID);
+
+        this.http
+            .post(this.ApI_Add_to_wishList, this.Favourite_service)
+            .subscribe(
+                (response) => {
+                    // Success: Show a success message using snackbar
+                    this.snackBar.open(
+                        "The Service " +
+                            service.name +
+                            '" has been added to favorites.',
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                },
+                (error) => {
+                    // Error: Handle the error case here, you can also show an error message
+                    this.snackBar.open(
+                        "Failed to add the property to favorites.",
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                }
+            );
+    }
+
+    public addToFavoritesInServiceDetails(
+        service: ServiceDetails,
+        direction: any,
+        CustomerID: string
+    ) {
+        this.Favourite_service = new wishList(service.id, CustomerID);
+
+        this.http
+            .post(this.ApI_Add_to_wishList, this.Favourite_service)
+            .subscribe(
+                (response) => {
+                    // Success: Show a success message using snackbar
+                    this.snackBar.open(
+                        'The property "' +
+                            service.name +
+                            '" has been added to favorites.',
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                },
+                (error) => {
+                    // Error: Handle the error case here, you can also show an error message
+                    this.snackBar.open(
+                        "Failed to add the property to favorites.",
+                        "×",
+                        {
+                            verticalPosition: "top",
+                            duration: 3000,
+                            direction: direction,
+                        }
+                    );
+                }
+            );
+    }
+    //to get services in the wish List
+    getAllServicesInWishList(customerid: string) {
+        return this.http.get(this.API_get_allWishList + "/" + customerid);
+    }
+
     getPropertyById(id: number): Observable<ServiceDetails> {
         return this.http.get<ServiceDetails>(
             this.API_GetServicebyID + "/" + id
@@ -339,6 +366,9 @@ export class ServicesService {
                 totalPages: totalPages,
             },
         };
+    }
+    public getCustomerByID(id: string): Observable<any> {
+        return this.http.get<any>(this.CUSTOMER_API + id);
     }
     public getAgents(): Agent[] {
         return [

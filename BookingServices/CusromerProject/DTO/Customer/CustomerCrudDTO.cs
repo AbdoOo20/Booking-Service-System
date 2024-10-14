@@ -21,11 +21,9 @@ namespace CusromerProject.DTO.Customer
         [Required(ErrorMessage = "AlternativePhone Is Required")]
         [RegularExpression(@"^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$",
         ErrorMessage = "Invalid Saudi phone number")]
-        [UniquePhone]
         public string AlternativePhone { get; set; }
         [Required(ErrorMessage = "SSN Is Required")]
         [RegularExpression(@"^[12]\d{9}$", ErrorMessage = "Invalid Saudi SSN number")]
-        [UniqueSSN]
         public string SSN { get; set; }
         [Required(ErrorMessage = "City Is Required")]
         public string City { get; set; }

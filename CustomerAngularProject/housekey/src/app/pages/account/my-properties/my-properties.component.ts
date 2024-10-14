@@ -14,6 +14,7 @@ import { AllBookingsService } from '@services/all-bookings.service';
 import { DecodingTokenService } from '@services/decoding-token.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertDialogComponent } from '@shared-components/alert-dialog/alert-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogModel } from '@shared-components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-my-properties',
@@ -49,14 +50,11 @@ export class MyPropertiesComponent implements OnInit {
   }
 
   ngOnInit() {
-    const decodedToken = this.decodeService.getUserIdFromToken();
-    console.log(decodedToken);
-    
+    const decodedToken = this.decodeService.getUserIdFromToken();   
     this._allBookingService.getBookingWithService(decodedToken).subscribe({
       next:(res) => {
         this.customerBookings = res;
         this.initDataSource(this.customerBookings);   
-        console.log(res);
       },
       error:(error) => {
         console.error('Error fetching customer bookings', error);
@@ -65,25 +63,34 @@ export class MyPropertiesComponent implements OnInit {
   }
 
   deleteBook(id: number): void {
-    // const dialogRef= this.dialog.open(AlertDialogComponent, {
-    //   data: {
-    //     title: 'Confirm Deletion',
-    //     message: 'Are you sure you want to delete this book?'
-    //   }
-    // });
-    if (confirm('Are you sure you want to delete this item?')){
+    const dialogData = new ConfirmDialogModel('Confirm Cancelation', 'Are you sure you want to cancel this book?');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: "800px",
+      data: dialogData
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Dialog result:', result);
+      if (result === true){
+        console.log(result);
         this._allBookingService.deleteBooking(id).subscribe({
           next: () => {
             // Remove the deleted item from the local array
             this.customerBookings = this.customerBookings.filter(item => item.bookId !== id);
-            alert('Item deleted successfully.');
+            this.dialog.open(AlertDialogComponent, {
+              maxWidth: "500px",
+              data: 'Item deleted successfully.'
+            });
           },
           error: (err) => {
             console.error('Error deleting item', err);
-            alert('Failed to delete item.');
+            this.dialog.open(AlertDialogComponent, {
+              maxWidth: "500px",
+              data: 'Failed to cancel item.'
+            });
           }
         });
-    }
+      }
+    });
   }
 
   public initDataSource(data: CustomerBookings[]) {

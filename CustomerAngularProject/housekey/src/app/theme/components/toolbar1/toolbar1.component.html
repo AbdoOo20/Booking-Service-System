@@ -21,7 +21,7 @@
         <div fxLayout="row" fxLayoutAlign="end center" class="">
             <!-- <app-currency></app-currency> -->
             <!-- <app-lang></app-lang> -->
-            @if(token){
+            @if(isLoggedIn){
             <app-user-menu></app-user-menu>
             }@else {
             <span fxLayoutAlign="center center" class="item">

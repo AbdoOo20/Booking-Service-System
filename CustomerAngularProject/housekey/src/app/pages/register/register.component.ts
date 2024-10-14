@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FlexLayoutModule } from '@ngbracket/ngx-layout';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
@@ -25,7 +26,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
     MatButtonModule,
     MatSlideToggleModule,
     FlexLayoutModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    CommonModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
@@ -57,8 +59,11 @@ export class RegisterComponent implements OnInit {
         ]
       ],
       username: [
-        '',
-        Validators.required
+        '',[
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(100)
+      ]
       ],
       email: [
         '',
@@ -89,23 +94,42 @@ export class RegisterComponent implements OnInit {
         ]
       ],
       city: [
-        '',
-        Validators.required
+        '',[
+        Validators.required,
+        Validators.minLength(3)]
       ],
       password: [
-        '',
-        Validators.required
-      ],
+        '',[
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/)
+      ]],
       confirmPassword: [
-        '',
-        Validators.required
-      ]
+        '',[
+        Validators.required,
+      ]]
     }, { validator: this.passwordMatchValidator });
   }
 
-  passwordMatchValidator(form: FormGroup) {
-    return form.controls['password'].value === form.controls['confirmPassword'].value
-      ? null : { 'mismatchedPasswords': true };
+  
+  // passwordMatchValidator(form: FormGroup) {
+  //   return form.controls['password'].value === form.controls['confirmPassword'].value
+  //     ? null : { 'mismatchedPasswords': true };
+  // }
+
+  passwordMatchValidator(formGroup: FormGroup) {
+    const password = formGroup.get('password');
+    const confirmPassword = formGroup.get('confirmPassword');
+
+    if (confirmPassword?.errors && !confirmPassword.errors['passwordMismatch']) {
+      return; // If another error already exists, skip further checks
+    }
+
+    if (password?.value !== confirmPassword?.value) {
+      confirmPassword?.setErrors({ passwordMismatch: true });
+    } else {
+      confirmPassword?.setErrors(null); // Clear error if passwords match
+    }
   }
 
   getErrorMessage(field: string) {
@@ -128,8 +152,10 @@ export class RegisterComponent implements OnInit {
       if (field === 'email') return 'Invalid email address';
       if (field === 'phone' || field === 'alternativePhone') return 'Invalid Saudi phone number';
       if (field === 'ssn') return 'Invalid Saudi SSN number';
+      if (field === 'password') return 'Password must contain uppercase, lowercase letters, digits, and special characters';
+
     }
-    if (field === 'confirmPassword' && control?.hasError('mismatchedPasswords')) {
+    if (control?.hasError('passwordMismatch')) {
       return 'Passwords do not match';
     }
     return '';
@@ -171,7 +197,7 @@ export class RegisterComponent implements OnInit {
         });
         setTimeout(() => {
           this.router.navigate(['/login']);  // Redirect after a delay
-        }, 3000); // 3 seconds delay
+        }, 5000); // 3 seconds delay
       },
       (error: HttpErrorResponse) => {
         console.error('API Error:', error);

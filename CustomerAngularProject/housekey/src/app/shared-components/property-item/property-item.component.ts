@@ -41,7 +41,7 @@ import { DecodingTokenService } from "@services/decoding-token.service";
         RatingComponent,
         DatePipe,
     ],
-    providers: [ServicesService,DecodingTokenService],
+    providers: [ServicesService, DecodingTokenService],
     templateUrl: "./property-item.component.html",
     styleUrls: ["./property-item.component.scss"],
 })
@@ -52,7 +52,7 @@ export class PropertyItemComponent implements OnInit {
     @Input() viewColChanged: number = 0;
     @Input() fullWidthPage: boolean = true;
     public column: number = 4;
-    public customerid:string;
+    public customerid: string;
     @ViewChild(SwiperDirective) directiveRef: SwiperDirective;
     public config: SwiperConfigInterface = {};
     private pagination: SwiperPaginationInterface = {
@@ -66,10 +66,10 @@ export class PropertyItemComponent implements OnInit {
         public appService: AppService,
         public cdr: ChangeDetectorRef,
         public myServ: ServicesService,
-        public decodingCustomerID:DecodingTokenService
+        public decodingCustomerID: DecodingTokenService
     ) {
         this.settings = this.settingsService.settings;
-        this.customerid=this.decodingCustomerID.getUserIdFromToken();
+        this.customerid = this.decodingCustomerID.getUserIdFromToken();
     }
     // My Function
     public getImageUrl(imagePath: string): string {
@@ -101,9 +101,9 @@ export class PropertyItemComponent implements OnInit {
         if (changes.viewColChanged) {
             this.getColumnCount(changes.viewColChanged.currentValue);
             if (!changes.viewColChanged.isFirstChange()) {
-                if (this.property.gallery.length > 1) {
-                    this.directiveRef.update();
-                }
+                // if (this.property.gallery.length > 1) {
+                //     this.directiveRef.update();
+                // }
             }
         }
 
@@ -169,7 +169,8 @@ export class PropertyItemComponent implements OnInit {
     public addToFavorites() {
         this.myServ.addToFavorites(
             this.service,
-            this.settings.rtl ? "rtl" : "ltr" , this.customerid    //customerId 
+            this.settings.rtl ? "rtl" : "ltr",
+            this.customerid //customerId
         );
     }
 
@@ -179,14 +180,14 @@ export class PropertyItemComponent implements OnInit {
     //     // Assuming getAllServicesInWishList is asynchronous and returns a Promise or Observable
     //     this.myServ.getAllServicesInWishList(this.customerid).subscribe((services) => {
     //       this.Services_WishList = services;
-      
+
     //       // Check if this.service.id is already in the wishlist
     //       const isInWishlist = this.Services_WishList.some(servWish => servWish.Id === this.service.id);
-      
+
     //       if (isInWishlist) {
     //         // Service is already in the wishlist, handle accordingly (e.g., update UI)
     //         console.log('Service is already in wishlist:', this.service.id);
-            
+
     //         // Example: Update UI or set a flag
     //       } else {
     //         // Service is not in the wishlist

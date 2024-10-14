@@ -8,7 +8,7 @@ import { FlexLayoutModule } from '@ngbracket/ngx-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { UserService } from '../profile/user.service';
 import { CommonModule } from '@angular/common';
-
+import { DecodingTokenService } from '@services/decoding-token.service';
 
 @Component({
   selector: 'app-profile',
@@ -32,24 +32,30 @@ export class ProfileComponent implements OnInit {
   constructor(
     public formBuilder: FormBuilder,
     public snackBar: MatSnackBar,
-    private userService: UserService
+    private userService: UserService,
+    private DecodeService: DecodingTokenService,
   ) { }
 
   ngOnInit() {
     this.property = {
-      customerId:'3'
-    
+      customerId: this.DecodeService.getUserIdFromToken(),
     };
-    
+
     this.infoForm = this.formBuilder.group({
-      customerId: '3',
+      customerId: this.DecodeService.getUserIdFromToken(),
       name: ['', Validators.compose([Validators.required, Validators.minLength(3)])],
       email: ['', Validators.compose([
         Validators.required,
         Validators.pattern('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')  // Email regex pattern
       ])],
       city: ['', Validators.compose([Validators.required, Validators.minLength(3)])],
-      ssn: ['', Validators.compose([Validators.required, Validators.minLength(14), Validators.maxLength(14)])],
+      ssn: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[12]\d{9}$/)
+        ]
+      ],
       phone: ['', Validators.compose([
         Validators.required,
         Validators.pattern('^(009665|9665|\\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$') // Phone regex pattern
@@ -57,8 +63,8 @@ export class ProfileComponent implements OnInit {
       alternativePhone: ['', Validators.compose([
         Validators.required,
         Validators.pattern('^(009665|9665|\\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$') // Phone regex pattern
-      ])]
-      // bankAccountEmail: ['', Validators.compose([Validators.required, Validators.pattern('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')])] // Update balance to bank account email
+      ])],
+      bankAccount: ['', Validators.compose([Validators.required, Validators.pattern('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')])] // Update balance to bank account email
     });
 
     this.passwordForm = this.formBuilder.group({
@@ -72,10 +78,11 @@ export class ProfileComponent implements OnInit {
   }
 
   private loadUserData(): void {
-    this.userService.getUserData().subscribe(
+    this.userService.getUserData(this.DecodeService.getUserIdFromToken()).subscribe(
       (data) => {
-        // Fill the form with user data
         this.infoForm.patchValue(data);
+        console.log(data);
+
       },
       (error) => {
         this.snackBar.open('Failed to load user data!', '×', { duration: 3000, panelClass: 'error' });
@@ -91,45 +98,52 @@ export class ProfileComponent implements OnInit {
   //  console.log("Error during update:", error); // إضافة هذا السطر
   //  this.snackBar.open('فشل في تحديث بيانات المستخدم!', '×', { duration: 3000, panelClass: 'error' });
   // }
-  private updateUserData(): void {
-    console.log(this.infoForm);
-
-    this.userService.updateCustomerData('3', this.infoForm.value).subscribe(
-
-      // إضافة دالة لتحديث بيانات المستخدم
-      (response) => {
-        this.snackBar.open('successfully updated!', '✓', { duration: 3000 });
-      },
-      (error) => {
-        console.log("Error during update:", error); // إضافة هذا السطر
-        this.snackBar.open('Failed to update !', '×', { duration: 3000, panelClass: 'error' });
-
-
-      }
-
-
-    );
-  }
-
 
   public onInfoFormSubmit(values: any): void {
-    if (this.infoForm.valid) {
-      console.log("Submitting data:", this.infoForm.value); // إضافة هذا السطر
-      this.updateUserData();
+    if (values) {
+      console.log("Submitting data:", values); // إضافة هذا السطر
+      this.updateUserData(this.DecodeService.getUserIdFromToken(), values);
     } else {
       console.log("Form is invalid:", this.infoForm.errors); // إضافة هذا السطر
     }
   }
+  private updateUserData(id: string, data: any): void {
+    console.log(data);
+    this.userService.updateCustomerData(id, data).subscribe(
+      // إضافة دالة لتحديث بيانات المستخدم
+      (response) => {
+        this.snackBar.open('successfully updated!', '✓', { duration: 3000 });
+        console.log(response);
+      },
+      (error) => {
+        console.log("Error during update:", error); // إضافة هذا السطر
+        this.snackBar.open('Failed to update !', '×', { duration: 3000, panelClass: 'error' });
+      }
+    );
+  }
+
 
 
   public onPasswordFormSubmit(values: any): void {
-    if (this.passwordForm.valid) {
-      this.userService.changePassword(values).subscribe(
+    if (values) {
+      const data = {
+        customerId: this.DecodeService.getUserIdFromToken(),
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+        confirmNewPassword: values.confirmNewPassword
+      }
+      console.log(data);
+      
+      this.userService.changePassword(this.DecodeService.getUserIdFromToken(), data).subscribe(
         response => {
           this.snackBar.open('Password is Updated !', '×', { duration: 3000, panelClass: 'success' });
+          console.log(response);
+
         },
         error => {
           this.snackBar.open('Failed to change password!', '×', { duration: 3000, panelClass: 'error' });
+          console.log(error);
+
         }
       );
     }
@@ -149,5 +163,5 @@ export class ProfileComponent implements OnInit {
       }
     );
   }
-  
+
 }
