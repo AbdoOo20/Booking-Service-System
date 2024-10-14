@@ -101,9 +101,9 @@ export class PropertyItemComponent implements OnInit {
         if (changes.viewColChanged) {
             this.getColumnCount(changes.viewColChanged.currentValue);
             if (!changes.viewColChanged.isFirstChange()) {
-                if (this.property.gallery.length > 1) {
-                    this.directiveRef.update();
-                }
+                // if (this.property.gallery.length > 1) {
+                //     this.directiveRef.update();
+                // }
             }
         }
 

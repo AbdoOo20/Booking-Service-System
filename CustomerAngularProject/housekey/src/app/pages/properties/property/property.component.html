@@ -30,7 +30,7 @@
                 >
                     <mat-card class="p-3">
                         <div class="widget">
-                            @if (service.provider) {
+                            @if (service?.provider) {
                             <mat-card>
                                 <img src="images/avatars/av-provider.png" />
                                 <mat-card-content class="p-3">
@@ -299,7 +299,7 @@
 <div>
     <app-reviews [service]="service"></app-reviews>
 </div>
-} @if(service.relatedServices.length != 0){
+} @if(service?.relatedServices.length != 0){
 <div class="section mt-3">
     <div class="px-3">
         <div class="theme-container">
