@@ -64,7 +64,7 @@ export class ProfileComponent implements OnInit {
         Validators.required,
         Validators.pattern('^(009665|9665|\\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$') // Phone regex pattern
       ])],
-      bankAccountEmail: ['', Validators.compose([Validators.required, Validators.pattern('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')])] // Update balance to bank account email
+      bankAccount: ['', Validators.compose([Validators.required, Validators.pattern('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')])] // Update balance to bank account email
     });
 
     this.passwordForm = this.formBuilder.group({
@@ -80,8 +80,9 @@ export class ProfileComponent implements OnInit {
   private loadUserData(): void {
     this.userService.getUserData(this.DecodeService.getUserIdFromToken()).subscribe(
       (data) => {
-        // Fill the form with user data
         this.infoForm.patchValue(data);
+        console.log(data);
+
       },
       (error) => {
         this.snackBar.open('Failed to load user data!', '×', { duration: 3000, panelClass: 'error' });
@@ -101,17 +102,18 @@ export class ProfileComponent implements OnInit {
   public onInfoFormSubmit(values: any): void {
     if (values) {
       console.log("Submitting data:", values); // إضافة هذا السطر
-      this.updateUserData(this.DecodeService.getUserIdFromToken(),values);
+      this.updateUserData(this.DecodeService.getUserIdFromToken(), values);
     } else {
       console.log("Form is invalid:", this.infoForm.errors); // إضافة هذا السطر
     }
   }
-  private updateUserData(id:string , data: any): void {
+  private updateUserData(id: string, data: any): void {
     console.log(data);
     this.userService.updateCustomerData(id, data).subscribe(
       // إضافة دالة لتحديث بيانات المستخدم
       (response) => {
         this.snackBar.open('successfully updated!', '✓', { duration: 3000 });
+        console.log(response);
       },
       (error) => {
         console.log("Error during update:", error); // إضافة هذا السطر
@@ -124,12 +126,24 @@ export class ProfileComponent implements OnInit {
 
   public onPasswordFormSubmit(values: any): void {
     if (values) {
-      this.userService.changePassword(this.DecodeService.getUserIdFromToken(), values).subscribe(
+      const data = {
+        customerId: this.DecodeService.getUserIdFromToken(),
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+        confirmNewPassword: values.confirmNewPassword
+      }
+      console.log(data);
+      
+      this.userService.changePassword(this.DecodeService.getUserIdFromToken(), data).subscribe(
         response => {
           this.snackBar.open('Password is Updated !', '×', { duration: 3000, panelClass: 'success' });
+          console.log(response);
+
         },
         error => {
           this.snackBar.open('Failed to change password!', '×', { duration: 3000, panelClass: 'error' });
+          console.log(error);
+
         }
       );
     }

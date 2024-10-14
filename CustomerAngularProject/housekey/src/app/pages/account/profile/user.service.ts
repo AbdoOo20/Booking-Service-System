@@ -20,7 +20,7 @@ export class UserService {
   }
 
   changePassword(id: string, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}change-password${id}`, data);
+    return this.http.put(`${this.apiUrl}changePassword${id}`, data);
   }
 
   // user.service.ts
