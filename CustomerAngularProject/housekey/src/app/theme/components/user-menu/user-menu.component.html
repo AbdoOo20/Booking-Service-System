@@ -6,7 +6,7 @@
 >
     <mat-icon class="mat-icon-sm m-0">person</mat-icon>
     <span fxShow="false" fxShow.gt-sm class="mx-1 uppercase">{{
-        customer.name
+        customer?.name
     }}</span>
     <mat-icon class="mat-icon-sm caret" iconPositionEnd
         >arrow_drop_down</mat-icon
@@ -21,7 +21,7 @@
     <span (mouseleave)="userMenuTrigger.closeMenu()">
         <div fxLayout="row" fxLayoutAlign="start center" class="user-info">
             <img src="images/others/user.jpg" alt="user-image" width="50" />
-            <p class="m-0">{{ customer.name }}</p>
+            <p class="m-0">{{ customer?.name }}</p>
         </div>
         <div class="divider"></div>
         <a mat-menu-item routerLink="/account/profile">
