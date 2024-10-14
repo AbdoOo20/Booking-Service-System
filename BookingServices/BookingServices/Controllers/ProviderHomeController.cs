@@ -31,22 +31,21 @@ namespace BookingServices.Controllers
                 .Count();
             var packageCreatedCount = context.Packages.Where(p => p.ProviderId == userIdFromManager).Count();
             var TotalOfClicks = context.Links.Where(l => l.ProviderId == userIdFromManager).Sum(l => l.NumberOfClicks);
-            //var TotalMoneyService = context.BookingServices.Where(bs => bs.Service.ProviderId == userIdFromManager).
-            //Select(bs => bs.Booking);
-            var totalPaymentValue = context.BookingServices
-            .Where(bs => bs.Service.ProviderId == userIdFromManager)
-            .Join(context.Payments,
-                  bs => bs.BookingId,
-                  p => p.BookingId,
-                  (bs, p) => p.PaymentValue) 
-            .Sum();
+            var totalPaymentValue = context.Bookings
+                .Join(context.BookingServices, b => b.BookingId, bs => bs.BookingId, (b, bs) => new { b, bs })
+                .Join(context.Services, b_bs => b_bs.bs.ServiceId, s => s.ServiceId, (b_bs, s) => new { b_bs.b, s })
+                .Join(context.PaymentIncomes, b_s => b_s.b.PaymentIncomeId, p => p.PaymentIncomeId, (b_s, p) => new { b_s.b, b_s.s, p })
+                .Where(joined => joined.s.ProviderId == userIdFromManager && joined.b.Status == "Confirmed").Select(joined => joined.b.Price - (joined.b.Price * joined.p.Percentage / 100))
+                .Sum();
+           string formattedValue = totalPaymentValue.ToString("F2");
+
             HomeInfoVM homeInfoVM = new HomeInfoVM();
             homeInfoVM.ServicesCount = services;
             homeInfoVM.ContaractCount = contracts;
             homeInfoVM.BookServiceCount = totalBookingsForServiceProvider;
             homeInfoVM.PackageCreateCount = packageCreatedCount;
             homeInfoVM.TotalOfClicks = TotalOfClicks;
-            homeInfoVM.TotalMoneyService = totalPaymentValue;
+            homeInfoVM.TotalMoneyService = formattedValue;
             //Start Chart
             var salesData = new List<int> { services, contracts, totalBookingsForServiceProvider, packageCreatedCount };
             ViewBag.SalesData = salesData;

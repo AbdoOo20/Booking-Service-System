@@ -50,11 +50,16 @@ export class MyPropertiesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getCustomerBookings();
+  }
+
+  getCustomerBookings(): void {
     const decodedToken = this.decodeService.getUserIdFromToken();   
     this._allBookingService.getBookingWithService(decodedToken).subscribe({
       next:(res) => {
         this.customerBookings = res;
-        this.initDataSource(this.customerBookings);   
+        this.initDataSource(this.customerBookings);
+        console.log(res)  
       },
       error:(error) => {
         console.error('Error fetching customer bookings', error);
@@ -62,24 +67,23 @@ export class MyPropertiesComponent implements OnInit {
     })
   }
 
-  deleteBook(id: number): void {
+  cancelBook(id: number): void {
     const dialogData = new ConfirmDialogModel('Confirm Cancelation', 'Are you sure you want to cancel this book?');
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       maxWidth: "800px",
       data: dialogData
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog result:', result);
       if (result === true){
-        console.log(result);
-        this._allBookingService.deleteBooking(id).subscribe({
+        this._allBookingService.cancelBooking(id).subscribe({
           next: () => {
             // Remove the deleted item from the local array
-            this.customerBookings = this.customerBookings.filter(item => item.bookId !== id);
+            // this.customerBookings = this.customerBookings.filter(item => item.bookId !== id);
             this.dialog.open(AlertDialogComponent, {
               maxWidth: "500px",
-              data: 'Item deleted successfully.'
+              data: 'Item canceled successfully.'
             });
+            this.getCustomerBookings();
           },
           error: (err) => {
             console.error('Error deleting item', err);

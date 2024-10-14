@@ -12,7 +12,7 @@ _apiURL = "http://localhost:18105/api";
 
   constructor(private _passToken: PassTokenWithHeaderService) { }
 
-  deleteBooking(id: number): Observable<void> {
+  cancelBooking(id: number): Observable<void> {
     return this._httpClient.delete<void>(`${this._apiURL}/Book/${id}`, {
       headers: this._passToken.getHeaders()
     });
