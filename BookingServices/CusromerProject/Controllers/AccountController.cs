@@ -1,6 +1,7 @@
 ﻿using BookingServices.Data;
 using CusromerProject.DTO.Account;
 using CusromerProject.DTO.Customer;
+using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -124,6 +125,11 @@ namespace CusromerProject.Controllers
             if (!result.Succeeded)
             {
                 return BadRequest(new { message = "Error creating user", errors = result.Errors });
+            }
+            var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest(roleResult.Errors);
             }
 
             var customer = new Customer
