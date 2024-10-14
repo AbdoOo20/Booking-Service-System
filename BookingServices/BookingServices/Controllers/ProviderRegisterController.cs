@@ -1,9 +1,12 @@
 ﻿using BookingServices.Data;
+using BookingServices.Data.Migrations;
 using BookingServices.Models;
 using BookingServices.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingServices.Controllers
 {
@@ -11,10 +14,12 @@ namespace BookingServices.Controllers
     {
         ApplicationDbContext _context;
         ErrorViewModel errorViewModel = new ErrorViewModel();
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ProviderRegisterController(ApplicationDbContext context)
+        public ProviderRegisterController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [Authorize(Roles = "Admin")]
@@ -32,12 +37,35 @@ namespace BookingServices.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ProviderRegisterViewModel providerVM)
+        public async Task<IActionResult> Create(ProviderRegisterViewModel providerVM)
         {
             try
             {
                 if(ModelState.IsValid)
                 {
+                    var existingProvider = await  _userManager.FindByEmailAsync(providerVM.ProviderEmail);
+                    var existingWaitingProvider = await _context.ProviderRegisters
+                        .Where(p => p.ProviderEmail == providerVM.ProviderEmail).FirstOrDefaultAsync();
+                    if (existingWaitingProvider != null || existingProvider != null && await _userManager.IsInRoleAsync(existingProvider, "Provider"))
+                    {
+                        ModelState.AddModelError("ProviderEmail", "The email address is already exists.");
+                        return View(providerVM);
+                    }
+
+                    // Check if phone number already exists
+                    var existingWaintingPhone = await _context.ProviderRegisters
+                        .Where(p => p.ProviderPhoneNumber == providerVM.ProviderPhoneNumber).FirstOrDefaultAsync();
+
+                    var existingPhone = await _userManager.Users
+                        .Where(u => u.PhoneNumber == providerVM.ProviderPhoneNumber)
+                        .FirstOrDefaultAsync();
+
+                    if (existingWaintingPhone != null || existingPhone != null)
+                    {
+                        ModelState.AddModelError("ProviderPhoneNumber", "This phone number already exists.");
+                        return View(providerVM);
+                    }
+
                     ProviderRegister providerRegister = new ProviderRegister
                     {
                         ProviderName = providerVM.ProviderName,
@@ -45,8 +73,8 @@ namespace BookingServices.Controllers
                         ProviderEmail = providerVM.ProviderEmail,
                         ServiceDetails = providerVM.ServiceDetails,
                     };
-                    _context.ProviderRegisters.Add(providerRegister);
-                    _context.SaveChanges();
+                    await _context.ProviderRegisters.AddAsync(providerRegister);
+                    await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Your data has been sent successfully!";
 
                     return RedirectToAction("Create");
@@ -54,9 +82,9 @@ namespace BookingServices.Controllers
 
                 return View(providerVM);
             }
-            catch (Exception ex) 
+            catch
             {
-                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                TempData["ErrorMessage"] = "An error occurred while processing your request. Please try again later.";
 
                 return View(providerVM);
             }
