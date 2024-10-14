@@ -190,14 +190,14 @@ export class RegisterComponent implements OnInit {
       (response) => {
         // Successful registration message
         console.log('Registration successful:', response);
-        this.snackBar.open('You registered successfully! Please login now.', '×', {
+        this.snackBar.open('You registered successfully! Please check your email for confirmation.', '×', {
           panelClass: 'success',
           verticalPosition: 'top',
           duration: 3000
         });
-        setTimeout(() => {
-          this.router.navigate(['/login']);  // Redirect after a delay
-        }, 5000); // 3 seconds delay
+        // setTimeout(() => {
+        //   this.router.navigate(['/login']);  // Redirect after a delay
+        // }, 5000); // 3 seconds delay
       },
       (error: HttpErrorResponse) => {
         console.error('API Error:', error);
