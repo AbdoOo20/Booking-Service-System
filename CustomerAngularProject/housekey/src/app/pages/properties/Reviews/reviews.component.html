@@ -1,22 +1,32 @@
-
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  </head>
 <div class="container mt-5">
-    <h2>Your Reviews</h2>
+   
     
     <div class="list-group mb-4">
         <div class="list-group-item">
-            <h5 class="mb-1">Yours</h5>
-            <p class="mb-1">{{review.customerComment}}</p>
-            <small>Posted on: {{review.customerCommentDate}}</small>
+            <h5 class="mb-1">Your Review</h5>
+            <p class="mb-1">{{reviewData.customerComment}}</p>
+            <small><strong>Posted on:</strong> {{reviewData.customerCommentDate}}</small>
             <hr>
-            @if(review.providerReplayComment != null){
+            @if(reviewData.providerReplayComment != null){
                 <h6>Reply:</h6>
-                <p class="mb-1">{{review.providerReplayComment}}</p>
-                <small>Posted on: {{review.providerReplayCommentDate}}</small>}
+                <p class="mb-1">{{reviewData.providerReplayComment}}</p>
+                <small><strong>Posted on:</strong>  {{reviewData.providerReplayCommentDate}}</small>}
             </div>
         
             
     </div>
+ <!-- jQuery Slim JS -->
+ <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+    
+ <!-- Popper.js JS -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+ 
+ <!-- Bootstrap JS -->
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
