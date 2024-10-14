@@ -6,29 +6,26 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:5285/api/Customer/3'; // استبدل هذا الرابط برابط API الخاص بك
+  private apiUrl = 'http://localhost:18105/api/Customer/'; // استبدل هذا الرابط برابط API الخاص بك
 
   constructor(private http: HttpClient) { }
 
-  getUserData(): Observable<any> {
-    return this.http.get(this.apiUrl); // تأكد من استخدام URL الصحيح
+  getUserData(id:string): Observable<any> {
+    return this.http.get(this.apiUrl + id); // تأكد من استخدام URL الصحيح
   }
 
- // editProfile(data: any): Observable<any> {
-   // return this.http.put('http://localhost:5285/api/Customer/3', data);
- // }
   // إضافة دالة لتحديث بيانات العميل
  updateCustomerData(id: string, customerData: any): Observable<any> {
-    return this.http.put('http://localhost:5285/api/Customer/3', customerData); // تأكد من استخدام URL الصحيح
+    return this.http.put(this.apiUrl + id, customerData); // تأكد من استخدام URL الصحيح
   }
 
-  changePassword(data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/change-password`, data);
+  changePassword(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}change-password${id}`, data);
   }
 
   // user.service.ts
 blockUser(id: string): Observable<any> {
-  return this.http.put(`${this.apiUrl}/block${2}`, null);
+  return this.http.put(`${this.apiUrl}block${id}`, null);
 }
 
 }
