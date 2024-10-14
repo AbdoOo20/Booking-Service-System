@@ -46,9 +46,9 @@
 
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Bank Account Email</mat-label>
-                <input matInput placeholder="Bank Account Email" formControlName="bankAccountEmail" required autocomplete="off">
-                <mat-error *ngIf="infoForm.controls.bankAccountEmail.errors?.required">Bank Account Email is required</mat-error>
-                <mat-error *ngIf="infoForm.controls.bankAccountEmail.hasError('pattern')">Invalid email format</mat-error>
+                <input matInput placeholder="Bank Account Email" formControlName="bankAccount" required autocomplete="off">
+                <mat-error *ngIf="infoForm.controls.bankAccount.errors?.required">Bank Account Email is required</mat-error>
+                <mat-error *ngIf="infoForm.controls.bankAccount.hasError('pattern')">Invalid email format</mat-error>
             </mat-form-field>
 
             <div class="text-center mt-2">
@@ -60,6 +60,7 @@
     <div fxFlex="100" fxFlex.gt-sm="50" class="p-3" ngClass.sm="mt-2" ngClass.xs="mt-2">
         <h2 class="text-muted text-center fw-600 mb-3">Password change</h2>
         <form [formGroup]="passwordForm" (ngSubmit)="onPasswordFormSubmit(passwordForm.value)">
+
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Current Password</mat-label>
                 <input matInput placeholder="Current Password" formControlName="currentPassword" type="password" required minlength="6" autocomplete="off">
