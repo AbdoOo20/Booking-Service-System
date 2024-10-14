@@ -110,13 +110,10 @@ export class ProfileComponent implements OnInit {
   private updateUserData(id: string, data: any): void {
     console.log(data);
     this.userService.updateCustomerData(id, data).subscribe(
-      // إضافة دالة لتحديث بيانات المستخدم
       (response) => {
         this.snackBar.open('successfully updated!', '✓', { duration: 3000 });
-        console.log(response);
       },
       (error) => {
-        console.log("Error during update:", error); // إضافة هذا السطر
         this.snackBar.open('Failed to update !', '×', { duration: 3000, panelClass: 'error' });
       }
     );
