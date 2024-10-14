@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FlexLayoutModule } from '@ngbracket/ngx-layout';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
@@ -25,7 +26,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
     MatButtonModule,
     MatSlideToggleModule,
     FlexLayoutModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    CommonModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
