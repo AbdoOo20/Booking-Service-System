@@ -47,29 +47,30 @@ export class LoginComponent implements OnInit {
         private authService: AuthServiceService
     ) {}
 
-  ngOnInit(): void {
-    // Initialize login form
-    this.loginForm = this.fb.group({
-      username: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(100),
-          Validators.minLength(3)
-        ]
-      ],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(6),
-          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/)
-        ]
-      ],
-      rememberMe: [false]
-    });
-
-}
+    ngOnInit(): void {
+        // Initialize login form
+        this.loginForm = this.fb.group({
+            username: [
+                "",
+                [
+                    Validators.required,
+                    Validators.maxLength(100),
+                    Validators.minLength(3),
+                ],
+            ],
+            password: [
+                "",
+                [
+                    Validators.required,
+                    Validators.minLength(6),
+                    Validators.pattern(
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/
+                    ),
+                ],
+            ],
+            rememberMe: [false],
+        });
+    }
     // Handle form submission
     onLoginFormSubmit() {
         if (this.loginForm.invalid) {
@@ -93,7 +94,7 @@ export class LoginComponent implements OnInit {
 
         // Call the API for login
         this.http
-            .post("http://localhost:5285/api/Account/Login", loginData)
+            .post("http://localhost:18105/api/Account/Login", loginData)
             .subscribe({
                 next: (response: any) => {
                     if (response.token) {
