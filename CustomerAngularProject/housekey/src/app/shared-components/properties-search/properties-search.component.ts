@@ -229,7 +229,6 @@ export class PropertiesSearchComponent implements OnInit {
         this.CatServ.GetAllCategories().subscribe({
             next: (data) => {
                 this.CategoryNames = data as Category[];
-                console.log(data);
             },
             error: (err) => {
                 console.log(err);
@@ -241,7 +240,6 @@ export class PropertiesSearchComponent implements OnInit {
         this.myServ.getLocations().subscribe({
             next: (data) => {
                 this.LocationNames = data;
-                console.log(data);
             },
             error: (err) => {
                 console.error("Error fetching regions data:", err);
@@ -252,7 +250,6 @@ export class PropertiesSearchComponent implements OnInit {
         this.myServ.GetAllServicesByCatName(catName).subscribe({
             next: (data) => {
                 this.ServicesItems = data;
-                console.log(data);
             },
             error: (err) => {
                 console.log(err);
@@ -263,7 +260,6 @@ export class PropertiesSearchComponent implements OnInit {
         this.myServ.GetAllServicesByCatName(locName).subscribe({
             next: (data) => {
                 this.ServicesItems = data;
-                console.log(data);
             },
             error: (err) => {
                 console.log(err);
@@ -273,7 +269,6 @@ export class PropertiesSearchComponent implements OnInit {
     // getInputPriceValue() {
     //     this.form.get("price.from")?.valueChanges.subscribe((value) => {
     //         this.homeCmp.getServicePrice(value, Number.MIN_VALUE);
-    //         console.log(value);
     //     });
     //     this.form.get("price.to")?.valueChanges.subscribe((value) => {
     //         this.homeCmp.getServicePrice(0, value);
@@ -284,7 +279,6 @@ export class PropertiesSearchComponent implements OnInit {
     getPrice() {
         this.form.get("price.from")?.valueChanges.subscribe((value) => {
             this.fromTest = value;
-            console.log(this.fromTest + " " + this.toTest);
             this.homeCmp.getServ(
                 this.catTest,
                 this.locTest,
@@ -294,7 +288,6 @@ export class PropertiesSearchComponent implements OnInit {
         });
         this.form.get("price.to")?.valueChanges.subscribe((value) => {
             this.toTest = value;
-            console.log(this.fromTest + " " + this.toTest);
             this.homeCmp.getServ(
                 this.catTest,
                 this.locTest,
@@ -303,8 +296,7 @@ export class PropertiesSearchComponent implements OnInit {
             );
         });
         this.form.get("propertyType")?.valueChanges.subscribe((value) => {
-            this.catTest = value.name;
-            console.log(this.catTest);
+            this.catTest = value?.name;
             this.homeCmp.getServ(
                 this.catTest,
                 this.locTest,
@@ -313,8 +305,7 @@ export class PropertiesSearchComponent implements OnInit {
             );
         });
         this.form.get("city")?.valueChanges.subscribe((value) => {
-            this.locTest = value.name_en;
-            console.log(this.locTest);
+            this.locTest = value?.name_en;
             this.homeCmp.getServ(
                 this.catTest,
                 this.locTest,
@@ -327,7 +318,6 @@ export class PropertiesSearchComponent implements OnInit {
     //     this.myServ.GetAllServicesPrice(from).subscribe({
     //         next: (data) => {
     //             this.ServicesItems = data;
-    //             console.log(data);
     //         },
     //         error: (err) => {
     //             console.log(err);

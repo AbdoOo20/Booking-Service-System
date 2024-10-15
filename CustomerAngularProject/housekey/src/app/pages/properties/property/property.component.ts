@@ -78,11 +78,19 @@ import { Observable, throwIfEmpty } from "rxjs";
         PropertiesCarouselComponent,
         GetInTouchComponent,
         MatButtonModule,
-        FlexLayoutModule,ReviewFormComponent,ReviewsComponent
+        FlexLayoutModule,
+        ReviewFormComponent,
+        ReviewsComponent,
     ],
     templateUrl: "./property.component.html",
     styleUrl: "./property.component.scss",
-    providers: [EmbedVideoService,AllBookingsService,ReviewServiceService,DecodingTokenService],
+
+    providers: [
+        EmbedVideoService,
+        AllBookingsService,
+        ReviewServiceService,
+        DecodingTokenService,
+    ],
 })
 export class PropertyComponent implements OnInit {
     @ViewChild("sidenav") sidenav: any;
@@ -93,7 +101,7 @@ export class PropertyComponent implements OnInit {
     private sub: any;
     private subService: any;
     public property: Property;
-    public service: ServiceDetails;
+    public service: any;
     public settings: Settings;
     public embedVideo: any;
     public relatedProperties: Property[];
@@ -117,7 +125,8 @@ export class PropertyComponent implements OnInit {
     };
     lat: number = 0;
     lng: number = 0;
-     
+    token = localStorage.getItem("token");
+
     constructor(
         public settingsService: SettingsService,
         public appService: AppService,
@@ -125,11 +134,11 @@ export class PropertyComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         private embedService: EmbedVideoService,
         public fb: FormBuilder,
-        private domHandlerService: DomHandlerService,   
-        public bookservice:AllBookingsService,          //bookingService
-        public ReviewService:ReviewServiceService,       //ReviewService
-        public DecodingCustomerID : DecodingTokenService
 
+        private domHandlerService: DomHandlerService,
+        public bookservice: AllBookingsService, //bookingService
+        public ReviewService: ReviewServiceService, //ReviewService
+        public DecodingCustomerID: DecodingTokenService
     ) {
         this.settings = this.settingsService.settings;
         
@@ -215,7 +224,7 @@ export class PropertyComponent implements OnInit {
         this.myServ.getServiceById(id).subscribe({
             next: (data) => {
                 this.service = data;
-                console.log(data.provider.providerId);
+                //console.log(data.provider.providerId);
             },
             error: (err) => {
                 console.log(err);
@@ -313,14 +322,13 @@ export class PropertyComponent implements OnInit {
         )[0];
     }
 
-
-
     public addToFavorites() {
-        this.myServ.addToFavoritesInServiceDetails(this.service, (this.settings.rtl) ? 'rtl' : 'ltr',this.customerId);
-      }
-    
-      public onFavorites() {
-        this.Services_WishList=this.myServ.getAllServicesInWishList(this.customerId) ;
+        this.myServ.addToFavoritesInServiceDetails(
+            this.service,
+            this.settings.rtl ? "rtl" : "ltr",
+            this.customerId
+        );
+    }
 
         // Assuming getAllServicesInWishList is asynchronous and returns a Promise or Observable
        /* this.myServ.getAllServicesInWishList(this.customerId).subscribe((services) => {
@@ -343,9 +351,9 @@ export class PropertyComponent implements OnInit {
           console.error('Failed to fetch wishlist services:', error);
           // Handle error scenario if needed
         });*/
-      }
+      
     
-
+    
     public getRelatedProperties() {
         this.appService.getRelatedProperties().subscribe((data) => {
             this.relatedProperties = data;

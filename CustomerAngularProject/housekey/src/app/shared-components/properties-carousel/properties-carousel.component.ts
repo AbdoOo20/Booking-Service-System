@@ -27,12 +27,7 @@ export class PropertiesCarouselComponent implements OnInit {
 
     constructor() {}
 
-    ngOnInit() {
-        this.printService();
-    }
-    printService() {
-        console.log(this.services);
-    }
+    ngOnInit() {}
 
     ngAfterViewInit() {
         this.config = {

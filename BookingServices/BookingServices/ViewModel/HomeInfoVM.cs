@@ -9,6 +9,6 @@ namespace BookingServices.ViewModel
         public int BookServiceCount { get; set; }
         public int PackageCreateCount { get; set; }
         public int TotalOfClicks { get; set; }
-        public decimal TotalMoneyService { get; set; }
+        public string TotalMoneyService { get; set; }
     }
 }

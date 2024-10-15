@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CustomerProject.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CustomerProject.Controllers
 {
@@ -13,8 +14,9 @@ namespace CustomerProject.Controllers
         {
             _payPalService = payPalService;
         }
-
+        
         [HttpGet("payment/{paymentId}")]
+        [Authorize]
         public async Task<IActionResult> GetPayment(string paymentId)
         {
             var payment = await _payPalService.GetPaymentAsync(paymentId);
@@ -26,6 +28,7 @@ namespace CustomerProject.Controllers
         }
 
         [HttpPost("create-payment")]
+        [Authorize]
         public async Task<IActionResult> CreatePayment([FromBody] PaymentRequest request)
         {
             var payment = await _payPalService.CreatePaymentAsync(request.Total, request.Currency, request.Description, request.ReturnUrl, request.CancelUrl);

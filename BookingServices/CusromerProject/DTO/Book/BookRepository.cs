@@ -24,116 +24,97 @@ namespace CusromerProject.DTO.Book
 
         public async Task<List<Book>> GetBookings()
         {
-            const string cacheKey = "AllBookingsCache";
+            List<Book> books = new List<Book>();
+            var bookings = await (from b in _context.Bookings
+                                  join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+                                  join s in _context.Services on bs.ServiceId equals s.ServiceId
+                                  select new
+                                  {
+                                      BookingId = b.BookingId,
+                                      BookDate = b.BookDate,
+                                      CashOrCashByHandOrInstallment = b.CashOrCashByHandOrInstallment,
+                                      CustomerId = b.CustomerId,
+                                      EndTime = b.EndTime,
+                                      EventDate = b.EventDate,
+                                      PaymentIncomeId = b.PaymentIncomeId,
+                                      Price = b.Price,
+                                      Quantity = b.Quantity,
+                                      Type = b.Type,
+                                      StartTime = b.StartTime,
+                                      Status = b.Status,
+                                      InitialPaymentPercentage = s.InitialPaymentPercentage,
+                                      ServiceId = s.ServiceId,
+                                  }).ToListAsync();
 
-            if (!_cache.TryGetValue(cacheKey, out List<Book> books))
+            foreach (var item in bookings)
             {
-                books = new List<Book>();
-                var bookings = await (from b in _context.Bookings
-                                      join bs in _context.BookingServices on b.BookingId equals bs.BookingId
-                                      join s in _context.Services on bs.ServiceId equals s.ServiceId
-                                      select new {
-                                          BookingId = b.BookingId,
-                                          BookDate = b.BookDate,
-                                          CashOrCashByHandOrInstallment = b.CashOrCashByHandOrInstallment,
-                                          CustomerId = b.CustomerId,
-                                          EndTime = b.EndTime,
-                                          EventDate = b.EventDate,
-                                          PaymentIncomeId = b.PaymentIncomeId,
-                                          Price = b.Price,
-                                          Quantity = b.Quantity,
-                                          Type = b.Type,
-                                          StartTime = b.StartTime,
-                                          Status = b.Status,
-                                          InitialPaymentPercentage = s.InitialPaymentPercentage,
-                                          ServiceId = s.ServiceId,
-                                      }).ToListAsync();
-
-                foreach (var item in bookings)
+                Book newBook = new Book()
                 {
-                    Book newBook = new Book()
-                    {
-                        BookId = item.BookingId,
-                        BookDate = item.BookDate,
-                        CashOrCashByHandOrInstallment = item.CashOrCashByHandOrInstallment,
-                        CustomerId = item.CustomerId,
-                        EndTime = item.EndTime,
-                        EventDate = item.EventDate,
-                        PaymentIncomeId = item.PaymentIncomeId,
-                        Price = item.Price,
-                        Quantity = item.Quantity,
-                        Type = item.Type,
-                        StartTime = item.StartTime,
-                        Status = item.Status,
-                        ServiceId = item.ServiceId,
-                        InitialPaymentPercentage = item.InitialPaymentPercentage,
-                    };
-                    books.Add(newBook);
-                }
-                var cacheOptions = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = _cacheDuration
+                    BookId = item.BookingId,
+                    BookDate = item.BookDate,
+                    CashOrCashByHandOrInstallment = item.CashOrCashByHandOrInstallment,
+                    CustomerId = item.CustomerId,
+                    EndTime = item.EndTime,
+                    EventDate = item.EventDate,
+                    PaymentIncomeId = item.PaymentIncomeId,
+                    Price = item.Price,
+                    Quantity = item.Quantity,
+                    Type = item.Type,
+                    StartTime = item.StartTime,
+                    Status = item.Status,
+                    ServiceId = item.ServiceId,
+                    InitialPaymentPercentage = item.InitialPaymentPercentage,
                 };
-                _cache.Set(cacheKey, books, cacheOptions);
+                books.Add(newBook);
             }
             return books;
         }
 
         public async Task<List<Book>> GetBookingsForCustomer(string id)
         {
-            const string cacheKey = "AllBookingsForCustomerCache";
+            List<Book> books = new List<Book>();
+            var bookings = await (from b in _context.Bookings
+                                  join bs in _context.BookingServices on b.BookingId equals bs.BookingId
+                                  join s in _context.Services on bs.ServiceId equals s.ServiceId
+                                  where b.CustomerId == id
+                                  select new
+                                  {
+                                      BookingId = b.BookingId,
+                                      BookDate = b.BookDate,
+                                      CashOrCashByHandOrInstallment = b.CashOrCashByHandOrInstallment,
+                                      CustomerId = b.CustomerId,
+                                      EndTime = b.EndTime,
+                                      EventDate = b.EventDate,
+                                      PaymentIncomeId = b.PaymentIncomeId,
+                                      Price = b.Price,
+                                      Quantity = b.Quantity,
+                                      Type = b.Type,
+                                      StartTime = b.StartTime,
+                                      Status = b.Status,
+                                      InitialPaymentPercentage = s.InitialPaymentPercentage,
+                                      ServiceId = s.ServiceId,
+                                  }).ToListAsync();
 
-            if (!_cache.TryGetValue(cacheKey, out List<Book> books))
+            foreach (var item in bookings)
             {
-                books = new List<Book>();
-                var bookings = await (from b in _context.Bookings
-                                      join bs in _context.BookingServices on b.BookingId equals bs.BookingId
-                                      join s in _context.Services on bs.ServiceId equals s.ServiceId
-                                      where b.CustomerId == id
-                                      select new
-                                      {
-                                          BookingId = b.BookingId,
-                                          BookDate = b.BookDate,
-                                          CashOrCashByHandOrInstallment = b.CashOrCashByHandOrInstallment,
-                                          CustomerId = b.CustomerId,
-                                          EndTime = b.EndTime,
-                                          EventDate = b.EventDate,
-                                          PaymentIncomeId = b.PaymentIncomeId,
-                                          Price = b.Price,
-                                          Quantity = b.Quantity,
-                                          Type = b.Type,
-                                          StartTime = b.StartTime,
-                                          Status = b.Status,
-                                          InitialPaymentPercentage = s.InitialPaymentPercentage,
-                                          ServiceId = s.ServiceId,
-                                      }).ToListAsync();
-
-                foreach (var item in bookings)
+                Book newBook = new Book()
                 {
-                    Book newBook = new Book()
-                    {
-                        BookId = item.BookingId,
-                        BookDate = item.BookDate,
-                        CashOrCashByHandOrInstallment = item.CashOrCashByHandOrInstallment,
-                        CustomerId = item.CustomerId,
-                        EndTime = item.EndTime,
-                        EventDate = item.EventDate,
-                        PaymentIncomeId = item.PaymentIncomeId,
-                        Price = item.Price,
-                        Quantity = item.Quantity,
-                        Type = item.Type,
-                        StartTime = item.StartTime,
-                        Status = item.Status,
-                        ServiceId= item.ServiceId,
-                        InitialPaymentPercentage = item.InitialPaymentPercentage
-                    };
-                    books.Add(newBook);
-                }
-                var cacheOptions = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = _cacheDuration
+                    BookId = item.BookingId,
+                    BookDate = item.BookDate,
+                    CashOrCashByHandOrInstallment = item.CashOrCashByHandOrInstallment,
+                    CustomerId = item.CustomerId,
+                    EndTime = item.EndTime,
+                    EventDate = item.EventDate,
+                    PaymentIncomeId = item.PaymentIncomeId,
+                    Price = item.Price,
+                    Quantity = item.Quantity,
+                    Type = item.Type,
+                    StartTime = item.StartTime,
+                    Status = item.Status,
+                    ServiceId = item.ServiceId,
+                    InitialPaymentPercentage = item.InitialPaymentPercentage
                 };
-                _cache.Set(cacheKey, books, cacheOptions);
+                books.Add(newBook);
             }
             return books;
         }

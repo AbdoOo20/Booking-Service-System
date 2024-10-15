@@ -21,7 +21,20 @@
         <div fxLayout="row" fxLayoutAlign="end center" class="">
             <!-- <app-currency></app-currency> -->
             <!-- <app-lang></app-lang> -->
+            @if(isLoggedIn){
             <app-user-menu></app-user-menu>
+            }@else {
+            <span fxLayoutAlign="center center" class="item">
+                <span class="px-1">
+                    <a routerLink="/login" class="log-reg-btn">Login</a>
+                </span>
+                |
+                <span class="px-1">
+                    <a routerLink="/register" class="log-reg-btn">Register</a>
+                </span>
+            </span>
+
+            }
         </div>
     </div>
 </mat-toolbar>
@@ -69,7 +82,7 @@
                     >compare_arrows</mat-icon
                 >
             </a> -->
-            <a
+            <!-- <a
                 routerLink="/submit-property"
                 mat-mini-fab
                 color="primary"
@@ -77,8 +90,8 @@
                 fxHide.gt-xs
                 class=""
                 ><mat-icon>add</mat-icon></a
-            >
-            <a
+            > -->
+            <!-- <a
                 routerLink="/submit-property"
                 mat-raised-button
                 color="primary"
@@ -86,7 +99,7 @@
                 fxShow.gt-xs
                 class="uppercase"
                 >{{ "SUBMIT_PROPERTY" | translate }}</a
-            >
+            > -->
         </div>
     </div>
 </mat-toolbar>

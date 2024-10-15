@@ -43,7 +43,8 @@ import { delay } from "rxjs/operators";
 import { SharedService } from "@services/shared.service";
 import { _SharedService } from "@services/passing-data.service";
 import { DecodingTokenService } from "@services/decoding-token.service";
-import { log } from "console";
+import { ActivatedRoute } from "@angular/router";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-submit-property",
@@ -93,7 +94,7 @@ export class SubmitPropertyComponent implements OnInit {
   };
 
   ///////////////////////////////////////////////////////////////////////
-  serviceID: number = 1; //221d4d90-d8f5-423f-920a-196a0a8c12d8
+  serviceID: number; //221d4d90-d8f5-423f-920a-196a0a8c12d8
   customerID: string = "221d4d90-d8f5-423f-920a-196a0a8c12d8";
   service: Service;
   minDate: Date;
@@ -112,6 +113,7 @@ export class SubmitPropertyComponent implements OnInit {
   acceptContract: boolean = false;
   bookedQuantity = 0;
   maxQuantity = 0;
+  EndTimeForLastBook: number = 0;
 
   // //Payment
   public payment: FormGroup;
@@ -137,6 +139,8 @@ export class SubmitPropertyComponent implements OnInit {
     private sharedService: SharedService,
     private NewBooking: _SharedService,
     private decodingService: DecodingTokenService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {
     // this.total = 0;
   }
@@ -153,6 +157,14 @@ export class SubmitPropertyComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!localStorage.getItem("token")) {
+      const targetPage = "/login";
+      this.router.navigate([targetPage]);
+    }
+    this.activatedRoute.paramMap.subscribe((params) => {
+      this.serviceID = Number(params.get("id")); // استقبال الـ id
+      console.log(this.serviceID); // طباعة الـ id
+    });
     this.features = this.appService.getFeatures();
     this.propertyTypes = this.appService.getPropertyTypes();
     this.propertyStatuses = this.appService.getPropertyStatuses();
@@ -171,7 +183,7 @@ export class SubmitPropertyComponent implements OnInit {
         eventDate: ["", Validators.required],
         startTime: ["", Validators.required],
         endTime: ["", Validators.required],
-        quantity: ["", Validators.required, Validators.min(1), Validators.max(100000000000000000000000000000),],
+        quantity: [""],
       }),
       payment: this.fb.group({
         amount: [0, Validators.required],
@@ -228,38 +240,44 @@ export class SubmitPropertyComponent implements OnInit {
       ?.valueChanges.subscribe((startTime) => {
         this.updateEndTimeOptions(startTime);
       });
-
+    this.initializeTimeOptions();
+    this.calculateTotal();
   }
 
   shareData(): void {
     // Convert booking form data
-    const selectedDate = this.submitForm.get('booking.eventDate').value;
-    const convertedStartTime = this.convertTo24HourFormat(this.submitForm.get('booking.startTime').value);
-    const convertedEndTime = this.convertTo24HourFormat(this.submitForm.get('booking.endTime').value);
+    const selectedDate = this.submitForm.get("booking.eventDate").value;
+    const convertedStartTime = this.convertTo24HourFormat(
+      this.submitForm.get("booking.startTime").value
+    );
+    const convertedEndTime = this.convertTo24HourFormat(
+      this.submitForm.get("booking.endTime").value
+    );
     console.log(selectedDate);
 
     this.bookingData = {
+      bookId: 0,
       eventDate: selectedDate,
       startTime: convertedStartTime,
       endTime: convertedEndTime,
       initialPaymentPercentage: 20,
-      status: 'Pending',
-      quantity: Number(this.submitForm.get('booking.quantity').value),
-      price: parseFloat(this.submitForm.get('booking.priceEuro').value),
-      cashOrCashByHandOrInstallment: 'Cash',
+      status: "Pending",
+      quantity: Number(this.submitForm.get("booking.quantity").value),
+      price: parseFloat(this.submitForm.get("booking.priceEuro").value),
+      cashOrCashByHandOrInstallment: "Cash",
       bookDate: new Date().toISOString(),
-      type: 'Service',
+      type: "Service",
       customerId: this.CustomerIDFromToken,
       serviceId: this.serviceID,
-      paymentIncomeId: null,
+      paymentIncomeId: 1,
     };
 
     // Save data in local storage
-    localStorage.setItem('bookingData', JSON.stringify(this.bookingData));
+    localStorage.setItem("bookingData", JSON.stringify(this.bookingData));
 
     // Set data in SharedService
     this.sharedService.setData(this.bookingData);
-    console.log('Booking data shared:', this.bookingData);
+    console.log("Booking data shared:", this.bookingData);
     this.NewBooking.setData(this.bookingData);
   }
 
@@ -317,7 +335,6 @@ export class SubmitPropertyComponent implements OnInit {
     // Share the booking data before proceeding with payment
     this.shareData(); // Call shareData here to share the booking data
 
-    alert("stile here");
     // Get total value from the form
     const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
 
@@ -358,7 +375,7 @@ export class SubmitPropertyComponent implements OnInit {
     this.timeOptions = [];
     this.startHour = parseInt(this.service.startTime.split(":")[0], 10); // Start from 9 AM
     this.endHour = parseInt(this.service.endTime.split(":")[0], 10); // End at 6 PM
-    for (let hour = this.startHour; hour <= this.endHour; hour++) {
+    for (let hour = this.startHour; hour < this.endHour; hour++) {
       const amPm = hour >= 12 ? "PM" : "AM";
       const displayHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
       //console.log(`${displayHour} ${amPm}`);
@@ -368,6 +385,7 @@ export class SubmitPropertyComponent implements OnInit {
     }
   }
 
+  end: number = 0;
   private updateEndTimeOptions(startTime: string) {
     // Reset end time options
     this.endTimeOptions = [];
@@ -375,26 +393,49 @@ export class SubmitPropertyComponent implements OnInit {
     if (!startTime) {
       return; // No start time selected
     }
-
-    // Get the hour from the start time
-    const [hourStr, period] = startTime.split(" "); // Split time into hour and period (AM/PM)
-    let startHour = parseInt(hourStr); // Get hour as number
-
-    // Convert start hour to 24-hour format for comparison
+    // Get the hour from the start time // 10 AM
+    const [hourStr, period] = startTime.split(" ");
+    let startHour = parseInt(hourStr);
     if (period === "PM" && startHour !== 12) {
       startHour += 12;
     } else if (period === "AM" && startHour === 12) {
-      startHour = 0; // Handle midnight case
+      startHour = 24;
     }
 
-    // Create end time options starting from the next hour after start time
-    for (let hour = startHour + 1; hour <= this.endHour; hour++) {
-      // Up to 6 PM
-      const amPm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
-      if (!this.timeBooked.includes(`${displayHour} ${amPm}`)) {
-        this.endTimeOptions.push(`${displayHour} ${amPm}`);
+    let startTimeEdited = [];
+    for (let index = 0; index < this.timeOptions.length; index++) {
+      const [hourCur, period] = this.timeOptions[index].split(" ");
+      let hour = parseInt(hourCur);
+      if (period === "PM" && hour !== 12) {
+        hour += 12;
+      } else if (period === "AM" && hour === 12) {
+        hour = 0;
       }
+      if (startHour <= hour) {
+        startTimeEdited.push(hour === 0 ? 24 : hour);
+      }
+    }
+
+    for (let index = 0; index < startTimeEdited.length; index++) {
+      const currentHour = index;
+      const nextHour = index + 1;
+      let hourCur = startTimeEdited[currentHour];
+      let hourNext = startTimeEdited[nextHour];
+      if (hourCur + 1 === hourNext) {
+        this.endHour = hourNext;
+      } else if (hourCur == startTimeEdited[startTimeEdited.length - 1]) {
+        this.endHour = hourCur + 1;
+        break;
+      } else if (hourNext > hourCur + 1) {
+        this.endHour = hourNext - 1;
+        break;
+      } 
+    }
+
+    for (let hour = startHour + 1; hour <= this.endHour; hour++) {
+      const amPm = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour > 12 ? hour - 12 : hour; 
+      this.endTimeOptions.push(`${displayHour} ${amPm}`);
     }
   }
 
@@ -403,6 +444,7 @@ export class SubmitPropertyComponent implements OnInit {
     this.services = [];
     this.date = "";
     this.bookedQuantity = 0;
+    this.EndTimeForLastBook = 0;
     this.submitForm.get("booking.startTime")?.setValue("");
     this.submitForm.get("booking.endTime")?.setValue("");
     const month = (selectedDate.getMonth() + 1).toString().padStart(2, "0");
@@ -417,7 +459,7 @@ export class SubmitPropertyComponent implements OnInit {
           for (const service of this.services) {
             const startTime = parseInt(service.startTime.split(":")[0], 10);
             const endTime = parseInt(service.endTime.split(":")[0], 10);
-            for (let hour = startTime; hour <= endTime; hour++) {
+            for (let hour = startTime; hour < endTime; hour++) {
               const amPm = hour >= 12 ? "PM" : "AM";
               const displayHour = hour > 12 ? hour - 12 : hour;
               this.timeBooked.push(`${displayHour} ${amPm}`);

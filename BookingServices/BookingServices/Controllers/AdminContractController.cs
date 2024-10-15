@@ -121,6 +121,7 @@ namespace BookingServices.Controllers
                     return View("Error", errorViewModel);
                 }
             }
+            adminContract.IsBlocked = adminContract.IsBlocked == null ? false : adminContract.IsBlocked;
             adminContract.IsBlocked = !adminContract.IsBlocked;
             try
             {

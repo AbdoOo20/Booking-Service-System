@@ -9,12 +9,17 @@ import { DecodingTokenService } from '@services/decoding-token.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-review-form',
-  standalone: true,
-  imports: [FormsModule,PropertyComponent],
-  providers:[ReviewServiceService,AllBookingsService,ServicesService,DecodingTokenService],
-  templateUrl: './review-form.component.html',
-  styleUrl: './review-form.component.scss'
+    selector: "app-review-form",
+    standalone: true,
+    imports: [FormsModule, PropertyComponent],
+    providers: [
+        ReviewServiceService,
+        AllBookingsService,
+        ServicesService,
+        DecodingTokenService,
+    ],
+    templateUrl: "./review-form.component.html",
+    styleUrl: "./review-form.component.scss",
 })
 export class ReviewFormComponent implements OnInit {
   customerReply: string = '';

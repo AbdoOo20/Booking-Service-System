@@ -35,6 +35,7 @@ import { ServicesService } from "@services/services.service";
 import { Service } from "../../common/interfaces/service";
 import { Category } from "../../common/interfaces/category";
 import { CategoriesService } from "@services/categories.service";
+import { MatSidenavModule } from "@angular/material/sidenav";
 import { RecommendationBookingComponent } from "../../shared-components/recommendation-booking/recommendation-booking.component";
 
 @Component({
@@ -64,6 +65,7 @@ import { RecommendationBookingComponent } from "../../shared-components/recommen
         ClientsComponent,
         GetInTouchComponent,
         RecommendationBookingComponent,
+        MatSidenavModule,
     ],
     providers: [CategoriesService, ServicesService], //,
     templateUrl: "./home.component.html",
@@ -119,7 +121,6 @@ export class HomeComponent implements OnInit {
                 map((changes: MediaChange[]) => changes[0])
             )
             .subscribe((change: MediaChange) => {
-                // console.log(change)
                 if (change.mqAlias == "xs") {
                     this.viewCol = 100;
                 } else if (change.mqAlias == "sm") {
@@ -138,7 +139,6 @@ export class HomeComponent implements OnInit {
     //       map((changes: MediaChange[]) => changes[0])
     //   )
     //   .subscribe((change: MediaChange) => {
-    //       // console.log(change)
     //       if (change.mqAlias == "xs") {
     //           this.viewCol = 100;
     //       } else if (change.mqAlias == "sm") {
@@ -285,7 +285,6 @@ export class HomeComponent implements OnInit {
     public removeSearchField(field: any) {
         this.message = null;
         this.removedSearchField = field;
-        console.log(field);
         if (field == "propertyType") this.catTest = null;
         else if (field == "city") this.locTest = null;
         else if (field == "price.from") this.fromTest = null;
@@ -296,10 +295,6 @@ export class HomeComponent implements OnInit {
             this.fromTest = null;
             this.toTest = null;
         }
-        console.log(this.catTest);
-        console.log(this.locTest);
-        console.log(this.fromTest);
-        console.log(this.toTest);
     }
 
     public changeCount(count: number) {
@@ -350,7 +345,6 @@ export class HomeComponent implements OnInit {
     //     this.myServ.GetAllServicesByCatName(catName).subscribe({
     //         next: (data) => {
     //             this.ServicesItems = data;
-    //             console.log(data);
     //         },
     //         error: (err) => {
     //             console.log(err);
@@ -363,7 +357,6 @@ export class HomeComponent implements OnInit {
     //     this.myServ.GetAllServicesByLocation(locName).subscribe({
     //         next: (data) => {
     //             this.ServicesItems = data;
-    //             console.log(data);
     //         },
     //         error: (err) => {
     //             console.log(err);
@@ -375,7 +368,6 @@ export class HomeComponent implements OnInit {
         this.myServ.GetRecomenditionServicesForBooking().subscribe({
             next: (data) => {
                 this.SrvBookingRec = data;
-                console.log(data);
             },
             error: (err) => {
                 console.log(err);
@@ -387,7 +379,6 @@ export class HomeComponent implements OnInit {
     //     this.myServ.GetAllServicesPrice(from, to).subscribe({
     //         next: (data) => {
     //             this.ServicesItems = data;
-    //             console.log(data);
     //         },
     //         error: (err) => {
     //             console.log(err);
@@ -410,7 +401,6 @@ export class HomeComponent implements OnInit {
         this.CatServ.GetAllCategories().subscribe({
             next: (data) => {
                 this.CatsItems = data as Category[];
-                console.log(data);
             },
             error: (err) => {
                 console.log(err);
