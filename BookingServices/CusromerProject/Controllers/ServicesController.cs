@@ -48,5 +48,16 @@ namespace CusromerProject.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+        [HttpGet("GetServiceNameByID/{id}")]
+        public async Task<IActionResult> GetServiceNameByID(int id)
+        {
+            if (id <= 0)
+                return BadRequest("UnExpected Error");
+            var serviceName = await _serviceRepository.GetServiceNameByID(id);
+            if (serviceName == null)
+                return NotFound("Service Not Found");
+            return Ok(serviceName);
+        }
     }
 }
