@@ -110,7 +110,7 @@ namespace CusromerProject.Controllers
                         return Ok(new
                         {
                             token = new JwtSecurityTokenHandler().WriteToken(token),
-                            expiration = DateTime.Now.AddHours(1),
+                            expiration = tokenExpiration,
                         });
                     }
                     ModelState.AddModelError("Password", "The name or password invaild");
