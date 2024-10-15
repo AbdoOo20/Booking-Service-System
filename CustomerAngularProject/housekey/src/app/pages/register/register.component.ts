@@ -53,7 +53,7 @@ export class RegisterComponent implements OnInit {
         private http: HttpClient,
         private router: Router,
         private snackBar: MatSnackBar
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.registerForm = this.fb.group(
@@ -112,7 +112,7 @@ export class RegisterComponent implements OnInit {
                         Validators.required,
                         Validators.minLength(6),
                         Validators.pattern(
-                            /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%?&]{6,}$/
+                            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/
                         ),
                     ],
                 ],
@@ -153,15 +153,14 @@ export class RegisterComponent implements OnInit {
         }
 
         if (control?.hasError("required")) {
-            return `${
-                field.charAt(0).toUpperCase() + field.slice(1)
-            } is required`;
+            return `${field.charAt(0).toUpperCase() + field.slice(1)
+                } is required`;
         }
         if (control?.hasError("minlength")) {
-            return Minimum length for ${field} is ${control.errors?.minlength.requiredLength} characters;
+            return `Minimum length for ${field} is ${control.errors?.minlength.requiredLength} characters`;
         }
         if (control?.hasError("maxlength")) {
-            return Maximum length for ${field} is ${control.errors?.maxlength.requiredLength} characters;
+            return `Maximum length for ${field} is ${control.errors?.maxlength.requiredLength} characters`;
         }
         if (control?.hasError("pattern")) {
             if (field === "email") return "Invalid email address";
