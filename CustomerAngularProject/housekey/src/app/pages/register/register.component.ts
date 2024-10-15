@@ -112,7 +112,7 @@ export class RegisterComponent implements OnInit {
                         Validators.required,
                         Validators.minLength(6),
                         Validators.pattern(
-                            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/
+                            /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%?&]{6,}$/
                         ),
                     ],
                 ],
@@ -158,10 +158,10 @@ export class RegisterComponent implements OnInit {
             } is required`;
         }
         if (control?.hasError("minlength")) {
-            return `Minimum length for ${field} is ${control.errors?.minlength.requiredLength} characters`;
+            return Minimum length for ${field} is ${control.errors?.minlength.requiredLength} characters;
         }
         if (control?.hasError("maxlength")) {
-            return `Maximum length for ${field} is ${control.errors?.maxlength.requiredLength} characters`;
+            return Maximum length for ${field} is ${control.errors?.maxlength.requiredLength} characters;
         }
         if (control?.hasError("pattern")) {
             if (field === "email") return "Invalid email address";
@@ -210,7 +210,7 @@ export class RegisterComponent implements OnInit {
                     // Successful registration message
                     console.log("Registration successful:", response);
                     this.snackBar.open(
-                        "You registered successfully! Please login now.",
+                        "You registered successfully! Please check your email for confirmation.Please check your email for confirmation.",
                         "×",
                         {
                             panelClass: "success",
@@ -218,9 +218,9 @@ export class RegisterComponent implements OnInit {
                             duration: 3000,
                         }
                     );
-                    setTimeout(() => {
-                        this.router.navigate(["/login"]); // Redirect after a delay
-                    }, 5000); // 3 seconds delay
+                    // setTimeout(() => {
+                    //     this.router.navigate(["/login"]); // Redirect after a delay
+                    // }, 5000); // 3 seconds delay
                 },
                 (error: HttpErrorResponse) => {
                     console.error("API Error:", error);
