@@ -88,6 +88,7 @@ export class LoginComponent implements OnInit {
       Password: this.loginForm.value.password,
     };
 
+<<<<<<< HEAD
     // Call the API for login
     this.http
       .post("http://localhost:18105/api/Account/Login", loginData)
@@ -102,6 +103,85 @@ export class LoginComponent implements OnInit {
               panelClass: "success",
               verticalPosition: "top",
               duration: 3000,
+=======
+        const loginData = {
+            UserName: this.loginForm.value.username,
+            Password: this.loginForm.value.password,
+        };
+
+        // Call the API for login
+        this.http
+            .post("http://localhost:18105/api/Account/Login", loginData)
+            .subscribe({
+                next: (response: any) => {
+                    if (response.token) {
+                        // Save the token and navigate to the home page
+                        this.authService.login(response.token);
+                        //localStorage.setItem('token', response.token);
+                        this.router.navigate(["/home"]);
+                        this.snackBar.open("Login successful!", "×", {
+                            panelClass: "success",
+                            verticalPosition: "top",
+                            duration: 3000,
+                        });
+                    }
+                },
+                error: (errorResponse: HttpErrorResponse) => {
+                    console.error("Login Error:", errorResponse);
+                    if (errorResponse.error) {
+                        if (errorResponse.error.Message) {
+                            // Handle the ModelState error messages returned from the API
+                            let errorMessage =
+                                "Login failed. Please check the following:\n";
+                            const validationErrors =
+                                errorResponse.error.Message;
+
+                            // Constructing error message based on the API response
+                            for (const key in validationErrors) {
+                                if (validationErrors.hasOwnProperty(key)) {
+                                    errorMessage += `${key}: ${validationErrors[
+                                        key
+                                    ].join(", ")}\n`;
+                                }
+                            }
+
+                            this.snackBar.open(errorMessage, "×", {
+                                panelClass: "error",
+                                verticalPosition: "top",
+                                duration: 5000,
+                            });
+                        } else {
+                            // Handle specific error messages from the API
+                            if (errorResponse.error["User Blocked"]) {
+                                this.errorMessage =
+                                    "Your account is blocked. Please contact customer service.";
+                            } else if (errorResponse.error.message["Confirm Email"]) {
+                                console.log("this is");
+                                this.errorMessage =
+                                "Please confirm your email, Please check your email for confirmation.";
+                             } else {
+                                this.errorMessage =
+                                    "Invalid username or password.";
+                            }
+                            // Display error in snackbar
+                            this.snackBar.open(this.errorMessage, "×", {
+                                panelClass: "error",
+                                verticalPosition: "top",
+                                duration: 3000,
+                            });
+                        }
+                    } else {
+                        this.errorMessage =
+                            "An unexpected error occurred. Please try again later.";
+                        // Display error in snackbar
+                        this.snackBar.open(this.errorMessage, "×", {
+                            panelClass: "error",
+                            verticalPosition: "top",
+                            duration: 3000,
+                        });
+                    }
+                },
+>>>>>>> a0d0952e08425e4b880ad1aa41d9b3bde3771e6a
             });
           }
         },
