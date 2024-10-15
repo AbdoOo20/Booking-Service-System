@@ -1,9 +1,7 @@
-import { Component, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { timeout } from 'rxjs/operators';
+import { ConfirmEmailService } from '@services/confirm-email.service';
 
 @Component({
   selector: 'app-confirmation-email',
@@ -12,11 +10,9 @@ import { timeout } from 'rxjs/operators';
   templateUrl: './confirmation-email.component.html',
 })
 export class ConfirmationEmailComponent {
-  private _httpClient = inject(HttpClient);
-  private _apiURL = "http://localhost:18105/api/Account";
   public message: string | null = null;
-
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  
+  constructor(private route: ActivatedRoute, private router: Router, private confirmEmailService: ConfirmEmailService) {}
 
   ngOnInit(): void {
     // Subscribe to query parameters to get userId and token
@@ -33,13 +29,10 @@ export class ConfirmationEmailComponent {
     });
   }
 
-  getConfirmEmail(userId: string, token: string): Observable<any> {
-    return this._httpClient.get(`${this._apiURL}/ConfirmEmail?userId=${userId}&token=${token}`, { observe: 'response' });
-  }
-
+  
   confirmEmail(userId: string, token: string): void {
     console.log("this is confirm email");
-    this.getConfirmEmail(userId, token).subscribe({
+    this.confirmEmailService.getConfirmEmail(userId, token).subscribe({
       next: (response) => {
         if (response.status === 200) {
           this.message = 'Email confirmed successfully! You can now log in.';
