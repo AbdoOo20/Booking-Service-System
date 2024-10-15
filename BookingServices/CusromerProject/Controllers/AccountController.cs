@@ -95,10 +95,14 @@ namespace CusromerProject.Controllers
                                 SecurityAlgorithms.HmacSha256
                             );
 
+                        var tokenExpiration = loginDTO.RememberMe
+                        ? DateTime.Now.AddDays(30) // Token valid for 30 days if RememberMe is true
+                        : DateTime.Now.AddHours(1);
+
                         JwtSecurityToken token = new JwtSecurityToken(
                                 audience: _configuration["JwtSettings:Audience"],
                                 issuer: _configuration["JwtSettings:Issuer"],
-                                expires: DateTime.Now.AddHours(1),
+                                expires: tokenExpiration,
                                 claims: userClaims,
                                 signingCredentials: credentials
                                 );
