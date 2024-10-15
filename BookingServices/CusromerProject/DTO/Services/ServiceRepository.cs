@@ -166,6 +166,40 @@ namespace CusromerProject.DTO.Services
                 }
                 : null;
         }
+
+        // 3. Get service name by ID with caching and without constraints
+        public async Task<string?> GetServiceNameByID(int serviceId)
+        {
+            string cacheKey = $"service_name_{serviceId}";
+
+            // Check if the service name is in the cache
+            if (!_cache.TryGetValue(cacheKey, out string? serviceName))
+            {
+                try
+                {
+                    serviceName = await _context.Services
+                        .Where(s => s.ServiceId == serviceId)
+                        .Select(s => s.Name)
+                        .FirstOrDefaultAsync();
+
+                    // If the service name is found, cache it
+                    if (serviceName != null)
+                    {
+                        var cacheOptions = new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = _cacheDuration
+                        };
+                        _cache.Set(cacheKey, serviceName, cacheOptions);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+
+            return serviceName;
+        }
     }
 
 }
