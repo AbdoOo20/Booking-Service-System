@@ -52,7 +52,15 @@ namespace CusromerProject.Controllers
                 // Check if the email is confirmed
                 if (!await _userManager.IsEmailConfirmedAsync(user))
                 {
+                    var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(confirmationToken));
+                    var angularUrl = "http://localhost:4200/confirm-email";
+                    var confirmationLink = $"{angularUrl}?userId={user.Id}&token={WebUtility.UrlEncode(encodedToken)}";
+                    await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
+                        $"Please confirm your account by clicking this link: <a href='{confirmationLink}'>link</a>");
+
                     ModelState.AddModelError("Confirm Email", "Please confirm your email before logging in.");
+
                     return BadRequest(new { Message = ModelState });
                 }
 

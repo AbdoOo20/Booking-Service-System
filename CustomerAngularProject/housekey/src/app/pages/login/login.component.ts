@@ -137,7 +137,11 @@ export class LoginComponent implements OnInit {
                             if (errorResponse.error["User Blocked"]) {
                                 this.errorMessage =
                                     "Your account is blocked. Please contact customer service.";
-                            } else {
+                            } else if (errorResponse.error.message["Confirm Email"]) {
+                                console.log("this is");
+                                this.errorMessage =
+                                "Please confirm your email, Please check your email for confirmation.";
+                             } else {
                                 this.errorMessage =
                                     "Invalid username or password.";
                             }
