@@ -416,41 +416,25 @@ export class SubmitPropertyComponent implements OnInit {
       }
     }
 
-    console.log(startTimeEdited);
-
-    for (let index = 0; index < startTimeEdited.length - 1; index++) {
+    for (let index = 0; index < startTimeEdited.length; index++) {
       const currentHour = index;
       const nextHour = index + 1;
       let hourCur = startTimeEdited[currentHour];
       let hourNext = startTimeEdited[nextHour];
-
-      // 10 ==> 11 ==> 12
       if (hourCur + 1 === hourNext) {
         this.endHour = hourNext;
+      } else if (hourCur == startTimeEdited[startTimeEdited.length - 1]) {
+        this.endHour = hourCur + 1;
+        break;
       } else if (hourNext > hourCur + 1) {
         this.endHour = hourNext - 1;
         break;
-      }
+      } 
     }
 
-    // Convert start hour to 24-hour format for comparison
-    // if (period === "PM" && startHour !== 12) {
-    //   startHour += 12;
-    // } else if (period === "AM" && startHour === 12) {
-    //   startHour = 0; // Handle midnight case
-    // }
-
-    console.log("End IS: ");
-    console.log(this.endHour);
-    console.log("Start IS: ");
-    console.log(startHour);
-
-    // Create end time options starting from the next hour after start time
     for (let hour = startHour + 1; hour <= this.endHour; hour++) {
-      console.log("in loop");
-      // Up to 6 PM
       const amPm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
+      const displayHour = hour > 12 ? hour - 12 : hour; 
       this.endTimeOptions.push(`${displayHour} ${amPm}`);
     }
   }

@@ -93,7 +93,7 @@ export class LoginComponent implements OnInit {
 
         // Call the API for login
         this.http
-            .post("http://localhost:5285/api/Account/Login", loginData)
+            .post("http://localhost:18105/api/Account/Login", loginData)
             .subscribe({
                 next: (response: any) => {
                     if (response.token) {

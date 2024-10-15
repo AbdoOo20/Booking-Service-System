@@ -290,16 +290,26 @@
         </mat-sidenav-container>
     </div>
 </div>
+<h2>Your Reviews</h2>
+<div>
+    @if (rev == null || rev.length === 0) {
+        <div>
+            <app-review-form  (reviewSubmitted)="handleReviewSubmission($event)" [bookids]="bookId"></app-review-form>
+        </div>
+    } @else {
+        
+        @for (review of rev; track $index;
+        let i = $index;) {
+            <div>
+                <app-reviews [reviewData]="review"></app-reviews>
+            </div>
+        }
+    }
+</div>
 
-@if(rev==null){
-<div>
-    <app-review-form [service]="service"></app-review-form>
-</div>
-} @else{
-<div>
-    <app-reviews [service]="service"></app-reviews>
-</div>
-} @if(service?.relatedServices.length != 0){
+
+
+@if(service.relatedServices.length != 0){
 <div class="section mt-3">
     <div class="px-3">
         <div class="theme-container">
