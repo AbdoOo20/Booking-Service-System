@@ -97,11 +97,7 @@ export class ConfirmationComponent implements OnInit {
             });
 
             // Fetch customer name
-            this.decodeService.getUserNameFromToken().subscribe({
-              next: (name) => {
-                this.customerName = name; // Adjust based on your response
-              }
-            });
+            this.customerName = this.decodeService.getUserNameFromToken();
 
             // Add booking
             this.bookingService.addBooking(JSON.stringify(this.bookingData)).subscribe({
