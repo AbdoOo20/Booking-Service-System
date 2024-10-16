@@ -114,7 +114,6 @@ export class HomeComponent implements OnInit {
     public mediaObserver: MediaObserver,
     public myServ: ServicesService,
     public CatServ: CategoriesService,
-    public wishListService:WishlistService,
     public decodeCustomerID:DecodingTokenService
   ) {
     this.settings = this.settingsService.settings;
@@ -170,7 +169,6 @@ export class HomeComponent implements OnInit {
     this.getCategories();
     this.GetRecSrvForBooking();
     this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
-    this.getWishListServices();
   }
 
   ngDoCheck() {
@@ -412,38 +410,5 @@ export class HomeComponent implements OnInit {
     });
   }
   // End
-
-  //Basma "Retrieve the Ids of services in WishList of Current Customer"
-  getWishListServices() {
-    this.wishListService.getWishlistServices(this.customerId).subscribe({
-      next: (data) => {
-        console.log('Raw Response Data:', data); // Check if it's a string
-  
-        // Check if data is a string and try to parse it
-        if (typeof data === 'string') {
-          try {
-            data = JSON.parse(data); // Attempt to parse the string into a JSON object
-          } catch (error) {
-            console.error('Failed to parse JSON string:', error);
-            return; // Exit if parsing fails
-          }
-        }
-  
-        // Now, check if the parsed data is an array
-        if (Array.isArray(data)) {
-          data.forEach(service => {
-            this.servicesIDs.push(service.id);
-          });
-          console.log(this.servicesIDs);
-        } else {
-          console.error('Expected an array but got:', typeof data); // Handle unexpected data type
-        }
-      },
-      error: (err) => {
-        console.error('Error fetching wishlist services:', err); // Handle errors
-      }
-    });
-  }
-  
   
 }
