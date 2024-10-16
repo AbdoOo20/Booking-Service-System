@@ -157,27 +157,32 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.customerId = this.decodeCustomerID.getUserIdFromToken();
-    this.wishListService.getWishlistServices(this.customerId).subscribe(
-      (data) => {
-        let properties: Property[] = JSON.parse(data);
-        this.wishListService.addToWishList(properties);
-        this.getSlides();
-        //this.getLocations();
-        this.getProperties();
-        this.getFeaturedProperties();
-        // My Function
-        // this.getServiceCategories(this.catChangeName);
-        // this.getServiceLocation(this.locChangeName);
-        // this.getServicePrice(this.fromPrice, this.toPrice);
-        // this.getServices();
-        this.getCategories();
-        this.GetRecSrvForBooking();
-        this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
-      },
-      (error) => {
-        console.error("Error loading wishlist", error);
-      }
-    );
+    this.getSlides();
+    //this.getLocations();
+    this.getProperties();
+    this.getFeaturedProperties();
+    // My Function
+    // this.getServiceCategories(this.catChangeName);
+    // this.getServiceLocation(this.locChangeName);
+    // this.getServicePrice(this.fromPrice, this.toPrice);
+    // this.getServices();
+    this.getCategories();
+    if (localStorage.getItem("token")) {
+      this.wishListService.getWishlistServices(this.customerId).subscribe(
+        (data) => {
+          let properties: Property[] = JSON.parse(data);
+          this.wishListService.addToWishList(properties);
+          this.GetRecSrvForBooking();
+          this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
+        },
+        (error) => {
+          console.error("Error loading wishlist", error);
+        }
+      );
+    }
+    this.GetRecSrvForBooking();
+    this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
+
     //Test
 
     //this.getWishListServices();
