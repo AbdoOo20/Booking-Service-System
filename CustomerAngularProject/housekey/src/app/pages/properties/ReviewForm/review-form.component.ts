@@ -53,7 +53,13 @@ constructor( public serv:ReviewServiceService,public bookServ:AllBookingsService
 }
   ngOnInit(): void {
     this.customerid=this.decodingCustomerID.getUserIdFromToken();
-    this.AllBooking.push(this.bookServ.getBooking(this.customerid));
+    this.bookServ.getBooking(this.customerid).subscribe({
+      next:(data)=> {console.log(data);
+        this.AllBooking.push(data);
+      },
+      error:(err)=>{console.log(err)}
+    })
+   ;
     console.log(this.AllBooking);
     console.log(this.bookids);
   }

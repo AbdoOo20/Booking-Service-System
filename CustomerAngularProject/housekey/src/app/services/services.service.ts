@@ -43,7 +43,7 @@ export class ServicesService {
   API_GetServicebyID = "http://localhost:18105/api/Services/";
   ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
   API_getAgents = "";
-  API_get_allWishList = "http://localhost:18105/api/wishlist/";
+ // API_get_allWishList = "http://localhost:18105/api/wishlist/";
   Favourite_service: wishList;
 
   constructor(
@@ -232,25 +232,28 @@ export class ServicesService {
         responseType: "text",
       })
       .subscribe(
-        (response) => {
-          this.snackBar.open(
-            "The Service " + service.name + " has been added to favorites.",
-            "×",
-            {
+        {
+          next: (response) => {
+            console.log('Success:', response);  // This will now log the plain text response
+            this.snackBar.open(
+              'The service "' + service.name + '" has been added to favorites.',
+              "×",
+              {
+                verticalPosition: "top",
+                duration: 3000,
+                direction: direction,
+              }
+            );
+          },
+          error: (err) => {
+            console.error('Error while adding to wishlist:', err);
+            this.snackBar.open("This Service Already In Wish List.", "×", {
               verticalPosition: "top",
               duration: 3000,
               direction: direction,
-            }
-          );
-        },
-        (error) => {
-          this.snackBar.open("Failed to add the property to favorites.", "×", {
-            verticalPosition: "top",
-            duration: 3000,
-            direction: direction,
-          });
-        }
-      );
+            });
+          }
+        });
   }
 
   public addToFavoritesInServiceDetails(
@@ -258,37 +261,42 @@ export class ServicesService {
     direction: any,
     CustomerID: string
   ) {
-    this.Favourite_service = new wishList(service.id, CustomerID);
-
+    var headers = this.header.getHeaders();
+    var data = {
+      serviceId: service.id,
+      customerId: CustomerID,
+    };
     this.http
-      .post(this.ApI_Add_to_wishList, this.Favourite_service, {})
+      .post(this.ApI_Add_to_wishList, JSON.stringify(data), {
+        headers,
+        responseType: "text",
+      })
       .subscribe(
-        (response) => {
-          // Success: Show a success message using snackbar
-          this.snackBar.open(
-            'The property "' + service.name + '" has been added to favorites.',
-            "×",
-            {
+        {
+          next: (response) => {
+            console.log('Success:', response);  // This will now log the plain text response
+            this.snackBar.open(
+              'The service "' + service.name + '" has been added to favorites.',
+              "×",
+              {
+                verticalPosition: "top",
+                duration: 3000,
+                direction: direction,
+              }
+            );
+          },
+          error: (err) => {
+            console.error('Error while adding to wishlist:', err);
+            this.snackBar.open("This Service Already In Wish List.", "×", {
               verticalPosition: "top",
               duration: 3000,
               direction: direction,
-            }
-          );
-        },
-        (error) => {
-          // Error: Handle the error case here, you can also show an error message
-          this.snackBar.open("Failed to add the property to favorites.", "×", {
-            verticalPosition: "top",
-            duration: 3000,
-            direction: direction,
-          });
-        }
-      );
+            });
+          }
+        });
   }
-  //to get services in the wish List
-  getAllServicesInWishList(customerid: string) {
-    return this.http.get(this.API_get_allWishList + "/" + customerid);
-  }
+
+
 
   getPropertyById(id: number): Observable<ServiceDetails> {
     return this.http.get<ServiceDetails>(this.API_GetServicebyID + "/" + id);

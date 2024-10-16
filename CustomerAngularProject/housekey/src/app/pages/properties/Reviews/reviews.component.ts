@@ -29,7 +29,7 @@ constructor(public serv:ReviewServiceService,public bookServ:AllBookingsService 
     this.serviceid=Number(params.get("id"));
     console.log(this.serviceid)})
 
-   this.customerid=this.decodeCustomerID.getUserIdFromToken();;
+   this.customerid=this.decodeCustomerID.getUserIdFromToken();
 
   this.serv.getAllReviewsForBookings(this.customerid,this.serviceid).subscribe({
     next:(data)=>{console.log(data);},

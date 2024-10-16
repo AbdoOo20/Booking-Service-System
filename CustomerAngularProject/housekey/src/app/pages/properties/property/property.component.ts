@@ -53,6 +53,8 @@ import { ReviewFormComponent } from "../ReviewForm/review-form.component";
 import { ReviewsComponent } from "../Reviews/reviews.component";
 import { DecodingTokenService } from "@services/decoding-token.service";
 import { Observable, throwIfEmpty } from "rxjs";
+import { WishlistService } from "@services/wishlist.service";
+
 
 @Component({
   selector: "app-property",
@@ -89,7 +91,7 @@ import { Observable, throwIfEmpty } from "rxjs";
     EmbedVideoService,
     AllBookingsService,
     ReviewServiceService,
-    DecodingTokenService,
+    DecodingTokenService,WishlistService
   ],
 })
 export class PropertyComponent implements OnInit {
@@ -117,8 +119,9 @@ export class PropertyComponent implements OnInit {
   public rev: any[] = [];
   public Services_WishList: any;
   public customerId: string;
-
+  public servicesIDs: number[] = [];
   @Output() bookId: number[] = [];
+  public serviceID:number;
   mapOptions: google.maps.MapOptions = {
     mapTypeControl: true,
     fullscreenControl: true,
@@ -126,6 +129,7 @@ export class PropertyComponent implements OnInit {
   lat: number = 0;
   lng: number = 0;
   token = localStorage.getItem("token");
+    
 
   constructor(
     public settingsService: SettingsService,
@@ -138,7 +142,7 @@ export class PropertyComponent implements OnInit {
     private domHandlerService: DomHandlerService,
     public bookservice: AllBookingsService, //bookingService
     public ReviewService: ReviewServiceService, //ReviewService
-    public DecodingCustomerID: DecodingTokenService
+    public DecodingCustomerID: DecodingTokenService,public wishListService:WishlistService
   ) {
     this.settings = this.settingsService.settings;
   }
@@ -148,6 +152,10 @@ export class PropertyComponent implements OnInit {
     //     this.getPropertyById(params["id"]);
     // });
     // this.customerId=this.DecodingCustomerID.getUserIdFromToken();
+    this.activatedRoute.paramMap.subscribe((params)=>{
+      this.serviceID=Number(params.get("id"));
+      console.log(this.serviceID)})
+
 
     this.sub = this.activatedRoute.params.subscribe((params) => {
       this.getSericeById(params["id"]);
@@ -177,7 +185,7 @@ export class PropertyComponent implements OnInit {
       phone: ["", Validators.required],
       message: ["", Validators.required],
     });
-
+    this.loadWishlistServices()
     this.checkForReview();
   }
 
@@ -323,28 +331,39 @@ export class PropertyComponent implements OnInit {
       this.customerId
     );
   }
-
-  // Assuming getAllServicesInWishList is asynchronous and returns a Promise or Observable
-  /* this.myServ.getAllServicesInWishList(this.customerId).subscribe((services) => {
-         this.Services_WishList = services;
-      
-          Check if this.service.id is already in the wishlist
-          const isInWishlist = this.Services_WishList.some(servWish => servWish.Id === this.service.id);
-      
-          if (isInWishlist) {
-            // Service is already in the wishlist, handle accordingly (e.g., update UI)
-            console.log('Service is already in wishlist:', this.service.id);
-            
-            // Example: Update UI or set a flag
-          } else {
-            // Service is not in the wishlist
-            console.log('Service is not in wishlist:', this.service.id);
-            // Example: Handle adding to wishlist logic
+  public loadWishlistServices() {
+    this.wishListService.getWishlistServices(this.customerId).subscribe({
+      next: (data) => {
+        // Parse the response only if it's a string
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data);
+          } catch (error) {
+            console.error('Failed to parse JSON string:', error);
+            return;
           }
-        }, (error) => {
-          console.error('Failed to fetch wishlist services:', error);
-          // Handle error scenario if needed
-        });*/
+        }
+  
+        // Ensure the data is an array and populate service IDs
+        if (Array.isArray(data)) {
+          this.servicesIDs = data.map(service => service.id);
+        } else {
+          console.error('Expected an array but got:', typeof data);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching wishlist services:', err);
+      }
+    });
+  }
+  
+  // Check if the service is already in favorites
+  public onFavorites(): boolean {
+    return this.servicesIDs.includes(this.service.id);  // Simplified check
+  }
+  
+
+ 
 
   public getRelatedProperties() {
     this.appService.getRelatedProperties().subscribe((data) => {
@@ -403,51 +422,52 @@ export class PropertyComponent implements OnInit {
     );
   }
 
+ 
   checkForReview() {
-    // this.customerId = this.DecodingCustomerID.getUserIdFromToken();  // Uncomment if you want to get customerId from token
-    // this.customerId="529d93df-bcdd-4b22-8f71-dd355f994798";
-    this.customerId = this.DecodingCustomerID.getUserIdFromToken(); // Hardcoded for now
-
-    this.ReviewService.getAllReviewsForBookings(
-      this.customerId,
-      this.service.id
-    ).subscribe({
+    // Get customer ID
+    this.customerId = this.DecodingCustomerID.getUserIdFromToken(); // Ensure this is returning a valid ID
+  
+    // Log before the API call
+    console.log('Fetching reviews for customer:', this.customerId, 'and service:', this.serviceID);
+  
+    // Fetch reviews
+    this.ReviewService.getAllReviewsForBookings(this.customerId, this.serviceID).subscribe({
       next: (data) => {
-        console.log(data); // Log the received data (bookings with reviews)
-
-        // Clear the array before assigning new values
+        console.log('Received review data:', data);  // Log the received data
+  
+        // Clear the rev array before adding new reviews
         this.rev = [];
-
-        // Loop through the received bookings with reviews
-        data.forEach((booking) => {
-          // Check if there are reviews for this booking
+  
+        // Process the bookings and reviews
+        data.forEach(booking => {
           if (booking.reviews && booking.reviews.length > 0) {
-            // Append the reviews for this booking to the rev array
-            this.rev.push(...booking.reviews); // Spread operator to merge reviews into the array
-            if (this.rev == null) {
-              this.bookId.push(booking.bookId);
-            }
+            // Append the reviews to the rev array
+            this.rev.push(...booking.reviews);
+          } else {
+            // If no reviews, add bookingId for future use
+            this.bookId.push(booking.bookId); 
           }
-          // if (this.rev==null){
-          // if(booking.booking && booking.booking.length >0){
-          //  console.log(booking.booking);
-          //   this.bookId = booking.booking[length-1];
-          // console.log(this.bookId);
-          //}
         });
-
+  
         // Log the final reviews array
-        console.log("All reviews:", this.rev);
+        console.log('All reviews:', this.rev);
       },
       error: (err) => {
-        console.error("Error:", err); // Handle any errors
-      },
+        console.error('Error fetching reviews:', err);  // More detailed error logging
+      }
     });
   }
-
+  
+  // Handle review submission
   handleReviewSubmission(reviewData: { rating: number; reply: string }) {
-    this.rev.push(reviewData); // Add the new review to the reviews array
-    console.log("New review added:", reviewData);
+    // Add the new review to the rev array
+    this.rev.push(reviewData);
+    console.log('New review added:', reviewData);
+  
+    // Recheck reviews after adding a new one
     this.checkForReview();
   }
-}
+  
+    
+    }
+    
