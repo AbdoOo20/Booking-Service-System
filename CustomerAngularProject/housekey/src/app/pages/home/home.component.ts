@@ -114,12 +114,8 @@ export class HomeComponent implements OnInit {
     public mediaObserver: MediaObserver,
     public myServ: ServicesService,
     public CatServ: CategoriesService,
-<<<<<<< HEAD
     public wishListService: WishlistService,
     public decodeCustomerID: DecodingTokenService
-=======
-    public decodeCustomerID:DecodingTokenService
->>>>>>> d8c121c93e732cc1bde8efb8f57b4f4c20c4e528
   ) {
     this.settings = this.settingsService.settings;
 
@@ -183,23 +179,8 @@ export class HomeComponent implements OnInit {
       }
     );
     //Test
-<<<<<<< HEAD
 
     //this.getWishListServices();
-=======
-    this.getSlides();
-    //this.getLocations();
-    this.getProperties();
-    this.getFeaturedProperties();
-    // My Function
-    // this.getServiceCategories(this.catChangeName);
-    // this.getServiceLocation(this.locChangeName);
-    // this.getServicePrice(this.fromPrice, this.toPrice);
-    // this.getServices();
-    this.getCategories();
-    this.GetRecSrvForBooking();
-    this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
->>>>>>> d8c121c93e732cc1bde8efb8f57b4f4c20c4e528
   }
 
   ngDoCheck() {
@@ -441,7 +422,6 @@ export class HomeComponent implements OnInit {
     });
   }
   // End
-<<<<<<< HEAD
 
   //Basma "Retrieve the Ids of services in WishList of Current Customer"
   // getWishListServices() {
@@ -474,7 +454,4 @@ export class HomeComponent implements OnInit {
   //     }
   //   });
   // }
-=======
-  
->>>>>>> d8c121c93e732cc1bde8efb8f57b4f4c20c4e528
 }

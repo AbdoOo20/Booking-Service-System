@@ -49,7 +49,6 @@ export class WishlistService {
             );
           },
           error: (err) => {
-            console.error("Error while adding to wishlist:", err);
             this.snackBar.open("This Service Already In Wish List.", "×", {
               verticalPosition: "top",
               duration: 3000,
