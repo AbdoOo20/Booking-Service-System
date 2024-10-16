@@ -86,15 +86,7 @@ export class FavoritesComponent implements OnInit {
         .deleteServiceFromWishlist(this.customerId, property.id)
         .subscribe(
           (response) => {
-            // إزالة العنصر من المصفوفة
-            //this.dataSource.data.splice(index, 1);
-
-            // تحديث الـ MatTableDataSource
-            // this.dataSource = new MatTableDataSource<Property>(this.dataSource.data);
-            // this.dataSource.paginator = this.paginator;
-            //this.dataSource.sort = this.sort;
-
-            // تحديث الجدول بدون إعادة تحميل الصفحة
+            this.wishlistService.removeFromWishList(property.id);
             this.table.renderRows();
           },
           (error) => {

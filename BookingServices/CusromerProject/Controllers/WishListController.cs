@@ -69,7 +69,14 @@ namespace BookingServices.Controllers
             WishList wish = new WishList() { ServiceId=existingService.ServiceId , CustomerId = wishList.CustomerId};
 
             _context.WishList.Add(wish);
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            { 
+                return StatusCode(500, ex.Message);
+            }
             return Ok("Service added to wishlist successfully.");
         }
 
@@ -86,7 +93,14 @@ namespace BookingServices.Controllers
             }
 
             _context.WishList.Remove(wishListItem);
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
             return Ok("Service removed from wishlist.");
         }
     }
