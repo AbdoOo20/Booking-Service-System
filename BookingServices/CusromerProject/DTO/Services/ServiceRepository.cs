@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using CustomerProject.DTO.Services;
 using Microsoft.DotNet.Scaffolding.Shared;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CusromerProject.DTO.Services
 {
@@ -168,37 +169,34 @@ namespace CusromerProject.DTO.Services
         }
 
         // 3. Get service name by ID with caching and without constraints
-        public async Task<string?> GetServiceNameByID(int serviceId)
+        public async Task<ServiceDetailsDTO> GetServiceNameByID(int serviceId)
         {
-            string cacheKey = $"service_name_{serviceId}";
+            ServiceDetailsDTO service;
 
-            // Check if the service name is in the cache
-            if (!_cache.TryGetValue(cacheKey, out string? serviceName))
+            try
             {
-                try
+                if(serviceId == 0)
                 {
-                    serviceName = await _context.Services
-                        .Where(s => s.ServiceId == serviceId)
-                        .Select(s => s.Name)
-                        .FirstOrDefaultAsync();
+                    return null;
+                }
 
-                    // If the service name is found, cache it
-                    if (serviceName != null)
-                    {
-                        var cacheOptions = new MemoryCacheEntryOptions
-                        {
-                            AbsoluteExpirationRelativeToNow = _cacheDuration
-                        };
-                        _cache.Set(cacheKey, serviceName, cacheOptions);
-                    }
-                }
-                catch (Exception ex)
+                var serviceDetails = await _context.Services
+                    .Where(s => s.ServiceId == serviceId)
+                    .Include(s => s.ServiceImages)
+                    .FirstOrDefaultAsync();
+
+                service = new ServiceDetailsDTO
                 {
-                    throw new Exception(ex.Message);
-                }
+                    Name = serviceDetails.Name,
+                    Images = serviceDetails.ServiceImages.Select(i => i.URL).ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
 
-            return serviceName;
+            return service;
         }
     }
 

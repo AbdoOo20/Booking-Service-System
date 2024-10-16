@@ -18,7 +18,7 @@ namespace CusromerProject.Controllers
 
         // GET: api/Reviews/{customerId}/{bookingId}
         [HttpGet("{customerId}")]
-       // [Authorize]
+       //[Authorize]
         public async Task<ActionResult<ReviewDTO>> GetReview(string customerId)
         {
             var result = await _reviewRepository.GetReviewByIdAsync(customerId);

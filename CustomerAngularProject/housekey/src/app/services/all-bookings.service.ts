@@ -23,7 +23,7 @@ _apiURL = "http://localhost:18105/api";
   }
 
   getService(serviceId : number):  Observable<any> {
-    return this._httpClient.get(`${this._apiURL}/Services/${serviceId}`);
+    return this._httpClient.get(`${this._apiURL}/Services/GetServiceNameByID/${serviceId}`);
   }
 
   getBookingWithService(id: string): Observable<any[]> {

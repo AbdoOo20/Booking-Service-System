@@ -95,7 +95,7 @@ namespace BookingServices.Controllers
                        booking => booking.PaymentIncomeId,
                        paymentIncome => paymentIncome.PaymentIncomeId,
                        (booking, paymentIncome) => new { booking, paymentIncome })
-                   .Where(x => x.paymentIncome.PaymentIncomeId == id)
+                   .Where(x => x.booking.Status == "Confirmed" && x.paymentIncome.PaymentIncomeId == id)
                    .Join(_context.BookingServices,
                        x => x.booking.BookingId,
                        bookingService => bookingService.BookingId,

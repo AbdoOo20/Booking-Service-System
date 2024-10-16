@@ -44,11 +44,6 @@ namespace BookingServices.Controllers
                 .Where(s => s.Price > 0) // عرض الخدمات التي تحتوي على سعر فقط
                 .ToList();
 
-            if (!servicesInWishList.Any())
-            {
-                return NotFound("No services Found!.");
-            }
-
             return Ok(servicesInWishList);
         }
 
