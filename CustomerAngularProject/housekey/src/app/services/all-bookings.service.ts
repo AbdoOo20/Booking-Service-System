@@ -12,7 +12,7 @@ _apiURL = "http://localhost:18105/api";
 
   constructor(private _passToken: PassTokenWithHeaderService) { }
 
-  deleteBooking(id: number): Observable<void> {
+  cancelBooking(id: number): Observable<void> {
     return this._httpClient.delete<void>(`${this._apiURL}/Book/${id}`, {
       headers: this._passToken.getHeaders()
     });
@@ -23,7 +23,7 @@ _apiURL = "http://localhost:18105/api";
   }
 
   getService(serviceId : number):  Observable<any> {
-    return this._httpClient.get(`${this._apiURL}/Services/${serviceId}`);
+    return this._httpClient.get(`${this._apiURL}/Services/GetServiceNameByID/${serviceId}`);
   }
 
   getBookingWithService(id: string): Observable<any[]> {

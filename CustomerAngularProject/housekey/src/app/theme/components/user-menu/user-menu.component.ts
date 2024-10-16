@@ -57,8 +57,6 @@ export class UserMenuComponent {
         this.myServ.getCustomerByID(id).subscribe({
             next: (data) => {
                 this.customer = data;
-                console.log(data);
-                console.log(this.customer);
             },
             error: (err) => {
                 console.log(err);

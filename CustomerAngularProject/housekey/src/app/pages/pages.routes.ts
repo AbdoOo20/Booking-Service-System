@@ -60,6 +60,13 @@ export const routes: Routes = [
                     ),
             },
             {
+                path: "confirm-email",
+                loadComponent: () =>
+                    import("./confirmation-email/confirmation-email.component").then(
+                        (c) => c.ConfirmationEmailComponent
+                    ),
+            },
+            {
                 // path: "register",
                 // loadComponent: () =>
                 //     import("./register/register.component").then(

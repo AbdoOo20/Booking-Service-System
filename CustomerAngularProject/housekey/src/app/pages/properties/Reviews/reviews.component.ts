@@ -18,32 +18,24 @@ import { ActivatedRoute } from '@angular/router';
 export class ReviewsComponent implements OnInit {
   bookingId:number;
   customerid:string;
-  review : any ;
+  @Input() reviewData: any;
   allBooking : any[];
   serviceid:number;
-  @Input() service : ServiceDetails;
+ // @Input() service : ServiceDetails;
 constructor(public serv:ReviewServiceService,public bookServ:AllBookingsService ,public decodeCustomerID:DecodingTokenService,private route: ActivatedRoute){}
   ngOnInit(): void {
-   this.customerid=this.decodeCustomerID.getUserIdFromToken();
+  // this.customerid=this.decodeCustomerID.getUserIdFromToken();
    this.route.paramMap.subscribe((params)=>{
     this.serviceid=Number(params.get("id"));
     console.log(this.serviceid)})
 
-   //this.customerid="4aba6942-2fe4-41a9-8a69-3e2196645645";
-   this.allBooking.push(this.bookServ.getBooking(this.customerid));
-   console.log(this.allBooking);
-   this.serviceid = this.service.id;
-   for (const booking of this.allBooking){
+   this.customerid=this.decodeCustomerID.getUserIdFromToken();
 
-   if(booking.serviceId==this.serviceid) {
-    this.bookingId=booking.Id;
-    this.serv.getReview(this.bookingId,this.customerid).subscribe({         //customerID from Token
-      next:(data)=>{
-        this.review = data;
-      },
-      error:(err)=>{console.log(err)}
-    });
-   }}}
+  this.serv.getAllReviewsForBookings(this.customerid,this.serviceid).subscribe({
+    next:(data)=>{console.log(data);},
+    error:(err)=>{console.log(err)}
+  })
+  }
   }
     
    

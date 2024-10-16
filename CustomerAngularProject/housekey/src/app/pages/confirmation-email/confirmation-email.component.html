@@ -1,0 +1,24 @@
+<style>
+    .alert {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 5px;
+    }
+  
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+  
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+  
+<div class="container">
+    <div *ngIf="message" class="alert" [ngClass]="{'alert-success': message.includes('successfully'), 'alert-danger': message.includes('failed')}">
+      {{ message }}
+    </div>
+  </div>
+  

@@ -89,9 +89,10 @@
                     [service]="service"
                     [viewType]="viewType"
                     [viewColChanged]="viewCol"
+                    [servIds]="servicesIDs"
                 ></app-property-item>
             </div>
-            } } @if(itemsToShow < AllServices.length){
+            } } @if(itemsToShow < AllServices?.length){
             <div fxFlex="100" fxLayoutAlign="center center" class="p-2 mt-2">
                 <button
                     class="uppercase load-more-btn"
@@ -243,4 +244,4 @@
 
 <app-clients></app-clients> -->
 
-<!-- <app-get-in-touch></app-get-in-touch> -->
+<app-get-in-touch></app-get-in-touch>

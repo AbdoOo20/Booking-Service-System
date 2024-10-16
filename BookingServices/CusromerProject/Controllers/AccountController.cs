@@ -49,6 +49,21 @@ namespace CusromerProject.Controllers
                     return BadRequest(ModelState);
                 }
 
+                // Check if the email is confirmed
+                if (!await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(confirmationToken));
+                    var angularUrl = "http://localhost:4200/confirm-email";
+                    var confirmationLink = $"{angularUrl}?userId={user.Id}&token={WebUtility.UrlEncode(encodedToken)}";
+                    await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
+                        $"Please confirm your account by clicking this link: <a href='{confirmationLink}'>link</a>");
+
+                    ModelState.AddModelError("Confirm Email", "Please confirm your email before logging in.");
+
+                    return BadRequest(new { Message = ModelState });
+                }
+
                 bool isBlocked = (from C in context.Customers
                                   where C.CustomerId == user.Id
                                   select C.IsBlocked).FirstOrDefault() ?? false;
@@ -80,10 +95,14 @@ namespace CusromerProject.Controllers
                                 SecurityAlgorithms.HmacSha256
                             );
 
+                        var tokenExpiration = loginDTO.RememberMe
+                        ? DateTime.Now.AddDays(30) // Token valid for 30 days if RememberMe is true
+                        : DateTime.Now.AddHours(1);
+
                         JwtSecurityToken token = new JwtSecurityToken(
                                 audience: _configuration["JwtSettings:Audience"],
                                 issuer: _configuration["JwtSettings:Issuer"],
-                                expires: DateTime.Now.AddHours(1),
+                                expires: tokenExpiration,
                                 claims: userClaims,
                                 signingCredentials: credentials
                                 );
@@ -91,7 +110,7 @@ namespace CusromerProject.Controllers
                         return Ok(new
                         {
                             token = new JwtSecurityTokenHandler().WriteToken(token),
-                            expiration = DateTime.Now.AddHours(1),
+                            expiration = tokenExpiration,
                         });
                     }
                     ModelState.AddModelError("Password", "The name or password invaild");
@@ -126,6 +145,18 @@ namespace CusromerProject.Controllers
             {
                 return BadRequest(new { message = "Error creating user", errors = result.Errors });
             }
+
+            // Generate and URL-safe encode the confirmation token
+            var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(confirmationToken)); // Encode safely
+
+            var angularUrl = "http://localhost:4200/confirm-email";
+            var confirmationLink = $"{angularUrl}?userId={user.Id}&token={WebUtility.UrlEncode(encodedToken)}";
+
+            // Send confirmation email
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
+                $"Please confirm your account by clicking this link: <a href='{confirmationLink}'>link</a>");
+
             var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
             if (!roleResult.Succeeded)
             {
@@ -147,7 +178,7 @@ namespace CusromerProject.Controllers
             context.Customers.Add(customer);
             await context.SaveChangesAsync();
 
-            return Ok(new { message = "Customer Created Successfully" });
+            return Ok(new { message = "Customer Created Successfully, A confirmation email has been sent." });
 
         }
 
@@ -204,6 +235,32 @@ namespace CusromerProject.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return BadRequest(new { message = "Invalid user ID or token." });
+            }
+
+            // Decode the Base64-encoded token and then URL decode it
+            var decodedToken = Encoding.UTF8.GetString(Convert.FromBase64String(WebUtility.UrlDecode(token)));
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Email confirmed successfully." });
+            }
+
+            return BadRequest(new { message = "Email confirmation failed." });
         }
     }
 }
