@@ -1,7 +1,6 @@
 import {
   Component,
   ElementRef,
-  Input,
   NgZone,
   OnInit,
   ViewChild,
@@ -14,7 +13,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
-import { MatSelectModule } from "@angular/material/select";
+import { MatSelectChange, MatSelectModule } from "@angular/material/select";
 import { MatStepper, MatStepperModule } from "@angular/material/stepper";
 import { AppService } from "@services/app.service";
 import { DomHandlerService } from "@services/dom-handler.service";
@@ -31,9 +30,8 @@ import { Service } from "../../common/interfaces/service";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { CommonModule, Time } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { PayPalService } from "@services/pay-pal.service";
-import { DataService } from "@services/data.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ContractDialogComponent } from "./../../shared-components/contract-dialog/contract-dialog.component";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -45,6 +43,9 @@ import { _SharedService } from "@services/passing-data.service";
 import { DecodingTokenService } from "@services/decoding-token.service";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
+import { PaymentIncome } from "../../common/interfaces/payment-income";
+import { PaymentsService } from "@services/payments.service";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
   selector: "app-submit-property",
@@ -67,6 +68,7 @@ import { Router } from "@angular/router";
     MatNativeDateModule,
     CommonModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: "./submit-property.component.html",
 })
@@ -121,12 +123,17 @@ export class SubmitPropertyComponent implements OnInit {
   public maxValue: number;
   public amount: number;
 
+  //Get Payment Incomes Initialization
+  public PaymentMethods: PaymentIncome[] = [];
+
+
   // Booking Data
   bookingData: any;
   public eventBookingDate: string;
   public startBookingTime: string;
   public endBookingTime: string;
   CustomerIDFromToken: any;
+  paymentMethodId: number;
 
   constructor(
     public appService: AppService,
@@ -140,7 +147,9 @@ export class SubmitPropertyComponent implements OnInit {
     private NewBooking: _SharedService,
     private decodingService: DecodingTokenService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private PaymentsService: PaymentsService,
+
   ) {
     // this.total = 0;
   }
@@ -176,6 +185,13 @@ export class SubmitPropertyComponent implements OnInit {
     this.maxDate = new Date(currentDate.setMonth(currentDate.getMonth() + 3));
     this.CustomerIDFromToken = this.decodingService.getUserIdFromToken();
 
+    //Get Payment methodes:
+    this.PaymentsService.getAllPaymentIncoms().subscribe({
+      next: (data) => {
+        console.log(data);
+        this.PaymentMethods = data;
+      }
+    })
     this.submitForm = this.fb.group({
       booking: this.fb.group({
         service: [""],
@@ -186,9 +202,10 @@ export class SubmitPropertyComponent implements OnInit {
         quantity: [""],
       }),
       payment: this.fb.group({
-        amount: [0, Validators.required],
-        minValue: 0,
-        maxValue: 0,
+        amount: ['', [Validators.required, Validators.maxLength(5)]],
+        maxValue: ['', [Validators.required, Validators.maxLength(5)]],
+        minValue: ['', [Validators.required, Validators.maxLength(5)]],
+        paymentMethod: ['', Validators.required],
       }),
     });
     const today = new Date();
@@ -214,6 +231,7 @@ export class SubmitPropertyComponent implements OnInit {
           payment: {
             minValue: this.service.initialPayment,
             maxValue: this.service.priceForTheCurrentDay,
+            paymentMethod: [null, Validators.required],
           },
         });
         this.hasQuantity = this.service.quantity > 0 ? true : false;
@@ -240,10 +258,15 @@ export class SubmitPropertyComponent implements OnInit {
       ?.valueChanges.subscribe((startTime) => {
         this.updateEndTimeOptions(startTime);
       });
+    this.submitForm.get("payment.paymentMethod")
+      ?.valueChanges.subscribe((paymentMethodId) => {
+        console.log(paymentMethodId);
+        this.paymentMethodId = paymentMethodId;
+      });
+
     this.initializeTimeOptions();
     this.calculateTotal();
   }
-
   shareData(): void {
     // Convert booking form data
     const selectedDate = this.submitForm.get("booking.eventDate").value;
@@ -254,23 +277,28 @@ export class SubmitPropertyComponent implements OnInit {
       this.submitForm.get("booking.endTime").value
     );
     console.log(selectedDate);
-
+    const formatedEvantDate = this.formatEventDate(selectedDate);
+    console.log(formatedEvantDate);
+    localStorage.setItem('NewDataFormat', formatedEvantDate);
+    
     this.bookingData = {
       bookId: 0,
       eventDate: selectedDate,
       startTime: convertedStartTime,
       endTime: convertedEndTime,
-      initialPaymentPercentage: 20,
-      status: "Pending",
+      initialPaymentPercentage: this.service.initialPayment,
+      status: "",
       quantity: Number(this.submitForm.get("booking.quantity").value),
       price: parseFloat(this.submitForm.get("booking.priceEuro").value),
-      cashOrCashByHandOrInstallment: "Cash",
+      cashOrCashByHandOrInstallment: "",
       bookDate: new Date().toISOString(),
       type: "Service",
       customerId: this.CustomerIDFromToken,
       serviceId: this.serviceID,
-      paymentIncomeId: 1,
+      paymentIncomeId: this.paymentMethodId,
     };
+
+    console.log(this.bookingData);
 
     // Save data in local storage
     localStorage.setItem("bookingData", JSON.stringify(this.bookingData));
@@ -279,6 +307,19 @@ export class SubmitPropertyComponent implements OnInit {
     this.sharedService.setData(this.bookingData);
     console.log("Booking data shared:", this.bookingData);
     this.NewBooking.setData(this.bookingData);
+  }
+
+
+  formatEventDate(dateString: string): string {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long', // 'short' for abbreviated month names
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // Set to false for 24-hour format
+    };
+    return new Date(dateString).toLocaleString('en-US', options);
   }
 
   convertTo24HourFormat(time: string): string {
@@ -331,7 +372,30 @@ export class SubmitPropertyComponent implements OnInit {
       ?.setValue(minPrice, { emitEvent: false });
   }
 
+  // Declare a variable to store the selected method ID
+  selectedPaymentMethodId: number | null = null;
+
+  onSelectMethod(methodId: number): void {
+    this.selectedPaymentMethodId = methodId;
+    console.log('Selected Payment Method ID:', this.selectedPaymentMethodId);
+  }
+
+  // Custom validator function
+  amountRangeValidator = (min: number, max: number) => {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const amount = control.value;
+      if (amount < min || amount > max) {
+        return { outOfRange: true };
+      }
+      return null;
+    };
+  };
+  loading: boolean = false;
+
   CreatePayment() {
+    // Set loading to true when the payment process starts
+    this.loading = true;
+
     // Share the booking data before proceeding with payment
     this.shareData(); // Call shareData here to share the booking data
 
@@ -349,6 +413,7 @@ export class SubmitPropertyComponent implements OnInit {
       amount <= 0
     ) {
       console.warn("Total must be between minimum and maximum values:", amount);
+      this.loading = false; // Stop loading if validation fails
       return; // Exit the method if the total is not in the valid range
     }
 
@@ -367,9 +432,11 @@ export class SubmitPropertyComponent implements OnInit {
       },
       error: (error) => {
         console.error("Payment Error:", error);
+        this.loading = false; // Stop loading on error
       },
     });
   }
+
 
   private initializeTimeOptions() {
     this.timeOptions = [];
@@ -429,12 +496,12 @@ export class SubmitPropertyComponent implements OnInit {
       } else if (hourNext > hourCur + 1) {
         this.endHour = hourNext - 1;
         break;
-      } 
+      }
     }
 
     for (let hour = startHour + 1; hour <= this.endHour; hour++) {
       const amPm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour > 12 ? hour - 12 : hour; 
+      const displayHour = hour > 12 ? hour - 12 : hour;
       this.endTimeOptions.push(`${displayHour} ${amPm}`);
     }
   }

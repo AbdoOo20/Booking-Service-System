@@ -4,28 +4,30 @@ import { PaymentsService } from '@services/payments.service';
 import { PayPalService } from '@services/pay-pal.service';
 import { BookingService } from '@services/booking.service';
 import { DecodingTokenService } from '@services/decoding-token.service';
+import { ServiceForConfirmation } from '@services/ServiceForConfirmation';
 
 @Component({
   selector: 'app-confirmation',
   standalone: true,
-  imports: [],
+  imports: [], // Make sure to add CommonModule here if needed
   templateUrl: './confirmation.component.html',
-  styles: ``,
+  styles: [],
 })
 export class ConfirmationComponent implements OnInit {
   confirmationMessage: string;
   confirmationDate: string;
   transactionId: string;
+  serviceName: string;
+  customerName: string;
+  eventDate: any;
+  bookingStatus: any;
+  totalPrice: number;
   amount: string;
   paymentId: string;
-  paymentDetails: any;
-  bookingDetails: any;
   bookingData: any;
-  NewBookingObject: any;
-  serviceObject: Object;
   BookingIdFromPayInstallment: any;
   CustomerID: string;
-
+  formattedEventDate: string; // New property to hold formatted date
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -33,122 +35,133 @@ export class ConfirmationComponent implements OnInit {
     private payPal: PayPalService,
     private bookingService: BookingService,
     private decodeService: DecodingTokenService,
+    private ServiceForConfirmation: ServiceForConfirmation,
   ) {
     this.confirmationMessage = 'Your Payment has been confirmed!';
     this.confirmationDate = new Date().toLocaleString();
     this.transactionId = '';
     this.amount = '';
+    this.totalPrice = 0; // Initialize totalPrice
   }
 
   ngOnInit(): void {
-    console.log(this.decodeService.getUserIdFromToken());
     this.CustomerID = this.decodeService.getUserIdFromToken();
+
     // Retrieve the payment ID from query parameters
     this.route.queryParams.subscribe(queryParams => {
       this.paymentId = queryParams['paymentId'];
-      console.log('Payment ID retrieved:', this.paymentId); // Log the payment ID
-
-
       this.BookingIdFromPayInstallment = localStorage.getItem('bookingID');
-      if (this.BookingIdFromPayInstallment)
-        console.log(this.BookingIdFromPayInstallment);
 
       // Retrieve booking data from local storage if available
       const savedBookingData = localStorage.getItem('bookingData');
       if (savedBookingData) {
         this.bookingData = JSON.parse(savedBookingData);
+        this.bookingData = JSON.parse(savedBookingData);
+        console.log('Booking data retrieved:', this.bookingData); // Log the booking data
+        this.bookingData = JSON.parse(savedBookingData);
         console.log('Booking data retrieved:', this.bookingData); // Log the booking data
       }
 
       if (this.paymentId) {
-        this.transactionId = this.paymentId;
-        this.getPaymentDetails(this.paymentId);  // Fetch payment details
+        this.transactionId = this.paymentId; // Set the transaction ID
+        this.getPaymentDetails(this.paymentId); // Fetch payment details
       }
     });
   }
 
   getPaymentDetails(paymentId: string): void {
-    console.log('Fetching payment details for ID:', paymentId); // Log fetching details
     this.payPal.getPaymentsById(paymentId).subscribe({
       next: (response) => {
-        console.log('Payment details response:', response); // Log the response
         if (response.state === 'created') {
           this.amount = response.transactions[0].amount.total;
-          console.log('Payment amount:', this.amount); // Log the payment amount
 
-          // Check if booking details exist before adding booking
           if (this.bookingData) {
-            // Add booking
-            console.log("this in Confirmation and BookingObject:");
+            this.totalPrice = this.bookingData.price; // Assign totalPrice from booking data
 
-            console.log(this.bookingData);
-            this.bookingService.addBooking(JSON.stringify(this.bookingData, null, 2)).subscribe({
-              
+            if (this.amount == this.bookingData.price) {
+              this.bookingData.status = "Paid";
+              this.bookingData.cashOrCashByHandOrInstallment = "Cash";
+            } else {
+              this.bookingData.status = "Pending";
+              this.bookingData.cashOrCashByHandOrInstallment = "Installment";
+            }
+            this.eventDate = this.bookingData.eventDate;
+            this.formattedEventDate = this.formatEventDate(this.eventDate);
+            this.bookingStatus = this.bookingData.status;
+
+            // Fetch service name
+            this.ServiceForConfirmation.getServiceName(this.bookingData.serviceId).subscribe({
+              next: (data) => {
+                this.serviceName = data.serviceName; // Adjust based on your response
+              }
+            });
+
+            // Fetch customer name
+            this.decodeService.getUserNameFromToken().subscribe({
+              next: (name) => {
+                this.customerName = name; // Adjust based on your response
+              }
+            });
+
+            // Add booking
+            this.bookingService.addBooking(JSON.stringify(this.bookingData)).subscribe({
               next: (bookingResponse) => {
-                console.log('Booking added successfully:', bookingResponse); // Log booking response
-                // Add payment
                 this.paymentsService.addPayment({
                   customerId: this.CustomerID,
                   bookingId: bookingResponse.id,
                   paymentDate: this.bookingData.selectedDate,
-                  paymentValue: response.transactions[0].amount.total
-                }).subscribe({
-                  next: (paymentResponse) => {
-                    console.log('Payment added successfully:', paymentResponse); // Log payment response
-                  },
-                  error: (err) => {
-                    console.error('Error adding payment:', err); // Log payment error
-                  }
-                });
-              },
-              error: (err) => {
-                console.error('Error adding booking:', err); // Log booking error
+                  paymentValue: this.amount,
+                }).subscribe();
               }
             });
-            localStorage.removeItem('bookingData');
-          }
-          else if (this.BookingIdFromPayInstallment) {
-            console.log("Payment without Book" + this.BookingIdFromPayInstallment);
+
+          } else if (this.BookingIdFromPayInstallment) {
+            // Payment without booking
             this.paymentsService.addPayment({
               customerId: this.CustomerID,
               bookingId: this.BookingIdFromPayInstallment,
               paymentDate: new Date().toISOString(),
-              paymentValue: response.transactions[0].amount.total
-            }).subscribe({
-              next: (paymentResponse) => {
-                console.log('Payment added successfully:', paymentResponse); // Log payment response
-              },
-              error: (err) => {
-                console.error('Error adding payment:', err); // Log payment error
-              }
-            });
-            localStorage.removeItem('bookingID');
+              paymentValue: this.amount,
+            }).subscribe();
           }
         }
       },
       error: (err) => {
-        console.error('Error fetching payment details:', err); // Log error fetching payment details
+        console.error('Error fetching payment details:', err);
       }
     });
   }
 
+  formatEventDate(dateString: string): string {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long', // 'short' for abbreviated month names
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // Set to false for 24-hour format
+    };
+    return new Date(dateString).toLocaleString('en-US', options);
+  }
+
   // Redirect to home page
   goToHome(): void {
-    console.log('Navigating to home page'); // Log navigation action
     this.router.navigate(['/home']);
+    localStorage.removeItem('bookingData');
+    localStorage.removeItem('bookingID');
   }
 
   // Print the confirmation
-  printConfirmation() {
+  printConfirmation(): void {
     const printContents = document.getElementById('printSection')?.innerHTML;
     const originalContents = document.body.innerHTML;
 
     if (printContents) {
-      console.log('Printing confirmation'); // Log print action
       document.body.innerHTML = printContents;
       window.print();
       document.body.innerHTML = originalContents;
       window.location.reload();
     }
   }
+
 }

@@ -5,8 +5,14 @@
 @using BookingServices.Data;
 @{
     IdentityUser? user = await UserManager.GetUserAsync(User);
+    string providerName;
     var prov = context.ServiceProviders.FirstOrDefault(s=>s.ProviderId == user.Id);
-    string providerName = prov.Name;
+    if (prov is not null)
+    {
+        providerName = prov.Name;
+    }
+    else
+        providerName = "";
 
 }
 @if (SignInManager.IsSignedIn(User))

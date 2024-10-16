@@ -1,5 +1,6 @@
 ﻿using BookingServices.Data;
 using CusromerProject.DTO.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,6 +59,18 @@ namespace CusromerProject.Controllers
             if (serviceName == null)
                 return NotFound("Service Not Found");
             return Ok(serviceName);
+        }
+
+        [HttpGet("GetServiceNameByIDV2/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetServiceNameByIdV2(int id)
+        {
+            if (id <= 0)
+                return BadRequest("UnExpected Error");
+            var serviceName = await _serviceRepository.GetServiceNameByIdV2(id);
+            if (serviceName == null)
+                return NotFound("Service Not Found");
+            return Ok(new { serviceName });
         }
     }
 }

@@ -38,22 +38,22 @@ export class LogoComponent {
       currentUrl === "/" ||
       currentUrl === "/contact" ||
       currentUrl === "/about";
-      console.log("Current URL:", currentUrl, "Is Home Page:", this.isHomePage);
+      //console.log("Current URL:", currentUrl, "Is Home Page:", this.isHomePage);
   }
 
   updateLogoBasedOnScroll() {
     this.checkIfHomePage();
-    console.log(this.router.url);
+    //console.log(this.router.url);
 
     if (this.isHomePage) {
-      console.log("if");
+      //console.log("if");
       if (window.scrollY === 0) {
         this.logoSrc = "images/logos/logo-new-white.png";
       } else if (window.scrollY > 20) {
         this.logoSrc = "images/logos/logo-new-blue.png";
       }
     } else {
-      console.log("else");
+      //console.log("else");
 
       this.logoSrc = "images/logos/logo-new-blue.png";
     }

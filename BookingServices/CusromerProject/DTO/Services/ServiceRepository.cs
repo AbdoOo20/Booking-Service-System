@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using CustomerProject.DTO.Services;
 using Microsoft.DotNet.Scaffolding.Shared;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CusromerProject.DTO.Services
 {
@@ -198,6 +200,24 @@ namespace CusromerProject.DTO.Services
                 }
             }
 
+            return serviceName;
+        }
+    
+        public async Task<string> GetServiceNameByIdV2(int serviceId)
+        {
+            string? serviceName;
+            try
+            {
+                serviceName = await _context.Services
+                   .Where(s => s.ServiceId == serviceId)
+                   .Select(s => s.Name)
+                   .FirstOrDefaultAsync();
+                if (serviceName is null) return null;
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
             return serviceName;
         }
     }
