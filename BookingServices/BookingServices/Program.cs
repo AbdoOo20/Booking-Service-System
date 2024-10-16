@@ -4,8 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Features;
 using BookingServices.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using BookingServices.ViewModel;
-
+using BookingServices.Jobs;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace BookingServices
 {
@@ -21,6 +25,35 @@ namespace BookingServices
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+
+
+            // Add Quartz services
+            builder.Services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionJobFactory(); // Use DI for Jobs
+
+                // Define the job and tie it to the UpdateServiceProviderBalancesJob class
+                var jobKey = new JobKey("UpdateServiceProviderBalancesJob");
+                q.AddJob<UpdateServiceProviderBalancesJob>(opts => opts.WithIdentity(jobKey));
+
+                // Create a trigger that fires at 12 AM every day
+                q.AddTrigger(opts => opts
+                    .ForJob(jobKey)  // Link the trigger to the job
+                    .WithIdentity("UpdateServiceProviderBalancesTrigger")
+                    //.WithCronSchedule("0/10 * * * * ?") // Cron expression for daily each 10 second
+                    .WithCronSchedule("0 0 0 * * ?") // Cron expression for daily at 12 AM
+                    .WithDescription("Daily task to update service provider balances at 12 AM"));
+            });
+            // Add Quartz.NET hosted service
+            builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+
+
+            // Add logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole(); // This will allow console logging
+
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -73,6 +106,7 @@ namespace BookingServices
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddRazorPages();
+
 
             var app = builder.Build();
 
