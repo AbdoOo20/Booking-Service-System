@@ -54,6 +54,7 @@ import { ReviewsComponent } from "../Reviews/reviews.component";
 import { DecodingTokenService } from "@services/decoding-token.service";
 import { Observable, throwIfEmpty } from "rxjs";
 
+
 @Component({
     selector: "app-property",
     standalone: true,
@@ -118,6 +119,7 @@ export class PropertyComponent implements OnInit {
     public Services_WishList :any;
     public customerId:string;
     
+    
 @Output() bookId :number[] =[];
     mapOptions: google.maps.MapOptions = {
         mapTypeControl: true,
@@ -145,10 +147,11 @@ export class PropertyComponent implements OnInit {
     }
 
     ngOnInit() {
+        
         // this.sub = this.activatedRoute.params.subscribe((params) => {
         //     this.getPropertyById(params["id"]);
         // });
-       // this.customerId=this.DecodingCustomerID.getUserIdFromToken();
+        this.customerId=this.DecodingCustomerID.getUserIdFromToken();
      
         this.sub = this.activatedRoute.params.subscribe((params) => {
             this.getSericeById(params["id"]);
@@ -324,7 +327,7 @@ export class PropertyComponent implements OnInit {
 
     public addToFavorites() {
         this.myServ.addToFavoritesInServiceDetails(
-            this.service,
+            this.service.id,
             this.settings.rtl ? "rtl" : "ltr",
             this.customerId
         );
@@ -426,13 +429,15 @@ export class PropertyComponent implements OnInit {
           
               // Loop through the received bookings with reviews
               data.forEach(booking => {
-                
+                console.log(booking.booking);
                 // Check if there are reviews for this booking
                 if (booking.reviews && booking.reviews.length > 0) {
+                    console.log(booking.reviews);
                   // Append the reviews for this booking to the rev array
                   this.rev.push(...booking.reviews);  // Spread operator to merge reviews into the array
                   if(this.rev == null){
                    this.bookId.push(booking.bookId); 
+                   console.log(this.bookId)
                   }
                 }
                // if (this.rev==null){
@@ -456,7 +461,7 @@ export class PropertyComponent implements OnInit {
       handleReviewSubmission(reviewData: { rating: number; reply: string }) {
         this.rev.push(reviewData); // Add the new review to the reviews array
         console.log('New review added:', reviewData);
-    this.checkForReview();
+        this.checkForReview();
     }
     }
     

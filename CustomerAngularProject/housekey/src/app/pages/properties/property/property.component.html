@@ -195,7 +195,7 @@
                             class="item"
                         >
                             <span>Start Time:</span>
-                            <span>{{ service.startTime }}</span>
+                            <span>{{ service?.startTime }}</span>
                         </div>
                         <div
                             fxFlex="100"
@@ -204,9 +204,9 @@
                             class="item"
                         >
                             <span>End Time:</span>
-                            <span>{{ service.endTime }}</span>
+                            <span>{{ service?.endTime }}</span>
                         </div>
-                        @if(service.quantity != 0){
+                        @if(service?.quantity != 0){
                         <div
                             fxFlex="100"
                             fxFlex.gt-xs="50"
@@ -214,7 +214,7 @@
                             class="item"
                         >
                             <span>Qunatity:</span>
-                            <span>{{ service.quantity }}</span>
+                            <span>{{ service?.quantity }}</span>
                         </div>
                         }
                         <div
@@ -224,7 +224,7 @@
                             class="item"
                         >
                             <span>Initail Payment:</span>
-                            <span>{{ service.initialPayment }}</span>
+                            <span>{{ service?.initialPayment }}</span>
                         </div>
                         <div
                             fxFlex="100"
@@ -233,7 +233,7 @@
                             class="item"
                         >
                             <span>Category:</span>
-                            <span>{{ service.category }}</span>
+                            <span>{{ service?.category }}</span>
                         </div>
                         <div
                             fxFlex="100"
@@ -242,7 +242,7 @@
                             class="item"
                         >
                             <span>Provider Name:</span>
-                            <span>{{ service.providerName }}</span>
+                            <span>{{ service?.providerName }}</span>
                         </div>
                         <div
                             fxFlex="100"
@@ -251,7 +251,7 @@
                             class="item"
                         >
                             <span>Service Type:</span>
-                            @if(service.quantity == 0){
+                            @if(service?.quantity == 0){
                             <span>For Rent</span>
                             }@else{
                             <span>For Sale</span>
@@ -276,7 +276,7 @@
                     <mat-card-header class="pt-0" fxLayoutAlign="center center">
                         <mat-card-title class="uppercase">
                             <a
-                                [routerLink]="['/Book', service.id]"
+                                [routerLink]="['/Book', service?.id]"
                                 mat-raised-button
                                 color="primary"
                                 class="uppercase mx-1"
@@ -290,26 +290,10 @@
         </mat-sidenav-container>
     </div>
 </div>
-<h2>Your Reviews</h2>
-<div>
-    @if (rev == null || rev.length === 0) {
-        <div>
-            <app-review-form  (reviewSubmitted)="handleReviewSubmission($event)" [bookids]="bookId"></app-review-form>
-        </div>
-    } @else {
-        
-        @for (review of rev; track $index;
-        let i = $index;) {
-            <div>
-                <app-reviews [reviewData]="review"></app-reviews>
-            </div>
-        }
-    }
-</div>
 
 
 
-@if(service.relatedServices.length != 0){
+@if(service?.relatedServices.length != 0){
 <div class="section mt-3">
     <div class="px-3">
         <div class="theme-container">
@@ -321,5 +305,20 @@
     </div>
 </div>
 }
+
+<div>
+    @if (rev == null ) {
+        <div>
+            <app-review-form  (reviewSubmitted)="handleReviewSubmission($event)" [bookids]="bookId"></app-review-form>
+        </div>
+    } @else {
+        <h2>Your Reviews</h2>
+        @for (review of rev; track $index; let i = $index;) {
+            <div>
+                <app-reviews [reviewData]="review"></app-reviews>
+            </div>
+        }
+    }
+</div>
 
 <app-get-in-touch></app-get-in-touch>
