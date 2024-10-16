@@ -55,10 +55,11 @@ namespace CusromerProject.Controllers
         {
             if (id <= 0)
                 return BadRequest("UnExpected Error");
-            var serviceName = await _serviceRepository.GetServiceNameByID(id);
-            if (serviceName == null)
+            var service = await _serviceRepository.GetServiceNameByID(id);
+            if (service == null)
                 return NotFound("Service Not Found");
-            return Ok(serviceName);
+
+            return Ok(service);
         }
 
         [HttpGet("GetServiceNameByIDV2/{id}")]

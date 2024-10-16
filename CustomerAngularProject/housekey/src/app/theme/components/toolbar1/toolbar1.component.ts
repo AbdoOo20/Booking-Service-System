@@ -16,6 +16,7 @@ import { FlexLayoutModule } from "@ngbracket/ngx-layout";
 import { MatButtonModule } from "@angular/material/button";
 import { DecodingTokenService } from "@services/decoding-token.service";
 import { AuthServiceService } from "@services/auth-service.service";
+import { WishlistService } from "@services/wishlist.service";
 
 @Component({
     selector: "app-toolbar1",
@@ -42,19 +43,58 @@ import { AuthServiceService } from "@services/auth-service.service";
 export class Toolbar1Component implements OnInit {
     token = localStorage.getItem("token");
     isLoggedIn: boolean = false;
+    public customerId:string;
+    public servicesIDs : number[]=[];
     @Output() onMenuIconClick: EventEmitter<any> = new EventEmitter<any>();
     constructor(
         public appService: AppService,
-        private authService: AuthServiceService
+        private authService: AuthServiceService, private wishListService:WishlistService,public decodeCustomerID:DecodingTokenService
     ) {}
 
     ngOnInit() {
         this.authService.isLoggedIn$.subscribe((status) => {
             this.isLoggedIn = status;
         });
+
+        //basma // retrieve customer id 
+        this.customerId=this.decodeCustomerID.getUserIdFromToken();
+        this.getWishListServices();
     }
 
     public sidenavToggle() {
         this.onMenuIconClick.emit();
     }
+
+     //Basma "Retrieve the Ids of services in WishList of Current Customer"
+  getWishListServices() {
+    this.wishListService.getWishlistServices(this.customerId).subscribe({
+      next: (data) => {
+        console.log('Raw Response Data:', data); // Check if it's a string
+  
+        // Check if data is a string and try to parse it
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data); // Attempt to parse the string into a JSON object
+          } catch (error) {
+            console.error('Failed to parse JSON string:', error);
+            return; // Exit if parsing fails
+          }
+        }
+  
+        // Now, check if the parsed data is an array
+        if (Array.isArray(data)) {
+          data.forEach(service => {
+            this.servicesIDs.push(service.id);
+          });
+          console.log(this.servicesIDs);
+        } else {
+          console.error('Expected an array but got:', typeof data); // Handle unexpected data type
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching wishlist services:', err); // Handle errors
+      }
+    });
+  }
+  
 }

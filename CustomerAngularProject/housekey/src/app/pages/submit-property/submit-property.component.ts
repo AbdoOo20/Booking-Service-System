@@ -445,7 +445,6 @@ export class SubmitPropertyComponent implements OnInit {
     for (let hour = this.startHour; hour < this.endHour; hour++) {
       const amPm = hour >= 12 ? "PM" : "AM";
       const displayHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
-      //console.log(`${displayHour} ${amPm}`);
       if (!this.timeBooked.includes(`${displayHour} ${amPm}`)) {
         this.timeOptions.push(`${displayHour} ${amPm}`);
       }
@@ -482,7 +481,6 @@ export class SubmitPropertyComponent implements OnInit {
         startTimeEdited.push(hour === 0 ? 24 : hour);
       }
     }
-
     for (let index = 0; index < startTimeEdited.length; index++) {
       const currentHour = index;
       const nextHour = index + 1;
@@ -498,11 +496,18 @@ export class SubmitPropertyComponent implements OnInit {
         break;
       }
     }
-
-    for (let hour = startHour + 1; hour <= this.endHour; hour++) {
-      const amPm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour > 12 ? hour - 12 : hour;
-      this.endTimeOptions.push(`${displayHour} ${amPm}`);
+    if (startHour + 1 === this.endHour) {
+      for (let hour = startHour + 1; hour <= this.endHour; hour++) {
+        const amPm = hour >= 12 ? "PM" : "AM";
+        const displayHour = hour > 12 ? hour - 12 : hour;
+        this.endTimeOptions.push(`${displayHour} ${amPm}`);
+      }
+    } else {
+      for (let hour = startHour + 1; hour <= this.endHour - 1; hour++) {
+        const amPm = hour >= 12 ? "PM" : "AM";
+        const displayHour = hour > 12 ? hour - 12 : hour;
+        this.endTimeOptions.push(`${displayHour} ${amPm}`);
+      }
     }
   }
 

@@ -27,6 +27,7 @@
         <div class="control-icons">
             <button
                 mat-button
+                [disabled]="onFavorites()"
                 (click)="addToFavorites()"
                 matTooltip="Add To Favorite"
             >

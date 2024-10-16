@@ -108,5 +108,7 @@ namespace BookingServices.Data
         public virtual DbSet<UserMessage> UserMessages { get; set; }
 
         public virtual DbSet<WishList> WishList { get; set; }
+
+        public virtual DbSet<RemainingCustomerBalance> RemainingCustomerBalances { get; set; }
     }
 }

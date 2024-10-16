@@ -1,6 +1,5 @@
 import { Component, HostListener } from "@angular/core";
 import { Router, NavigationEnd } from "@angular/router";
-import { log } from "console";
 import { filter } from "rxjs/operators";
 
 @Component({
@@ -38,32 +37,18 @@ export class LogoComponent {
       currentUrl === "/" ||
       currentUrl === "/contact" ||
       currentUrl === "/about";
-      //console.log("Current URL:", currentUrl, "Is Home Page:", this.isHomePage);
   }
 
   updateLogoBasedOnScroll() {
     this.checkIfHomePage();
-    //console.log(this.router.url);
-
     if (this.isHomePage) {
-      //console.log("if");
       if (window.scrollY === 0) {
         this.logoSrc = "images/logos/logo-new-white.png";
       } else if (window.scrollY > 20) {
         this.logoSrc = "images/logos/logo-new-blue.png";
       }
     } else {
-      //console.log("else");
-
       this.logoSrc = "images/logos/logo-new-blue.png";
     }
   }
 }
-
-// onWindowScroll() {
-//     // if (window.scrollY > 0) {
-//     //     this.logoSrc = "images/logos/logo-new-blue.png";
-//     // } else {
-//     //     this.logoSrc = "images/logos/logo-new-blue.png";
-//     // }
-// }

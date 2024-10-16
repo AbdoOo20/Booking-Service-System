@@ -8,17 +8,17 @@ import {
     ViewChildren,
 } from "@angular/core";
 import {
-    SwiperConfigInterface,
-    SwiperDirective,
-    SwiperModule,
+  SwiperConfigInterface,
+  SwiperDirective,
+  SwiperModule,
 } from "../../../theme/components/swiper/swiper.module";
 import { Property } from "@models/app.models";
 import { Settings, SettingsService } from "@services/settings.service";
 import {
-    FormBuilder,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
 } from "@angular/forms";
 import { AppService } from "@services/app.service";
 import { ActivatedRoute, RouterModule } from "@angular/router";
@@ -52,42 +52,42 @@ import { ReviewsComponent } from "../Reviews/reviews.component";
 import { DecodingTokenService } from "@services/decoding-token.service";
 
 @Component({
-    selector: "app-property",
-    standalone: true,
-    imports: [
-        RouterModule,
-        ReactiveFormsModule,
-        SwiperModule,
-        MatSidenavModule,
-        MatIconModule,
-        NgScrollbarModule,
-        MatCardModule,
-        RatingComponent,
-        MatDividerModule,
-        MatInputModule,
-        PropertyItemComponent,
-        CurrencyPipe,
-        NgClass,
-        GoogleMapsModule,
-        MatExpansionModule,
-        DatePipe,
-        CommentsComponent,
-        PropertiesCarouselComponent,
-        GetInTouchComponent,
-        MatButtonModule,
-        FlexLayoutModule,
-        ReviewFormComponent,
-        ReviewsComponent,
-    ],
-    templateUrl: "./property.component.html",
-    styleUrl: "./property.component.scss",
+  selector: "app-property",
+  standalone: true,
+  imports: [
+    RouterModule,
+    ReactiveFormsModule,
+    SwiperModule,
+    MatSidenavModule,
+    MatIconModule,
+    NgScrollbarModule,
+    MatCardModule,
+    RatingComponent,
+    MatDividerModule,
+    MatInputModule,
+    PropertyItemComponent,
+    CurrencyPipe,
+    NgClass,
+    GoogleMapsModule,
+    MatExpansionModule,
+    DatePipe,
+    CommentsComponent,
+    PropertiesCarouselComponent,
+    GetInTouchComponent,
+    MatButtonModule,
+    FlexLayoutModule,
+    ReviewFormComponent,
+    ReviewsComponent,
+  ],
+  templateUrl: "./property.component.html",
+  styleUrl: "./property.component.scss",
 
-    providers: [
-        EmbedVideoService,
-        AllBookingsService,
-        ReviewServiceService,
-        DecodingTokenService,
-    ],
+  providers: [
+    EmbedVideoService,
+    AllBookingsService,
+    ReviewServiceService,
+    DecodingTokenService,
+  ],
 })
 export class PropertyComponent implements OnInit {
     @Output() bookId: number[] = [];
@@ -126,13 +126,13 @@ export class PropertyComponent implements OnInit {
     lng: number = 0;
     token = localStorage.getItem("token");
 
-    constructor(
-        public settingsService: SettingsService,
-        public appService: AppService,
-        private myServ: ServicesService,
-        private activatedRoute: ActivatedRoute,
-        private embedService: EmbedVideoService,
-        public fb: FormBuilder,
+  constructor(
+    public settingsService: SettingsService,
+    public appService: AppService,
+    private myServ: ServicesService,
+    private activatedRoute: ActivatedRoute,
+    private embedService: EmbedVideoService,
+    public fb: FormBuilder,
 
         private domHandlerService: DomHandlerService,
         public bookservice: AllBookingsService, //bookingService
@@ -142,7 +142,6 @@ export class PropertyComponent implements OnInit {
         this.settings = this.settingsService.settings;
         this.customerId = this.DecodingCustomerID.getUserIdFromToken();
     }
-
     ngOnInit() {
         // this.sub = this.activatedRoute.params.subscribe((params) => {
         //     this.getPropertyById(params["id"]);
@@ -150,8 +149,6 @@ export class PropertyComponent implements OnInit {
         this.sub = this.activatedRoute.params.subscribe((params) => {
             this.getSericeById(params["id"]);
             this.ServiceId = params["id"];
-            console.log(this.ServiceId);
-
         });
         this.subService = this.activatedRoute.params.subscribe((params) => {
             this.getSericeById(params["id"]);
@@ -167,21 +164,19 @@ export class PropertyComponent implements OnInit {
             }
         }
         this.mortgageForm = this.fb.group({
-            principalAmount: ["", Validators.required],
-            downPayment: ["", Validators.required],
-            interestRate: ["", Validators.required],
-            period: ["", Validators.required],
+          principalAmount: ["", Validators.required],
+          downPayment: ["", Validators.required],
+          interestRate: ["", Validators.required],
+          period: ["", Validators.required],
         });
         this.contactForm = this.fb.group({
-            name: ["", Validators.required],
-            email: [
-                "",
-                Validators.compose([Validators.required, emailValidator]),
-            ],
-            phone: ["", Validators.required],
-            message: ["", Validators.required],
+          name: ["", Validators.required],
+          email: ["", Validators.compose([Validators.required, emailValidator])],
+          phone: ["", Validators.required],
+          message: ["", Validators.required],
         });
-        //this.checkForReview();
+        // this.loadWishlistServices()
+        // this.checkForReview();
     }
 
     ngOnDestroy() {
@@ -202,8 +197,8 @@ export class PropertyComponent implements OnInit {
             this.embedVideo = this.embedService.embed(
                 this.property.videos[1].link
             );
-            this.lat = +this.property.location.lat;
-            this.lng = +this.property?.location.lng;
+            // this.lat = +this.property.location.lat;
+            // this.lng = +this.property?.location.lng;
             if (this.domHandlerService.isBrowser) {
                 this.config.observer = false;
                 this.config2.observer = false;
@@ -469,4 +464,4 @@ export class PropertyComponent implements OnInit {
     //     console.log('New review added:', reviewData);
     //     this.checkForReview();
     // }
-}
+  }

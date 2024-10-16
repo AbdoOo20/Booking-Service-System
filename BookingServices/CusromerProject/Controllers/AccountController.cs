@@ -54,7 +54,15 @@ namespace CusromerProject.Controllers
                 // Check if the email is confirmed
                 if (!await _userManager.IsEmailConfirmedAsync(user))
                 {
+                    var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(confirmationToken));
+                    var angularUrl = "http://localhost:4200/confirm-email";
+                    var confirmationLink = $"{angularUrl}?userId={user.Id}&token={WebUtility.UrlEncode(encodedToken)}";
+                    await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
+                        $"Please confirm your account by clicking this link: <a href='{confirmationLink}'>link</a>");
+
                     ModelState.AddModelError("Confirm Email", "Please confirm your email before logging in.");
+
                     return BadRequest(new { Message = ModelState });
                 }
 
@@ -89,10 +97,14 @@ namespace CusromerProject.Controllers
                                 SecurityAlgorithms.HmacSha256
                             );
 
+                        var tokenExpiration = loginDTO.RememberMe
+                        ? DateTime.Now.AddDays(30) // Token valid for 30 days if RememberMe is true
+                        : DateTime.Now.AddHours(1);
+
                         JwtSecurityToken token = new JwtSecurityToken(
                                 audience: _configuration["JwtSettings:Audience"],
                                 issuer: _configuration["JwtSettings:Issuer"],
-                                expires: DateTime.Now.AddHours(1),
+                                expires: tokenExpiration,
                                 claims: userClaims,
                                 signingCredentials: credentials
                                 );
@@ -100,7 +112,7 @@ namespace CusromerProject.Controllers
                         return Ok(new
                         {
                             token = new JwtSecurityTokenHandler().WriteToken(token),
-                            expiration = DateTime.Now.AddHours(1),
+                            expiration = tokenExpiration,
                         });
                     }
                     ModelState.AddModelError("Password", "The name or password invaild");
