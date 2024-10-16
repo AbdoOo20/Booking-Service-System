@@ -1,39 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { PassTokenWithHeaderService } from './pass-token-with-header.service';
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentsService {
   private endPoint = "http://localhost:18105/api/Payments";
-  private token = localStorage.getItem('token');
-  private Id;
-  constructor(private http: HttpClient) { }
 
-  // Method to create headers with token
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.token}` // Add token in the Authorization header
-    });
-  }
+  constructor(private http: HttpClient, private PassTokenWithHeaderService: PassTokenWithHeaderService) { }
+
 
   // GET request
   getPayments(): Observable<any> {
-    return this.http.get<any>(this.endPoint, { headers: this.getHeaders() });
+    return this.http.get<any>(this.endPoint,
+      { headers: this.PassTokenWithHeaderService.getHeaders() });
   }
   // GET By ID request
-  getPaymentsById(): Observable<any> {
-    return this.http.get<any>(this.endPoint + "/" + this.Id, { headers: this.getHeaders() });
+  getPaymentsById(id: number): Observable<any> {
+    return this.http.get<any>(this.endPoint + "/" + id,
+      { headers: this.PassTokenWithHeaderService.getHeaders() });
   }
 
-  // POST request , { headers: this.getHeaders() }
-  addPayment(paymentData: { customerId: string, bookingId: number, paymentDate: string, paymentValue: string }): Observable<any> {
-    return this.http.post<any>(this.endPoint, paymentData);
+  // POST request 
+  addPayment(paymentData: any): Observable<any> {
+    return this.http.post<any>(this.endPoint, paymentData,
+      { headers: this.PassTokenWithHeaderService.getHeaders() });
   }
 
-
-
-
+  //Get PaymentIncoms For Display
+  getAllPaymentIncoms(): Observable<any> {
+    return this.http.get<any>(this.endPoint+"/PaymentGetways",
+      { headers: this.PassTokenWithHeaderService.getHeaders() });
+  }
 }

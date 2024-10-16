@@ -69,7 +69,7 @@ export class Toolbar1Component implements OnInit {
   getWishListServices() {
     this.wishListService.getWishlistServices(this.customerId).subscribe({
       next: (data) => {
-        console.log('Raw Response Data:', data); // Check if it's a string
+        //console.log('Raw Response Data:', data); // Check if it's a string
   
         // Check if data is a string and try to parse it
         if (typeof data === 'string') {
@@ -86,7 +86,7 @@ export class Toolbar1Component implements OnInit {
           data.forEach(service => {
             this.servicesIDs.push(service.id);
           });
-          console.log(this.servicesIDs);
+          //console.log(this.servicesIDs);
         } else {
           console.error('Expected an array but got:', typeof data); // Handle unexpected data type
         }

@@ -41,7 +41,9 @@ namespace CusromerProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                IdentityUser user = await _userManager.FindByNameAsync(loginDTO.UserName);
+                IdentityUser? user = await _userManager.FindByNameAsync(loginDTO.UserName);
+                if (user is null)
+                    user = await _userManager.FindByEmailAsync(loginDTO.UserName);
                 if (user == null) return NotFound(new {message= "User Not Found"});
                 if (!await _userManager.IsInRoleAsync(user,"Customer"))
                 {
