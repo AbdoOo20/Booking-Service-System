@@ -47,8 +47,6 @@ import { PaymentIncome } from "../../common/interfaces/payment-income";
 import { PaymentsService } from "@services/payments.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ConfirmDialogComponent, ConfirmDialogModel } from "@shared-components/confirm-dialog/confirm-dialog.component";
-import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
-
 
 @Component({
   selector: "app-submit-property",
@@ -136,6 +134,7 @@ export class SubmitPropertyComponent implements OnInit {
   public endBookingTime: string;
   CustomerIDFromToken: any;
   paymentMethodId: number;
+  isPaymentMethodSelected: boolean = false;
 
   constructor(
     public appService: AppService,
@@ -261,8 +260,12 @@ export class SubmitPropertyComponent implements OnInit {
     this.submitForm
       .get("payment.paymentMethod")
       ?.valueChanges.subscribe((paymentMethodId) => {
-        //console.log(paymentMethodId);
+        console.log(paymentMethodId);
         this.paymentMethodId = paymentMethodId;
+
+        this.isPaymentMethodSelected = true;
+        console.log(this.isPaymentMethodSelected);
+
       });
   }
   shareData(): void {
