@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BookingServices.Hubs;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,6 +66,7 @@ namespace BookingServices.Data
 
             base.OnModelCreating(modelBuilder);
         }
+
         public virtual DbSet<AdminContract> AdminContracts { get; set; }
 
         public virtual DbSet<Booking> Bookings { get; set; }
@@ -112,5 +114,7 @@ namespace BookingServices.Data
         public virtual DbSet<WishList> WishList { get; set; }
 
         public virtual DbSet<RemainingCustomerBalance> RemainingCustomerBalances { get; set; }
+        public virtual DbSet<NotificationAdmin> NotificationAdmins { get; set; }
+
     }
 }
