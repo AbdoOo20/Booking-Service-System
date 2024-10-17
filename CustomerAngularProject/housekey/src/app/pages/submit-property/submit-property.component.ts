@@ -126,7 +126,6 @@ export class SubmitPropertyComponent implements OnInit {
   //Get Payment Incomes Initialization
   public PaymentMethods: PaymentIncome[] = [];
 
-
   // Booking Data
   bookingData: any;
   public eventBookingDate: string;
@@ -148,8 +147,7 @@ export class SubmitPropertyComponent implements OnInit {
     private decodingService: DecodingTokenService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private PaymentsService: PaymentsService,
-
+    private PaymentsService: PaymentsService
   ) {
     // this.total = 0;
   }
@@ -189,8 +187,8 @@ export class SubmitPropertyComponent implements OnInit {
     this.PaymentsService.getAllPaymentIncoms().subscribe({
       next: (data) => {
         this.PaymentMethods = data;
-      }
-    })
+      },
+    });
     this.submitForm = this.fb.group({
       booking: this.fb.group({
         service: [""],
@@ -201,10 +199,10 @@ export class SubmitPropertyComponent implements OnInit {
         quantity: [""],
       }),
       payment: this.fb.group({
-        amount: ['', [Validators.required, Validators.maxLength(5)]],
-        maxValue: ['', [Validators.required, Validators.maxLength(5)]],
-        minValue: ['', [Validators.required, Validators.maxLength(5)]],
-        paymentMethod: ['', Validators.required],
+        amount: ["", [Validators.required, Validators.maxLength(5)]],
+        maxValue: ["", [Validators.required, Validators.maxLength(5)]],
+        minValue: ["", [Validators.required, Validators.maxLength(5)]],
+        paymentMethod: ["", Validators.required],
       }),
     });
     const today = new Date();
@@ -257,14 +255,12 @@ export class SubmitPropertyComponent implements OnInit {
       ?.valueChanges.subscribe((startTime) => {
         this.updateEndTimeOptions(startTime);
       });
-    this.submitForm.get("payment.paymentMethod")
+    this.submitForm
+      .get("payment.paymentMethod")
       ?.valueChanges.subscribe((paymentMethodId) => {
         //console.log(paymentMethodId);
         this.paymentMethodId = paymentMethodId;
       });
-
-    this.initializeTimeOptions();
-    this.calculateTotal();
   }
   shareData(): void {
     // Convert booking form data
@@ -278,8 +274,8 @@ export class SubmitPropertyComponent implements OnInit {
     console.log(selectedDate);
     const formatedEvantDate = this.formatEventDate(selectedDate);
     console.log(formatedEvantDate);
-    localStorage.setItem('NewDataFormat', formatedEvantDate);
-    
+    localStorage.setItem("NewDataFormat", formatedEvantDate);
+
     this.bookingData = {
       bookId: 0,
       eventDate: selectedDate,
@@ -308,17 +304,16 @@ export class SubmitPropertyComponent implements OnInit {
     this.NewBooking.setData(this.bookingData);
   }
 
-
   formatEventDate(dateString: string): string {
     const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long', // 'short' for abbreviated month names
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      year: "numeric",
+      month: "long", // 'short' for abbreviated month names
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true, // Set to false for 24-hour format
     };
-    return new Date(dateString).toLocaleString('en-US', options);
+    return new Date(dateString).toLocaleString("en-US", options);
   }
 
   convertTo24HourFormat(time: string): string {
@@ -371,6 +366,24 @@ export class SubmitPropertyComponent implements OnInit {
       ?.setValue(minPrice, { emitEvent: false });
   }
 
+  // Declare a variable to store the selected method ID
+  selectedPaymentMethodId: number | null = null;
+
+  onSelectMethod(methodId: number): void {
+    this.selectedPaymentMethodId = methodId;
+    console.log("Selected Payment Method ID:", this.selectedPaymentMethodId);
+  }
+
+  // Custom validator function
+  amountRangeValidator = (min: number, max: number) => {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const amount = control.value;
+      if (amount < min || amount > max) {
+        return { outOfRange: true };
+      }
+      return null;
+    };
+  };
   loading: boolean = false;
 
   CreatePayment() {
@@ -419,7 +432,6 @@ export class SubmitPropertyComponent implements OnInit {
     });
   }
 
-
   private initializeTimeOptions() {
     this.timeOptions = [];
     this.startHour = parseInt(this.service.startTime.split(":")[0], 10); // Start from 9 AM
@@ -463,6 +475,7 @@ export class SubmitPropertyComponent implements OnInit {
         startTimeEdited.push(hour === 0 ? 24 : hour);
       }
     }
+
     for (let index = 0; index < startTimeEdited.length; index++) {
       const currentHour = index;
       const nextHour = index + 1;
@@ -474,7 +487,7 @@ export class SubmitPropertyComponent implements OnInit {
         this.endHour = hourCur + 1;
         break;
       } else if (hourNext > hourCur + 1) {
-        this.endHour = hourNext - 1;
+        this.endHour = hourCur + 1;
         break;
       }
     }

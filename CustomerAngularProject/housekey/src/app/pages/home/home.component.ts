@@ -69,7 +69,7 @@ import { DecodingTokenService } from "@services/decoding-token.service";
     RecommendationBookingComponent,
     MatSidenavModule,
   ],
-  providers: [CategoriesService, ServicesService,WishlistService], //,
+  providers: [CategoriesService, ServicesService, WishlistService], //,
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
 })
@@ -106,15 +106,16 @@ export class HomeComponent implements OnInit {
   public locTest: string;
   public fromTest: number;
   public toTest: number;
-   public customerId : string;
-   @Output() public servicesIDs : number[] =[];
+  public customerId: string;
+  @Output() public servicesIDs: number[] = [];
   constructor(
     public settingsService: SettingsService,
     public appService: AppService,
     public mediaObserver: MediaObserver,
     public myServ: ServicesService,
     public CatServ: CategoriesService,
-    public decodeCustomerID:DecodingTokenService
+    public wishListService: WishlistService,
+    public decodeCustomerID: DecodingTokenService
   ) {
     this.settings = this.settingsService.settings;
 
@@ -155,8 +156,7 @@ export class HomeComponent implements OnInit {
   //   });
 
   ngOnInit() {
-    this.customerId=this.decodeCustomerID.getUserIdFromToken();
-    //Test
+    this.customerId = this.decodeCustomerID.getUserIdFromToken();
     this.getSlides();
     //this.getLocations();
     this.getProperties();
@@ -167,8 +167,25 @@ export class HomeComponent implements OnInit {
     // this.getServicePrice(this.fromPrice, this.toPrice);
     // this.getServices();
     this.getCategories();
+    if (localStorage.getItem("token")) {
+      this.wishListService.getWishlistServices(this.customerId).subscribe(
+        (data) => {
+          let properties: Property[] = JSON.parse(data);
+          this.wishListService.addToWishList(properties);
+          this.GetRecSrvForBooking();
+          this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
+        },
+        (error) => {
+          console.error("Error loading wishlist", error);
+        }
+      );
+    }
     this.GetRecSrvForBooking();
     this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
+
+    //Test
+
+    //this.getWishListServices();
   }
 
   ngDoCheck() {
@@ -410,5 +427,36 @@ export class HomeComponent implements OnInit {
     });
   }
   // End
-  
+
+  //Basma "Retrieve the Ids of services in WishList of Current Customer"
+  // getWishListServices() {
+  //   this.wishListService.getWishlistServices(this.customerId).subscribe({
+  //     next: (data) => {
+  //      // console.log('Raw Response Data:', data); // Check if it's a string
+
+  //       // Check if data is a string and try to parse it
+  //       if (typeof data === 'string') {
+  //         try {
+  //           data = JSON.parse(data); // Attempt to parse the string into a JSON object
+  //         } catch (error) {
+  //           console.error('Failed to parse JSON string:', error);
+  //           return; // Exit if parsing fails
+  //         }
+  //       }
+
+  //       // Now, check if the parsed data is an array
+  //       if (Array.isArray(data)) {
+  //         data.forEach(service => {
+  //           this.servicesIDs.push(service.id);
+  //         });
+  //         console.log(this.servicesIDs);
+  //       } else {
+  //         console.error('Expected an array but got:', typeof data); // Handle unexpected data type
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching wishlist services:', err); // Handle errors
+  //     }
+  //   });
+  // }
 }
