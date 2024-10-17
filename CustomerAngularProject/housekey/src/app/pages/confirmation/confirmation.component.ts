@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { PaymentsService } from '@services/payments.service';
-import { PayPalService } from '@services/pay-pal.service';
-import { BookingService } from '@services/booking.service';
-import { DecodingTokenService } from '@services/decoding-token.service';
-import { ServiceForConfirmation } from '@services/ServiceForConfirmation';
+import { Component, OnInit } from "@angular/core";
+import { Router, ActivatedRoute } from "@angular/router";
+import { PaymentsService } from "@services/payments.service";
+import { PayPalService } from "@services/pay-pal.service";
+import { BookingService } from "@services/booking.service";
+import { DecodingTokenService } from "@services/decoding-token.service";
+import { ServiceForConfirmation } from "@services/ServiceForConfirmation";
 
 @Component({
-  selector: 'app-confirmation',
+  selector: "app-confirmation",
   standalone: true,
   imports: [], // Make sure to add CommonModule here if needed
-  templateUrl: './confirmation.component.html',
+  templateUrl: "./confirmation.component.html",
   styles: [],
 })
 export class ConfirmationComponent implements OnInit {
@@ -35,12 +35,12 @@ export class ConfirmationComponent implements OnInit {
     private payPal: PayPalService,
     private bookingService: BookingService,
     private decodeService: DecodingTokenService,
-    private ServiceForConfirmation: ServiceForConfirmation,
+    private ServiceForConfirmation: ServiceForConfirmation
   ) {
-    this.confirmationMessage = 'Your Payment has been confirmed!';
+    this.confirmationMessage = "Your Payment has been confirmed!";
     this.confirmationDate = new Date().toLocaleString();
-    this.transactionId = '';
-    this.amount = '';
+    this.transactionId = "";
+    this.amount = "";
     this.totalPrice = 0; // Initialize totalPrice
   }
 
@@ -48,18 +48,22 @@ export class ConfirmationComponent implements OnInit {
     this.CustomerID = this.decodeService.getUserIdFromToken();
 
     // Retrieve the payment ID from query parameters
-    this.route.queryParams.subscribe(queryParams => {
-      this.paymentId = queryParams['paymentId'];
-      this.BookingIdFromPayInstallment = localStorage.getItem('bookingID');
+    this.route.queryParams.subscribe((queryParams) => {
+      this.paymentId = queryParams["paymentId"];
+      this.BookingIdFromPayInstallment = localStorage.getItem("bookingID");
 
       // Retrieve booking data from local storage if available
-      const savedBookingData = localStorage.getItem('bookingData');
+      const savedBookingData = localStorage.getItem("bookingData");
+
       if (savedBookingData) {
         this.bookingData = JSON.parse(savedBookingData);
-        this.bookingData = JSON.parse(savedBookingData);
-        console.log('Booking data retrieved:', this.bookingData); // Log the booking data
-        this.bookingData = JSON.parse(savedBookingData);
-        console.log('Booking data retrieved:', this.bookingData); // Log the booking data
+        let eventDate = new Date(this.bookingData.eventDate);
+        //eventDate.setHours(eventDate.getHours() + 0);
+        this.bookingData.eventDate = eventDate;
+        let bookDate = new Date(this.bookingData.bookDate);
+        // bookDate.setHours(bookDate.getHours() + 0);
+        this.bookingData.bookDate = bookDate;
+        console.log("Booking data retrieved:", this.bookingData); // Log the booking data
       }
 
       if (this.paymentId) {
@@ -72,7 +76,7 @@ export class ConfirmationComponent implements OnInit {
   getPaymentDetails(paymentId: string): void {
     this.payPal.getPaymentsById(paymentId).subscribe({
       next: (response) => {
-        if (response.state === 'created') {
+        if (response.state === "created") {
           this.amount = response.transactions[0].amount.total;
 
           if (this.bookingData) {
@@ -90,66 +94,73 @@ export class ConfirmationComponent implements OnInit {
             this.bookingStatus = this.bookingData.status;
 
             // Fetch service name
-            this.ServiceForConfirmation.getServiceName(this.bookingData.serviceId).subscribe({
+            this.ServiceForConfirmation.getServiceName(
+              this.bookingData.serviceId
+            ).subscribe({
               next: (data) => {
                 this.serviceName = data.serviceName; // Adjust based on your response
-              }
+              },
             });
 
             // Fetch customer name
             this.customerName = this.decodeService.getUserNameFromToken();
 
             // Add booking
-            this.bookingService.addBooking(JSON.stringify(this.bookingData)).subscribe({
-              next: (bookingResponse) => {
-                this.paymentsService.addPayment({
-                  customerId: this.CustomerID,
-                  bookingId: bookingResponse.id,
-                  paymentDate: this.bookingData.selectedDate,
-                  paymentValue: this.amount,
-                }).subscribe();
-              }
-            });
-
+            this.bookingService
+              .addBooking(JSON.stringify(this.bookingData))
+              .subscribe({
+                next: (bookingResponse) => {
+                  this.paymentsService
+                    .addPayment({
+                      customerId: this.CustomerID,
+                      bookingId: bookingResponse.id,
+                      paymentDate: this.bookingData.selectedDate,
+                      paymentValue: this.amount,
+                    })
+                    .subscribe();
+                },
+              });
           } else if (this.BookingIdFromPayInstallment) {
             // Payment without booking
-            this.paymentsService.addPayment({
-              customerId: this.CustomerID,
-              bookingId: this.BookingIdFromPayInstallment,
-              paymentDate: new Date().toISOString(),
-              paymentValue: this.amount,
-            }).subscribe();
+            this.paymentsService
+              .addPayment({
+                customerId: this.CustomerID,
+                bookingId: this.BookingIdFromPayInstallment,
+                paymentDate: new Date().toISOString(),
+                paymentValue: this.amount,
+              })
+              .subscribe();
           }
         }
       },
       error: (err) => {
-        console.error('Error fetching payment details:', err);
-      }
+        console.error("Error fetching payment details:", err);
+      },
     });
   }
 
   formatEventDate(dateString: string): string {
     const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long', // 'short' for abbreviated month names
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      year: "numeric",
+      month: "long", // 'short' for abbreviated month names
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true, // Set to false for 24-hour format
     };
-    return new Date(dateString).toLocaleString('en-US', options);
+    return new Date(dateString).toLocaleString("en-US", options);
   }
 
   // Redirect to home page
   goToHome(): void {
-    this.router.navigate(['/home']);
-    localStorage.removeItem('bookingData');
-    localStorage.removeItem('bookingID');
+    this.router.navigate(["/home"]);
+    localStorage.removeItem("bookingData");
+    localStorage.removeItem("bookingID");
   }
 
   // Print the confirmation
   printConfirmation(): void {
-    const printContents = document.getElementById('printSection')?.innerHTML;
+    const printContents = document.getElementById("printSection")?.innerHTML;
     const originalContents = document.body.innerHTML;
 
     if (printContents) {
@@ -159,5 +170,4 @@ export class ConfirmationComponent implements OnInit {
       window.location.reload();
     }
   }
-
 }
