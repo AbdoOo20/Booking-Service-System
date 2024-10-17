@@ -42,7 +42,7 @@ namespace BookingServices.Models
 
         [Required(ErrorMessage = "Please provide the price of the service.")]
         [Display(Name = "Price")]
-        [Range(0.00, (double)decimal.MaxValue, ErrorMessage = "The service price must be greater than or equal to 0.")]
+        [Range(1.00, (double)decimal.MaxValue, ErrorMessage = "The service price must be greater than 0.")]
         public decimal ServicePrice { get; set; } = 0;
 
         [Display(Name = "Online / Offline")]

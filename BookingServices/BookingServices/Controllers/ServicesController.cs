@@ -10,7 +10,7 @@ using Humanizer;
 
 namespace BookingServices.Controllers
 {
-    [Authorize(Roles ="Admin,Provider")]
+    [Authorize(Roles = "Admin,Provider")]
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -62,7 +62,7 @@ namespace BookingServices.Controllers
                 bool isProvider = user != null && await _userManager.IsInRoleAsync(user, "Provider");
                 ViewBag.isProvider = isProvider;
 
-                if (await _userManager.IsInRoleAsync(user,"Admin"))
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
                 {
                     servicesIndexModel = await _context.Services
                     .Include(s => s.Category)
@@ -79,7 +79,7 @@ namespace BookingServices.Controllers
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
                         IsRequestedOrNot = service.IsRequestedOrNot,
                         CategoryName = service.Category.Name ?? "Not Exists",
-                        ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists" 
+                        ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists"
                     })
                     .ToListAsync();
                 }
@@ -107,7 +107,7 @@ namespace BookingServices.Controllers
                 foreach (var service in servicesIndexModel)
                 {
                     service.ServicePrice = await _context.ServicePrices
-                        .Where(s => s.ServiceId == service.ServiceId 
+                        .Where(s => s.ServiceId == service.ServiceId
                         && s.PriceDate.Date == DateTime.Now.Date)
                         .Select(s => s.Price)
                         .FirstOrDefaultAsync();
@@ -373,9 +373,9 @@ namespace BookingServices.Controllers
                         Name = service.Name,
                         Details = service.Details,
                         Location = service.Location,
-                        StartTime = new TimeSpan(service.StartTime,0,0),
-                        EndTime = service.EndTime == 24 
-                        ? new TimeSpan(service.StartTime-1, 59, 59) 
+                        StartTime = new TimeSpan(service.StartTime, 0, 0),
+                        EndTime = service.EndTime == 24
+                        ? new TimeSpan(service.StartTime - 1, 59, 59)
                         : new TimeSpan(service.StartTime, 0, 0),
                         Quantity = service.Quantity ?? 0,
                         InitialPaymentPercentage = service.InitialPaymentPercentage,
@@ -398,7 +398,7 @@ namespace BookingServices.Controllers
                 }
                 catch (Exception ex)
                 {
-                    HandleError(ex.Message,"Services", nameof(Index));
+                    HandleError(ex.Message, "Services", nameof(Index));
                 }
             }
 
@@ -411,7 +411,7 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-                HandleError("ID is Required !!!", "Services",nameof(Index));
+                HandleError("ID is Required !!!", "Services", nameof(Index));
 
             var service = await _context.Services
                 .Where(s => s.ServiceId == id)
@@ -419,7 +419,7 @@ namespace BookingServices.Controllers
                 .FirstOrDefaultAsync();
 
             if (service == null)
-                HandleError("The Service Does Not Exist !!!","Services", nameof(Index));
+                HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
 
             var serviceModel = new ServiceModel()
             {
@@ -444,7 +444,7 @@ namespace BookingServices.Controllers
         [HttpPost]
         [Authorize("Provider")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ServiceModel serviceModel ,IFormFileCollection Images)
+        public async Task<IActionResult> Edit(ServiceModel serviceModel, IFormFileCollection Images)
         {
             try
             {
@@ -474,7 +474,7 @@ namespace BookingServices.Controllers
                     if (service.EndTime == TimeSpan.Zero || service.EndTime <= service.StartTime)
                     {
                         await AddSelectLists();
-                        return View(serviceModel); 
+                        return View(serviceModel);
                     }
 
                     _context.Update(service);
@@ -539,7 +539,7 @@ namespace BookingServices.Controllers
             }
             catch (Exception ex)
             {
-                HandleError(ex.Message,"Services","Index");
+                HandleError(ex.Message, "Services", "Index");
             }
             return RedirectToAction(nameof(Index));
         }
@@ -550,7 +550,7 @@ namespace BookingServices.Controllers
         {
             if (!ServiceExists(id))
                 HandleError("The Service Dose Not Exists !!!", "Services", "Index");
-            
+
             var serviceImages = _context.ServiceImages.Where(s => s.ServiceId == id).Include(s => s.Service);
             var service = await _context.Services.FindAsync(id);
             ViewData["servicename"] = service.Name;
@@ -671,13 +671,13 @@ namespace BookingServices.Controllers
                 }
 
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 HandleError(ex.Message, "Services", nameof(Prices));
             }
             return View(servicePriceModel);
         }
-        public async Task<IActionResult> EditPrice(int id,[FromQuery] DateTime date)
+        public async Task<IActionResult> EditPrice(int id, [FromQuery] DateTime date)
         {
             if (!ServiceExists(id))
             {
@@ -702,7 +702,7 @@ namespace BookingServices.Controllers
         {
             if (!ServiceExists(id))
             {
-                HandleError("The Service does not exist!","Services", nameof(Prices));
+                HandleError("The Service does not exist!", "Services", nameof(Prices));
                 return NotFound();
             }
 
@@ -813,9 +813,10 @@ namespace BookingServices.Controllers
 
                 foreach (var image in Images)
                 {
-                    if (image.Length > 0)
+                    if (image.Length > 0 && AllowedImageTypes.Contains(image.ContentType))
                     {
                         var filePath = Path.Combine(uploadPath, image.FileName);
+
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await image.CopyToAsync(stream);
@@ -829,6 +830,11 @@ namespace BookingServices.Controllers
 
                         _context.ServiceImages.Add(serviceImage);
                         await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        // Handle invalid files (optional: throw an exception, log, or return a message)
+                        throw new InvalidDataException("Only image files are allowed.");
                     }
                 }
             }
@@ -849,5 +855,14 @@ namespace BookingServices.Controllers
                 await _context.SaveChangesAsync();
             }
         }
+        
+        private static readonly List<string> AllowedImageTypes = new List<string>
+        {
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/bmp",
+            "image/webp"
+        };
     }
 }

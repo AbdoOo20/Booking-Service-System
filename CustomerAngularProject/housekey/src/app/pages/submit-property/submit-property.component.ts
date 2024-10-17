@@ -46,6 +46,9 @@ import { Router } from "@angular/router";
 import { PaymentIncome } from "../../common/interfaces/payment-income";
 import { PaymentsService } from "@services/payments.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ConfirmDialogComponent, ConfirmDialogModel } from "@shared-components/confirm-dialog/confirm-dialog.component";
+import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
+
 
 @Component({
   selector: "app-submit-property",
@@ -386,8 +389,19 @@ export class SubmitPropertyComponent implements OnInit {
   };
   loading: boolean = false;
 
+
   CreatePayment() {
-    
+    const dialogData = new ConfirmDialogModel('Confirm', 'Save Your Account Bank !!');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: "800px",
+      data: dialogData
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true)
+        localStorage.setItem('SetBankAccount', 'true');
+      else
+        localStorage.setItem('SetBankAccount', 'false');
+    });
     // Set loading to true when the payment process starts
     this.loading = true;
 

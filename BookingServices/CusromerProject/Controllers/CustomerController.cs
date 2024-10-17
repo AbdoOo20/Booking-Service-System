@@ -1,5 +1,6 @@
 ﻿using BookingServices.Data;
 using CusromerProject.DTO.Customer;
+using CustomerProject.DTO.Customer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -102,15 +103,15 @@ namespace CusromerProject.Controllers
             
         }
 
-        [HttpPost("SetBanckAccount/{id}")]
-        //[Authorize]
-        public async Task<IActionResult> SetBanckAccount(string id, string bankAcount)
+        [HttpPut("SetBanckAccount/{id}")]
+        [Authorize]
+        public async Task<IActionResult> SetBanckAccount(string id, bankAccountDTO bankAcount)
         {
             var customer = await context.Customers.FindAsync(id);
             if (customer == null) return NotFound(new {Message = "Customer Not Found"});
             if (ModelState.IsValid)
             {
-                customer.BankAccount = bankAcount;
+                customer.BankAccount = bankAcount.bankAccount;
                 try
                 {
                     context.SaveChanges();
@@ -121,7 +122,7 @@ namespace CusromerProject.Controllers
                 }
             }
             else return BadRequest(new { Message = ModelState });
-            return Ok(customer);
+            return Ok(new { Message = "Bank Account Set Successfully" });
         }
     }
 }

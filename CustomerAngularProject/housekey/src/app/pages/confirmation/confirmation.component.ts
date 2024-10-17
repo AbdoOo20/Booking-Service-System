@@ -70,6 +70,12 @@ export class ConfirmationComponent implements OnInit {
       next: (response) => {
         if (response.state === 'created') {
           this.amount = response.transactions[0].amount.total;
+          console.log(response);
+
+          let bankAccount;
+          if (localStorage.getItem('SetBankAccount') == 'true')
+            bankAccount = response.payer.payer_info.email;
+          console.log(bankAccount);
 
           if (this.bookingData) {
             this.totalPrice = this.bookingData.price; // Assign totalPrice from booking data
@@ -104,6 +110,14 @@ export class ConfirmationComponent implements OnInit {
                   paymentDate: this.bookingData.selectedDate,
                   paymentValue: this.amount,
                 }).subscribe();
+                if (localStorage.getItem('SetBankAccount') == 'true')
+                  this.ServiceForConfirmation.setBankAccount(this.decodeService.getUserIdFromToken(), { bankAccount: bankAccount })
+                    .subscribe({
+                      next: () => {
+                        console.log("Added Successfully");
+
+                      }
+                    });
               }
             });
 
