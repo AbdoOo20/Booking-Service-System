@@ -30,6 +30,7 @@
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             <input asp-for="ServiceId" type="hidden" />
+            <input asp-for="ServicePrice" type="hidden" />
 
             <!-- Name and Location -->
             <div class="row">

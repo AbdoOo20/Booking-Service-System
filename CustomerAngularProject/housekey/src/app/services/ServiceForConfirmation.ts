@@ -18,9 +18,7 @@ export class ServiceForConfirmation {
         };
 
         setBankAccount(id: string, bankAccount: any): Observable<any> {
-                return this.http.put<any>(
-                        "http://localhost:18105/api/Customer/SetBanckAccount/" + id,
-                        bankAccount,
+                return this.http.put<any>(this.endPoint + "/Customer/SetBanckAccount/" + id, bankAccount,
                         { headers: this.PassTokenWithHeaderService.getHeaders() }
                 );
         }
