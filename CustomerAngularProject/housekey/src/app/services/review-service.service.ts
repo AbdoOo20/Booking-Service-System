@@ -30,11 +30,8 @@ private readonly _APIUrl="http://localhost:18105/api";
               return filteredBookings
                 .map(booking => {
                   const review = reviews.find((rev: any) => rev.bookingId === booking.bookId);
-                  if (review) {
-                    return { booking, review };
-                  } else {
-                    return null;
-                  }
+
+                    return { booking, review: review || null };
                 })
                 .filter(result => result !== null);
             })
@@ -46,7 +43,7 @@ private readonly _APIUrl="http://localhost:18105/api";
     );
   }
   
-  postReview( postReview:any){
-    return this.http.post(this._APIUrl,postReview);
+  postReview(review: any): Observable<any>{
+    return this.http.post<any>(`${this._APIUrl}/Reviews`, review);
   }
 }
