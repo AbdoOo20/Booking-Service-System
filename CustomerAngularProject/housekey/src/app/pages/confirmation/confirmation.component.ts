@@ -56,10 +56,6 @@ export class ConfirmationComponent implements OnInit {
       const savedBookingData = localStorage.getItem('bookingData');
       if (savedBookingData) {
         this.bookingData = JSON.parse(savedBookingData);
-        this.bookingData = JSON.parse(savedBookingData);
-        console.log('Booking data retrieved:', this.bookingData); // Log the booking data
-        this.bookingData = JSON.parse(savedBookingData);
-        console.log('Booking data retrieved:', this.bookingData); // Log the booking data
       }
 
       if (this.paymentId) {

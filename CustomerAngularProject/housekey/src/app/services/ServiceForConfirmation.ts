@@ -14,10 +14,12 @@ export class ServiceForConfirmation {
         getServiceName(id: number): Observable<any> {
                 return this.http.get<any>(this.endPoint + "/Services/GetServiceNameByIDV2/" + id,
                         { headers: this.PassTokenWithHeaderService.getHeaders() });
-        }
-        getCustomerNameById(id: string): Observable<any> {
-                return this.http.get<any>(this.endPoint + "/Customer/GetCustomerNameById/" + id,
-                        { headers: this.PassTokenWithHeaderService.getHeaders() });
-        }
+        };
+
+        setBanckAccount(id: string, banckAccount: string): Observable<any>{
+                return this.http.post<any>(this.endPoint + "/Customer/SetBanckAccount/"+ id, banckAccount,
+                        {headers: this.PassTokenWithHeaderService.getHeaders()}
+                )
+        };
 
 }
