@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Humanizer;
 
 namespace BookingServices.Controllers
 {
@@ -72,7 +73,7 @@ namespace BookingServices.Controllers
                         Name = service.Name,
                         Location = service.Location ?? "Not Exists",
                         StartTime = service.StartTime.Hours,
-                        EndTime = service.EndTime.Hours,
+                        EndTime = service.EndTime.Minutes > 0 ? 24 : service.EndTime.Hours,
                         Quantity = service.Quantity,
                         InitialPaymentPercentage = service.InitialPaymentPercentage,
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
@@ -93,7 +94,7 @@ namespace BookingServices.Controllers
                             Name = service.Name,
                             Location = service.Location ?? "Not Exists",
                             StartTime = service.StartTime.Hours,
-                            EndTime = service.EndTime.Hours,
+                            EndTime = service.EndTime.Minutes > 0 ? 24 : service.EndTime.Hours,
                             Quantity = service.Quantity,
                             InitialPaymentPercentage = service.InitialPaymentPercentage,
                             IsOnlineOrOffline = service.IsOnlineOrOffline,
@@ -373,7 +374,9 @@ namespace BookingServices.Controllers
                         Details = service.Details,
                         Location = service.Location,
                         StartTime = new TimeSpan(service.StartTime,0,0),
-                        EndTime = new TimeSpan(service.EndTime,0,0),
+                        EndTime = service.EndTime == 24 
+                        ? new TimeSpan(service.StartTime-1, 59, 59) 
+                        : new TimeSpan(service.StartTime, 0, 0),
                         Quantity = service.Quantity ?? 0,
                         InitialPaymentPercentage = service.InitialPaymentPercentage,
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
@@ -425,7 +428,7 @@ namespace BookingServices.Controllers
                 Details = service.Details,
                 Location = service.Location,
                 StartTime = service.StartTime.Hours,
-                EndTime = service.EndTime.Hours,
+                EndTime = service.EndTime.Minutes > 0 ? 24 : service.EndTime.Hours,
                 Quantity = service.Quantity,
                 InitialPaymentPercentage = service.InitialPaymentPercentage,
                 CategoryId = service.CategoryId,
@@ -457,14 +460,23 @@ namespace BookingServices.Controllers
                     service.Details = serviceModel.Details;
                     service.Location = serviceModel.Location;
                     service.StartTime = new TimeSpan(serviceModel.StartTime, 0, 0);
-                    service.EndTime = new TimeSpan(serviceModel.EndTime, 0, 0);
+                    if (serviceModel.EndTime == 24)
+                        service.EndTime = new TimeSpan(serviceModel.EndTime - 1, 59, 59);
+                    else
+                        service.EndTime = new TimeSpan(serviceModel.EndTime, 0, 0);
                     service.Quantity = serviceModel.Quantity ?? 0;
                     service.InitialPaymentPercentage = serviceModel.InitialPaymentPercentage;
                     service.CategoryId = serviceModel.CategoryId;
                     service.AdminContractId = serviceModel.AdminContractId;
                     service.BaseServiceId = serviceModel.BaseServiceId;
                     service.ProviderContractId = serviceModel.ProviderContractId;
-                    
+
+                    if (service.EndTime == TimeSpan.Zero || service.EndTime <= service.StartTime)
+                    {
+                        await AddSelectLists();
+                        return View(serviceModel); 
+                    }
+
                     _context.Update(service);
                     await _context.SaveChangesAsync();
 
@@ -765,8 +777,10 @@ namespace BookingServices.Controllers
         private async Task AddSelectLists(ServiceModel? service = null)
         {
             // Generate hours dictionary using a single line LINQ statement
-            var hours = Enumerable.Range(0, 24)
-                                  .ToDictionary(i => i.ToString("D2") + " :00", i => i);
+            var StartTimehours = Enumerable.Range(0, 24)
+                .ToDictionary(i => i.ToString("D2") + " :00", i => i);
+            var EndTimehours = Enumerable.Range(0, 25)
+                .ToDictionary(i => i.ToString("D2") + " :00", i => i);
 
             UserID = await GetCurrentUserID();
             var response = await _client.GetAsync(SaudiArabiaRegionsCitiesAndDistricts);
@@ -785,8 +799,8 @@ namespace BookingServices.Controllers
             ViewData["BaseServiceId"] = new SelectList(baseServicesQuery, "ServiceId", "Name", service?.BaseServiceId);
             ViewData["AdminContractId"] = new SelectList(_context.AdminContracts.Where(ac => ac.IsBlocked == false), "ContractId", "ContractName", service?.AdminContractId);
             ViewData["ProviderContractId"] = new SelectList(_context.ProviderContracts.Where(p => p.ProviderId == UserID && p.IsBlocked == false), "ContractId", "ContractName", service?.ProviderContractId);
-            ViewData["StartTime"] = new SelectList(hours, "Value", "Key");
-            ViewData["EndTime"] = new SelectList(hours, "Value", "Key");
+            ViewData["StartTime"] = new SelectList(StartTimehours, "Value", "Key");
+            ViewData["EndTime"] = new SelectList(EndTimehours, "Value", "Key");
         }
 
         // Helper Method: Handle File Uploads

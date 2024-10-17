@@ -27,7 +27,7 @@ namespace BookingServices.Models
         public int StartTime { get; set; }
 
         [Display(Name = "End Time")]
-        [Range(0, 23, ErrorMessage = "End Time must be between 0 and 23 (24-hour format).")]
+        [Range(1, 24, ErrorMessage = "End Time must be between 1 and 24 (24-hour format).")]
         [Required(ErrorMessage = "Please select the service end time.")]
         public int EndTime { get; set; }
 

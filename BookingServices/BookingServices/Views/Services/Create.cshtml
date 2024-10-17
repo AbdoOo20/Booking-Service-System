@@ -57,7 +57,7 @@
                 </div>
                 <div class="col-md-4 form-group mb-3">
                     <label asp-for="EndTime" class="form-label"></label>
-                    <select asp-for="EndTime" asp-items="ViewBag.EndTime" class="form-control" id="EndTime">
+                    <select asp-for="EndTime" asp-items="ViewBag.EndTime" class="form-control" id="EndTime" disabled>
                         <option value="">-- Select End Time --</option>
                     </select>
                     <span asp-validation-for="EndTime" class="text-danger"></span>

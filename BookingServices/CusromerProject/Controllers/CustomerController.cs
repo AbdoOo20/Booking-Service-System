@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
+using PayPal.Api;
 using SendGrid.Helpers.Mail;
 
 namespace CusromerProject.Controllers
@@ -99,6 +100,28 @@ namespace CusromerProject.Controllers
             } 
             else return BadRequest();
             
+        }
+
+        [HttpPost("SetBanckAccount/{id}")]
+        //[Authorize]
+        public async Task<IActionResult> SetBanckAccount(string id, string bankAcount)
+        {
+            var customer = await context.Customers.FindAsync(id);
+            if (customer == null) return NotFound(new {Message = "Customer Not Found"});
+            if (ModelState.IsValid)
+            {
+                customer.BankAccount = bankAcount;
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    return BadRequest(new { Message = "Unexpected Error" });
+                }
+            }
+            else return BadRequest(new { Message = ModelState });
+            return Ok(customer);
         }
     }
 }
