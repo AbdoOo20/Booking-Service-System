@@ -426,31 +426,45 @@ import {
         next: (data) => {
           this.finalReviews = [];
           this.bookId = [];
-          const uniqueReviews = new Map();
+
           data.forEach(item => {
             const review = item.review;
-            if (review) {
-              if (!uniqueReviews.has(review.bookingId)) {
-                uniqueReviews.set(review.bookingId, review);
-              }
-            } else {
-              this.bookId.push(item.booking.bookId); 
+            this.finalReviews.push(review);
+            if (!review) {
+              this.bookId.push(item.booking?.bookId);
             }
           });
-          this.finalReviews = Array.from(uniqueReviews.values());
         },
         error: (err) => {
           console.error('Error fetching reviews:', err);
         }
       });
     }
+
+    hasLastReviewNull(): boolean {
+      if (this.finalReviews.length === 0) {
+          return false;
+      }
+      const lastReview = this.finalReviews[this.finalReviews.length - 1];
+
+      return lastReview === null;
+  }
     
     // Handle review submission
     handleReviewSubmission(reviewData: { rating: number; reply: string }) {
-        this.finalReviews.push(reviewData);
-        console.log('New review added:', reviewData);
-    
-        this.checkForReview();
+      const lastReview = this.finalReviews[this.finalReviews.length - 1];
+      const lastBookingId = lastReview ? lastReview.bookingId : null;
+  
+      const newReview = {
+          ...reviewData,
+          bookingId: lastBookingId, // Pass the last booking ID
+          customerId: this.customerId, // Assuming you have this defined
+          customerCommentDate: new Date().toISOString() // Set the current date
+      };
+  
+      this.finalReviews.push(newReview);
+      console.log('New review added:', newReview);
+      this.checkForReview();
     }
   }
       
