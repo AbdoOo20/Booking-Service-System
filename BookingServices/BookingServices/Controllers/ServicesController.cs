@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using BookingServices.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using BookingServices.Hubs;
 
 namespace BookingServices.Controllers
 {
@@ -19,8 +21,10 @@ namespace BookingServices.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         string UserID;
         ErrorViewModel errorViewModel;
+        private readonly IHubContext<AdminNotification> _hubContext;
 
-        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment, UserManager<IdentityUser> userManager)
+
+        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment, UserManager<IdentityUser> userManager , IHubContext<AdminNotification> hubContext)
         {
             _context = context;
             _client = client;
@@ -29,6 +33,8 @@ namespace BookingServices.Controllers
             _userManager = userManager;
             UserID = "";
             errorViewModel = new ErrorViewModel();
+            _hubContext = hubContext;
+
         }
 
         public async Task<string> GetCurrentUserID()
@@ -745,10 +751,30 @@ namespace BookingServices.Controllers
                 var service = await _context.Services.FindAsync(id);
                 if (service != null)
                 {
+                    
+
                     service.IsRequestedOrNot = true;
                     _context.Entry(service).State = EntityState.Modified;
+       
                     await _context.SaveChangesAsync();
+                    // Hub Code
+
+                    //var currentProvider = _context.ServiceProviders.FirstOrDefault(p => p.ProviderId == UserID);
+                    //NotificationAdmin notification = new NotificationAdmin
+                    //{
+                    //    NotificationTitle = $"The Provider : {currentProvider.Name} Request To Make The Service {service.Name} Available Online On The Website",
+                    //    Time = DateTime.Now
+                    //};
+
+                    //await _context.NotificationAdmins.AddAsync(notification);
+
+
+                    //List<NotificationAdmin> notificationList = _context.NotificationAdmins.ToList();
+                    //var length = notificationList.Count();
+
+                    //await _hubContext.Clients.All.SendAsync("ReceiveMessage", $"The Provider : {currentProvider.Name} Request To Make The Service {service.Name} Available Online On The Website", DateTime.Now, length);
                     return Json(new { success = true, message = "Request to make service online is submitted." });
+
                 }
             }
             return Json(new { success = false, message = "Service not found." });

@@ -127,7 +127,7 @@
                             {
                                 <a href="javascript:void(0);"
                                    class="btn btn-outline-secondary ps-3 pe-3 make-service-online"
-                                   data-service-id="@item.ServiceId">Offline</a>
+                                   data-service-id="@item.ServiceId" data-service-name="@item.Name">Offline</a>
                             }
                             else if (!item.IsOnlineOrOffline && item.IsRequestedOrNot)
                             {
@@ -191,6 +191,10 @@
 <!-- Include external JS files -->
 <script src="~/js/servicesfilter.js"></script>
 <script src="~/js/requestonlineservice.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js">
+
+
 
 <!-- DataTable Initialization -->
 <script>
