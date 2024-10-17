@@ -268,6 +268,13 @@ export class SubmitPropertyComponent implements OnInit {
 
       });
   }
+
+  printDate() {
+    console.log("Event Date: ");
+    console.log(this.submitForm.get("booking.eventDate").value);
+    console.log("Book Date: ");
+    console.log(new Date().toISOString());
+  }
   shareData(): void {
     // Convert booking form data
     const selectedDate = this.submitForm.get("booking.eventDate").value;
@@ -278,8 +285,10 @@ export class SubmitPropertyComponent implements OnInit {
       this.submitForm.get("booking.endTime").value
     );
     console.log(selectedDate);
+    console.log("----------------------------------------");
     const formatedEvantDate = this.formatEventDate(selectedDate);
     console.log(formatedEvantDate);
+    console.log("-----------------------------------------------------");
     localStorage.setItem("NewDataFormat", formatedEvantDate);
 
     this.bookingData = {
@@ -306,7 +315,6 @@ export class SubmitPropertyComponent implements OnInit {
 
     // Set data in SharedService
     this.sharedService.setData(this.bookingData);
-    console.log("Booking data shared:", this.bookingData);
     this.NewBooking.setData(this.bookingData);
   }
 
@@ -437,14 +445,13 @@ export class SubmitPropertyComponent implements OnInit {
       cancelUrl: "http://localhost:4200/submit-property",
     };
 
-    // Call the addPayment method
     this.PayPal.addPayment(paymentData).subscribe({
       next: (response) => {
         window.location.href = response.approvalUrl;
       },
       error: (error) => {
         console.error("Payment Error:", error);
-        this.loading = false; // Stop loading on error
+        this.loading = false;
       },
     });
   }

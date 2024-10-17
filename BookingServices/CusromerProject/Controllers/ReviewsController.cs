@@ -43,7 +43,7 @@ namespace CusromerProject.Controllers
                 return BadRequest(result.Error);
             }
 
-            return Ok("Created Success");
+            return Ok(new { message = "Created Success" });
         }
     }
 }
