@@ -78,6 +78,12 @@ export class ConfirmationComponent implements OnInit {
       next: (response) => {
         if (response.state === "created") {
           this.amount = response.transactions[0].amount.total;
+          console.log(response);
+
+          let bankAccount;
+          if (localStorage.getItem('SetBankAccount') == 'true')
+            bankAccount = response.payer.payer_info.email;
+          console.log(bankAccount);
 
           if (this.bookingData) {
             this.totalPrice = this.bookingData.price; // Assign totalPrice from booking data
@@ -106,20 +112,24 @@ export class ConfirmationComponent implements OnInit {
             this.customerName = this.decodeService.getUserNameFromToken();
 
             // Add booking
-            this.bookingService
-              .addBooking(JSON.stringify(this.bookingData))
-              .subscribe({
-                next: (bookingResponse) => {
-                  this.paymentsService
-                    .addPayment({
-                      customerId: this.CustomerID,
-                      bookingId: bookingResponse.id,
-                      paymentDate: this.bookingData.selectedDate,
-                      paymentValue: this.amount,
-                    })
-                    .subscribe();
-                },
-              });
+            this.bookingService.addBooking(JSON.stringify(this.bookingData)).subscribe({
+              next: (bookingResponse) => {
+                this.paymentsService.addPayment({
+                  customerId: this.CustomerID,
+                  bookingId: bookingResponse.id,
+                  paymentDate: this.bookingData.selectedDate,
+                  paymentValue: this.amount,
+                }).subscribe();
+                if (localStorage.getItem('SetBankAccount') == 'true')
+                  this.ServiceForConfirmation.setBankAccount(this.decodeService.getUserIdFromToken(), { bankAccount: bankAccount })
+                    .subscribe({
+                      next: () => {
+                        console.log("Added Successfully");
+
+                      }
+                    });
+              }
+            });
           } else if (this.BookingIdFromPayInstallment) {
             // Payment without booking
             this.paymentsService

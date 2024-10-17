@@ -1,11 +1,13 @@
 ﻿using BookingServices.Data;
 using CusromerProject.DTO.Customer;
+using CustomerProject.DTO.Customer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
+using PayPal.Api;
 using SendGrid.Helpers.Mail;
 
 namespace CusromerProject.Controllers
@@ -99,6 +101,28 @@ namespace CusromerProject.Controllers
             } 
             else return BadRequest();
             
+        }
+
+        [HttpPut("SetBanckAccount/{id}")]
+        [Authorize]
+        public async Task<IActionResult> SetBanckAccount(string id, bankAccountDTO bankAcount)
+        {
+            var customer = await context.Customers.FindAsync(id);
+            if (customer == null) return NotFound(new {Message = "Customer Not Found"});
+            if (ModelState.IsValid)
+            {
+                customer.BankAccount = bankAcount.bankAccount;
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    return BadRequest(new { Message = "Unexpected Error" });
+                }
+            }
+            else return BadRequest(new { Message = ModelState });
+            return Ok(new { Message = "Bank Account Set Successfully" });
         }
     }
 }

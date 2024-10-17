@@ -131,16 +131,19 @@
                                 <div fxLayout="row" fxLayoutAlign="space-between center">
                                     <mat-form-field appearance="outline" class="w-100">
                                         <mat-label>Select Payment Method</mat-label>
-                                        <mat-select formControlName="paymentMethod" required>
+                                        <mat-select formControlName="paymentMethod"
+                                            (selectionChange)="onSelectionChange2($event)">
                                             <mat-option *ngFor="let method of PaymentMethods" [value]="method.id">
                                                 {{ method.name }}
                                             </mat-option>
                                         </mat-select>
                                         <mat-error
-                                            *ngIf="submitForm.get('payment').get('paymentMethod')?.hasError('required')">Payment
-                                            Method is required</mat-error>
+                                            *ngIf="submitForm.get('payment.paymentMethod')?.hasError('required')">
+                                            Payment Method is required
+                                        </mat-error>
                                     </mat-form-field>
                                 </div>
+
 
                                 <!-- Amount for Payment -->
                                 <div fxLayout="row" fxLayoutAlign="space-between center">
@@ -168,11 +171,13 @@
                                     <mat-icon>navigate_before</mat-icon>
                                     Back
                                 </button>
-                                <button mat-raised-button color="primary" (click)="CreatePayment()"
-                                    [disabled]="loading || submitForm.get('payment').invalid">
-                                    Buy Now
-                                    <mat-icon iconPositionEnd>navigate_next</mat-icon>
-                                </button>
+                                <div class="mt-3" fxLayoutAlign="end">
+                                    <button mat-raised-button color="primary" (click)="CreatePayment()"
+                                        [disabled]="submitForm.invalid || !isPaymentMethodSelected || loading">
+                                        Buy Now
+                                        <mat-icon>navigate_next</mat-icon>
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
