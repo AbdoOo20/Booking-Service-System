@@ -13,7 +13,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
-import { MatSelectModule } from "@angular/material/select";
+import { MatSelectChange, MatSelectModule } from "@angular/material/select";
 import { MatStepper, MatStepperModule } from "@angular/material/stepper";
 import { AppService } from "@services/app.service";
 import { DomHandlerService } from "@services/dom-handler.service";
@@ -47,6 +47,7 @@ import { PaymentIncome } from "../../common/interfaces/payment-income";
 import { PaymentsService } from "@services/payments.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ConfirmDialogComponent, ConfirmDialogModel } from "@shared-components/confirm-dialog/confirm-dialog.component";
+import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
 
 @Component({
   selector: "app-submit-property",
@@ -193,12 +194,12 @@ export class SubmitPropertyComponent implements OnInit {
     });
     this.submitForm = this.fb.group({
       booking: this.fb.group({
-        service: [""],
-        priceEuro: [""],
+        service: ["", Validators.required],
+        priceEuro: ["", Validators.required],
         eventDate: ["", Validators.required],
         startTime: ["", Validators.required],
         endTime: ["", Validators.required],
-        quantity: [""],
+        quantity: ["", [Validators.required, Validators.min(1)]],
       }),
       payment: this.fb.group({
         amount: ["", [Validators.required, Validators.maxLength(5)]],
@@ -230,7 +231,7 @@ export class SubmitPropertyComponent implements OnInit {
           payment: {
             minValue: this.service.initialPayment,
             maxValue: this.service.priceForTheCurrentDay,
-            paymentMethod: [null, Validators.required],
+            paymentMethod: [1, Validators.required],
           },
         });
         this.hasQuantity = this.service.quantity > 0 ? true : false;
@@ -256,16 +257,6 @@ export class SubmitPropertyComponent implements OnInit {
       .get("booking.startTime")
       ?.valueChanges.subscribe((startTime) => {
         this.updateEndTimeOptions(startTime);
-      });
-    this.submitForm
-      .get("payment.paymentMethod")
-      ?.valueChanges.subscribe((paymentMethodId) => {
-        console.log(paymentMethodId);
-        this.paymentMethodId = paymentMethodId;
-
-        this.isPaymentMethodSelected = true;
-        console.log(this.isPaymentMethodSelected);
-
       });
   }
 
@@ -402,59 +393,80 @@ export class SubmitPropertyComponent implements OnInit {
 
 
   CreatePayment() {
-    const dialogData = new ConfirmDialogModel('Confirm', 'Save Your Account Bank !!');
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      maxWidth: "800px",
-      data: dialogData
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true)
-        localStorage.setItem('SetBankAccount', 'true');
-      else
-        localStorage.setItem('SetBankAccount', 'false');
-    });
-    // Set loading to true when the payment process starts
-    this.loading = true;
-
-    // Share the booking data before proceeding with payment
-    this.shareData(); // Call shareData here to share the booking data
-
-    // Get total value from the form
-    const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
-
-    // Ensure minValue and maxValue are properly set from the form
-    this.minValue = parseFloat(this.submitForm.get("payment.minValue")?.value);
-    this.maxValue = parseFloat(this.submitForm.get("payment.maxValue")?.value);
-
-    // Check if the total is between minValue and maxValue
+    // Step 1: Retrieve form values and validate the amount
+    const amount = this.submitForm.get('payment.amount')?.value;
+    this.minValue = parseFloat(this.submitForm.get('payment.minValue')?.value);
+    this.maxValue = parseFloat(this.submitForm.get('payment.maxValue')?.value);
+  
     if (
       amount < (this.minValue * this.maxValue) / 100 ||
       amount > this.maxValue ||
       amount <= 0
     ) {
-      console.warn("Total must be between minimum and maximum values:", amount);
-      this.loading = false; // Stop loading if validation fails
-      return; // Exit the method if the total is not in the valid range
+      console.warn('Total must be between minimum and maximum values:', amount);
+  
+      // Open an alert dialog to notify the user about the invalid amount
+      this.dialog.open(AlertDialogComponent, {
+        maxWidth: '500px',
+        data: 'The amount must be between the specified minimum and maximum values.',
+      });
+  
+      return; // Exit the function if validation fails
     }
-
-    const paymentData = {
-      total: amount,
-      currency: "USD",
-      description: "New Transaction",
-      returnUrl: "http://localhost:4200/confirmation",
-      cancelUrl: "http://localhost:4200/submit-property",
-    };
-
-    this.PayPal.addPayment(paymentData).subscribe({
-      next: (response) => {
-        window.location.href = response.approvalUrl;
-      },
-      error: (error) => {
-        console.error("Payment Error:", error);
-        this.loading = false;
-      },
+  
+    // Step 2: Open a confirmation dialog for saving the bank account
+    const dialogData = new ConfirmDialogModel('Confirm', 'Save Your Account Bank !!');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      minWidth: '500px',
+      maxWidth: '500px',
+      data: dialogData,
+    });
+  
+    // Step 3: Wait for the user's response and proceed with the payment
+    dialogRef.afterClosed().subscribe((result) => {
+      localStorage.setItem('SetBankAccount', result ? 'true' : 'false');
+  
+      if (!result) {
+        console.warn('User canceled bank account saving.');
+        // Continue with the payment even if the user cancels saving the account
+      }
+  
+      // Set loading to true when the payment process starts
+      this.loading = true;
+  
+      // Share the booking data
+      this.shareData();
+  
+      // Prepare payment data
+      const paymentData = {
+        total: amount,
+        currency: 'USD',
+        description: 'New Transaction',
+        returnUrl: 'http://localhost:4200/confirmation',
+        cancelUrl: 'http://localhost:4200/submit-property',
+      };
+  
+      // Proceed with PayPal payment
+      this.PayPal.addPayment(paymentData).subscribe({
+        next: (response) => {
+          window.location.href = response.approvalUrl;
+        },
+        error: (error) => {
+          console.error('Payment Error:', error);
+          this.loading = false;
+        },
+      });
     });
   }
+  
+  onSelectionChange2(event: MatSelectChange) {
+    console.log("Selected Payment Method:", event.value);
+    // Update the selected payment method ID and mark it as selected
+    this.paymentMethodId = event.value;
+    this.isPaymentMethodSelected = !!event.value; // Ensure it's set only if valid
+  }
+
+
 
   private initializeTimeOptions() {
     this.timeOptions = [];
