@@ -60,6 +60,8 @@ namespace BookingServices.Data
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.AlternativePhone)
                 .IsUnique();
+            modelBuilder.Entity<Payment>()
+                .ToTable("Payments", tb => tb.HasTrigger("ChangeBookingStatus_Trg"));
 
             base.OnModelCreating(modelBuilder);
         }

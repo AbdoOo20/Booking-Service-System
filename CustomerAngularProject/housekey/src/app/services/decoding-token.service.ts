@@ -9,7 +9,11 @@ export class DecodingTokenService {
     constructor() { }
 
     getUserIdFromToken() {
-        const token = localStorage.getItem("token");
+        let token;
+        if (sessionStorage.getItem("token"))
+            token = sessionStorage.getItem("token");
+        if (!token)
+         token = localStorage.getItem("token");
         if (token) {
             this.decoded = jwtDecode(token);
             return this.decoded[

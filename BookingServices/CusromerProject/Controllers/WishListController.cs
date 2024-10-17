@@ -22,7 +22,7 @@ namespace BookingServices.Controllers
 
         // Get all Categories with Services in WishList by CustomerId
         [HttpGet("{customerId}")]
-        [Authorize]
+        //[Authorize]
         public IActionResult GetAllServicesInWishList(string customerId)
         {
             // جلب الخدمات فقط إذا كان لها سعر لليوم الحالي
@@ -51,7 +51,7 @@ namespace BookingServices.Controllers
 
         // 2. Add Service to WishList (POST)
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public IActionResult AddServiceToWishList([FromBody] WishListDTO wishList)
         {
             if (wishList == null || string.IsNullOrWhiteSpace(wishList.CustomerId) || wishList.ServiceId <= 0)
@@ -82,7 +82,7 @@ namespace BookingServices.Controllers
 
         // 3. Delete Service from WishList (DELETE)
         [HttpDelete("{customerId}/{serviceId}")]
-        [Authorize]
+        //[Authorize]
         public IActionResult DeleteServiceFromWishList(string customerId, int serviceId)
         {
             var wishListItem = _context.WishList

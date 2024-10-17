@@ -46,6 +46,8 @@ import { Router } from "@angular/router";
 import { PaymentIncome } from "../../common/interfaces/payment-income";
 import { PaymentsService } from "@services/payments.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ConfirmDialogComponent, ConfirmDialogModel } from "@shared-components/confirm-dialog/confirm-dialog.component";
+import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
 
 @Component({
   selector: "app-submit-property",
@@ -133,6 +135,7 @@ export class SubmitPropertyComponent implements OnInit {
   public endBookingTime: string;
   CustomerIDFromToken: any;
   paymentMethodId: number;
+  isPaymentMethodSelected: boolean = false;
 
   constructor(
     public appService: AppService,
@@ -186,18 +189,17 @@ export class SubmitPropertyComponent implements OnInit {
     //Get Payment methodes:
     this.PaymentsService.getAllPaymentIncoms().subscribe({
       next: (data) => {
-        console.log(data);
         this.PaymentMethods = data;
       },
     });
     this.submitForm = this.fb.group({
       booking: this.fb.group({
-        service: [""],
-        priceEuro: [""],
+        service: ["", Validators.required],
+        priceEuro: ["", Validators.required],
         eventDate: ["", Validators.required],
         startTime: ["", Validators.required],
         endTime: ["", Validators.required],
-        quantity: [""],
+        quantity: ["", [Validators.required, Validators.min(1)]],
       }),
       payment: this.fb.group({
         amount: ["", [Validators.required, Validators.maxLength(5)]],
@@ -229,7 +231,7 @@ export class SubmitPropertyComponent implements OnInit {
           payment: {
             minValue: this.service.initialPayment,
             maxValue: this.service.priceForTheCurrentDay,
-            paymentMethod: [null, Validators.required],
+            paymentMethod: [1, Validators.required],
           },
         });
         this.hasQuantity = this.service.quantity > 0 ? true : false;
@@ -255,12 +257,6 @@ export class SubmitPropertyComponent implements OnInit {
       .get("booking.startTime")
       ?.valueChanges.subscribe((startTime) => {
         this.updateEndTimeOptions(startTime);
-      });
-    this.submitForm
-      .get("payment.paymentMethod")
-      ?.valueChanges.subscribe((paymentMethodId) => {
-        console.log(paymentMethodId);
-        this.paymentMethodId = paymentMethodId;
       });
   }
 
@@ -395,49 +391,82 @@ export class SubmitPropertyComponent implements OnInit {
   };
   loading: boolean = false;
 
+
   CreatePayment() {
-    // Set loading to true when the payment process starts
-    this.loading = true;
-
-    // Share the booking data before proceeding with payment
-    this.shareData(); // Call shareData here to share the booking data
-
-    // Get total value from the form
-    const amount = this.submitForm.get("payment.amount")?.value; // Reference the correct form group
-
-    // Ensure minValue and maxValue are properly set from the form
-    this.minValue = parseFloat(this.submitForm.get("payment.minValue")?.value);
-    this.maxValue = parseFloat(this.submitForm.get("payment.maxValue")?.value);
-
-    // Check if the total is between minValue and maxValue
+    // Step 1: Retrieve form values and validate the amount
+    const amount = this.submitForm.get('payment.amount')?.value;
+    this.minValue = parseFloat(this.submitForm.get('payment.minValue')?.value);
+    this.maxValue = parseFloat(this.submitForm.get('payment.maxValue')?.value);
+  
     if (
       amount < (this.minValue * this.maxValue) / 100 ||
       amount > this.maxValue ||
       amount <= 0
     ) {
-      console.warn("Total must be between minimum and maximum values:", amount);
-      this.loading = false; // Stop loading if validation fails
-      return; // Exit the method if the total is not in the valid range
+      console.warn('Total must be between minimum and maximum values:', amount);
+  
+      // Open an alert dialog to notify the user about the invalid amount
+      this.dialog.open(AlertDialogComponent, {
+        maxWidth: '500px',
+        data: 'The amount must be between the specified minimum and maximum values.',
+      });
+  
+      return; // Exit the function if validation fails
     }
-
-    const paymentData = {
-      total: amount,
-      currency: "USD",
-      description: "New Transaction",
-      returnUrl: "http://localhost:4200/confirmation",
-      cancelUrl: "http://localhost:4200/submit-property",
-    };
-
-    this.PayPal.addPayment(paymentData).subscribe({
-      next: (response) => {
-        window.location.href = response.approvalUrl;
-      },
-      error: (error) => {
-        console.error("Payment Error:", error);
-        this.loading = false;
-      },
+  
+    // Step 2: Open a confirmation dialog for saving the bank account
+    const dialogData = new ConfirmDialogModel('Confirm', 'Save Your Account Bank !!');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      minWidth: '500px',
+      maxWidth: '500px',
+      data: dialogData,
+    });
+  
+    // Step 3: Wait for the user's response and proceed with the payment
+    dialogRef.afterClosed().subscribe((result) => {
+      localStorage.setItem('SetBankAccount', result ? 'true' : 'false');
+  
+      if (!result) {
+        console.warn('User canceled bank account saving.');
+        // Continue with the payment even if the user cancels saving the account
+      }
+  
+      // Set loading to true when the payment process starts
+      this.loading = true;
+  
+      // Share the booking data
+      this.shareData();
+  
+      // Prepare payment data
+      const paymentData = {
+        total: amount,
+        currency: 'USD',
+        description: 'New Transaction',
+        returnUrl: 'http://localhost:4200/confirmation',
+        cancelUrl: 'http://localhost:4200/submit-property',
+      };
+  
+      // Proceed with PayPal payment
+      this.PayPal.addPayment(paymentData).subscribe({
+        next: (response) => {
+          window.location.href = response.approvalUrl;
+        },
+        error: (error) => {
+          console.error('Payment Error:', error);
+          this.loading = false;
+        },
+      });
     });
   }
+  
+  onSelectionChange2(event: MatSelectChange) {
+    console.log("Selected Payment Method:", event.value);
+    // Update the selected payment method ID and mark it as selected
+    this.paymentMethodId = event.value;
+    this.isPaymentMethodSelected = !!event.value; // Ensure it's set only if valid
+  }
+
+
 
   private initializeTimeOptions() {
     this.timeOptions = [];
@@ -581,267 +610,5 @@ export class SubmitPropertyComponent implements OnInit {
         featured: false,
       },
     });
-  }
-
-  // -------------------- Address ---------------------------
-  public onSelectCity() {
-    this.submitForm.controls.address
-      .get("neighborhood")!
-      .setValue(null, { emitEvent: false });
-    this.submitForm.controls.address
-      .get("street")!
-      .setValue(null, { emitEvent: false });
-  }
-  public onSelectNeighborhood() {
-    this.submitForm.controls.address
-      .get("street")!
-      .setValue(null, { emitEvent: false });
-  }
-
-  private setCurrentPosition() {
-    if (this.domHandlerService.isBrowser) {
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          this.lat = position.coords.latitude;
-          this.lng = position.coords.longitude;
-          this.center = {
-            lat: this.lat,
-            lng: this.lng,
-          };
-        });
-      }
-    }
-  }
-
-  onMapReady() {
-    setTimeout(() => {
-      this.placesAutocomplete();
-    });
-  }
-
-  private placesAutocomplete() {
-    let autocomplete = new google.maps.places.Autocomplete(
-      this.addressAutocomplete.nativeElement,
-      {
-        types: ["address"],
-      }
-    );
-    autocomplete.addListener("place_changed", () => {
-      this.ngZone.run(() => {
-        let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-        if (place.geometry === undefined || place.geometry === null) {
-          return;
-        }
-        this.lat = place.geometry.location!.lat();
-        this.lng = place.geometry.location!.lng();
-        this.center = {
-          lat: this.lat,
-          lng: this.lng,
-        };
-        this.getAddress();
-      });
-    });
-  }
-
-  // public getAddress(){
-  //   let geocoder = new google.maps.Geocoder();
-  //   let latlng = new google.maps.LatLng(this.lat, this.lng);
-  //   geocoder.geocode({'location': latlng}, (results, status) => {
-  //     if(status === google.maps.GeocoderStatus.OK) {
-  //       console.log(results);
-  //       let address = results[0].formatted_address;
-  //       this.submitForm.controls.address.get('location').setValue(address);
-  //       this.setAddresses(results[0]);
-  //     }
-  //   });
-  // }
-  public getAddress() {
-    this.appService.getAddress(this.lat, this.lng).subscribe((response) => {
-      console.log(response);
-      if (response["results"].length) {
-        if (response["results"][0]) {
-          let address = response["results"][0].formatted_address;
-          this.submitForm.controls.address.get("location")!.setValue(address);
-          //this.setAddresses(response["results"][0]);
-        }
-      }
-    });
-  }
-  public onMapClick(e: any) {
-    this.lat = e.latLng.lat();
-    this.lng = e.latLng.lng();
-    this.getAddress();
-  }
-
-  // public setAddresses(result: any) {
-  //   this.submitForm.controls.address.get("city")!.setValue(null);
-  //   this.submitForm.controls.address.get("zipCode")!.setValue(null);
-  //   this.submitForm.controls.address.get("street")!.setValue(null);
-
-  //   var newCity, newStreet, newNeighborhood;
-
-  //   result.address_components.forEach((item) => {
-  //     if (item.types.indexOf("locality") > -1) {
-  //       if (this.cities.filter((city) => city.name == item.long_name)[0]) {
-  //         newCity = this.cities.filter(
-  //           (city) => city.name == item.long_name
-  //         )[0];
-  //       } else {
-  //         newCity = { id: this.cities.length + 1, name: item.long_name };
-  //         this.cities.push(newCity);
-  //       }
-  //       this.submitForm.controls.address.get("city")!.setValue(newCity);
-  //     }
-  //     if (item.types.indexOf("postal_code") > -1) {
-  //       this.submitForm.controls.address
-  //         .get("zipCode")!
-  //         .setValue(item.long_name);
-  //     }
-  //   });
-
-  //   if (!newCity) {
-  //     result.address_components.forEach((item) => {
-  //       if (item.types.indexOf("administrative_area_level_1") > -1) {
-  //         if (this.cities.filter((city) => city.name == item.long_name)[0]) {
-  //           newCity = this.cities.filter(
-  //             (city) => city.name == item.long_name
-  //           )[0];
-  //         } else {
-  //           newCity = {
-  //             id: this.cities.length + 1,
-  //             name: item.long_name,
-  //           };
-  //           this.cities.push(newCity);
-  //         }
-  //         this.submitForm.controls.address.get("city")!.setValue(newCity);
-  //       }
-  //     });
-  //   }
-
-  //   if (newCity) {
-  //     result.address_components.forEach((item) => {
-  //       if (item.types.indexOf("neighborhood") > -1) {
-  //         let neighborhood = this.neighborhoods.filter(
-  //           (n) => n.name == item.long_name && n.cityId == newCity.id
-  //         )[0];
-  //         if (neighborhood) {
-  //           newNeighborhood = neighborhood;
-  //         } else {
-  //           newNeighborhood = {
-  //             id: this.neighborhoods.length + 1,
-  //             name: item.long_name,
-  //             cityId: newCity.id,
-  //           };
-  //           this.neighborhoods.push(newNeighborhood);
-  //         }
-  //         this.neighborhoods = [...this.neighborhoods];
-  //         this.submitForm.controls.address
-  //           .get("neighborhood")!
-  //           .setValue([newNeighborhood]);
-  //       }
-  //     });
-  //   }
-
-  //   if (newCity) {
-  //     result.address_components.forEach((item) => {
-  //       if (item.types.indexOf("route") > -1) {
-  //         if (
-  //           this.streets.filter(
-  //             (street) =>
-  //               street.name == item.long_name && street.cityId == newCity.id
-  //           )[0]
-  //         ) {
-  //           newStreet = this.streets.filter(
-  //             (street) =>
-  //               street.name == item.long_name && street.cityId == newCity.id
-  //           )[0];
-  //         } else {
-  //           newStreet = {
-  //             id: this.streets.length + 1,
-  //             name: item.long_name,
-  //             cityId: newCity.id,
-  //             neighborhoodId: newNeighborhood ? newNeighborhood.id : null,
-  //           };
-  //           this.streets.push(newStreet);
-  //         }
-  //         this.streets = [...this.streets];
-  //         this.submitForm.controls.address.get("street")!.setValue([newStreet]);
-  //       }
-  //     });
-  //   }
-  // }
-
-  // -------------------- Additional ---------------------------
-  public buildFeatures() {
-    const arr = this.features.map((feature) => {
-      return this.fb.group({
-        id: feature.id,
-        name: feature.name,
-        selected: feature.selected,
-      });
-    });
-    return this.fb.array(arr);
-  }
-
-  // -------------------- Media ---------------------------
-  public createVideo(): FormGroup {
-    return this.fb.group({
-      id: null,
-      name: null,
-      link: null,
-    });
-  }
-  public addVideo(): void {
-    const videos = this.submitForm.controls.media.get("videos") as FormArray;
-    videos.push(this.createVideo());
-  }
-  public deleteVideo(index) {
-    const videos = this.submitForm.controls.media.get("videos") as FormArray;
-    videos.removeAt(index);
-  }
-
-  public createPlan(): FormGroup {
-    return this.fb.group({
-      id: null,
-      name: null,
-      desc: null,
-      area: null,
-      rooms: null,
-      baths: null,
-      image: null,
-    });
-  }
-  public addPlan(): void {
-    const plans = this.submitForm.controls.media.get("plans") as FormArray;
-    plans.push(this.createPlan());
-  }
-  public deletePlan(index) {
-    const plans = this.submitForm.controls.media.get("plans") as FormArray;
-    plans.removeAt(index);
-  }
-
-  public createFeature(): FormGroup {
-    return this.fb.group({
-      id: null,
-      name: null,
-      value: null,
-    });
-  }
-  public addFeature(): void {
-    const features = this.submitForm.controls.media.get(
-      "additionalFeatures"
-    ) as FormArray;
-    features.push(this.createFeature());
-  }
-  public deleteFeature(index) {
-    const features = this.submitForm.controls.media.get(
-      "additionalFeatures"
-    ) as FormArray;
-    features.removeAt(index);
-  }
-
-  get featuresForm() {
-    return (this.submitForm.get("additional") as FormGroup).controls
-      .features as FormArray;
   }
 }
