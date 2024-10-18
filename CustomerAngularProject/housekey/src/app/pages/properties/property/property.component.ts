@@ -424,14 +424,15 @@ export class PropertyComponent implements OnInit {
     this.customerId = this.DecodingCustomerID.getUserIdFromToken();
     this.ReviewService.getFilteredBookingsAndReviews(this.customerId, this.serviceID).subscribe({
       next: (data) => {
+        console.log(data);
         this.finalReviews = [];
         this.bookId = [];
 
         data.forEach(item => {
-          const review = item.review;
-          this.finalReviews.push(review);
-          if (!review) {
-            this.bookId.push(item.booking?.bookId);
+          const {booking, review} = item;
+          this.finalReviews.push(review || null);
+          if (!review && booking?.bookId) {
+            this.bookId.push(booking.bookId);
           }
         });
       },
@@ -450,6 +451,10 @@ export class PropertyComponent implements OnInit {
     return lastReview === null;
   }
 
+  hasAllReviewsNull(): boolean {
+    return this.finalReviews.every(item => item === null || item.review === null);
+  }
+
   // Handle review submission
   handleReviewSubmission(reviewData: { rating: number; reply: string }) {
     const lastReview = this.finalReviews[this.finalReviews.length - 1];
@@ -457,9 +462,9 @@ export class PropertyComponent implements OnInit {
 
     const newReview = {
       ...reviewData,
-      bookingId: lastBookingId, // Pass the last booking ID
-      customerId: this.customerId, // Assuming you have this defined
-      customerCommentDate: new Date().toISOString() // Set the current date
+      bookingId: lastBookingId,
+      customerId: this.customerId,
+      customerCommentDate: new Date().toISOString()
     };
 
     this.finalReviews.push(newReview);
