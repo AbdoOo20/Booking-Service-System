@@ -441,6 +441,13 @@ namespace BookingServices.Controllers
                 BaseServiceId = service.BaseServiceId,
                 ProviderContractId = service.ProviderContractId,
             };
+            var price = await _context.ServicePrices
+                .Where(s => s.ServiceId == id && s.PriceDate.Date == DateTime.Now.Date)
+                .Select(s => s.Price)
+                .FirstOrDefaultAsync();
+
+            serviceModel.ServicePrice = ( price > 0) ? price : 1;
+
 
             await AddSelectLists(serviceModel);
             return View(serviceModel);
@@ -458,7 +465,7 @@ namespace BookingServices.Controllers
 
                 if (service == null)
                     HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
-
+                
                 if (ModelState.IsValid)
                 {
                     service.Name = serviceModel.Name;
