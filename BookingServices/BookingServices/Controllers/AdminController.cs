@@ -165,34 +165,46 @@ namespace BookingServices.Controllers
         public IActionResult BookingDetails(string Id)
         {
             string userIdFromManager = Id;
+            List<BookingViewModel> books = new List<BookingViewModel>();
             var bookings = (from b in _appcontext.Bookings
                             from bs in _appcontext.BookingServices
                             from s in _appcontext.Services
+                            from c in _appcontext.Customers
+                            from m in _appcontext.PaymentIncomes
                             where b.BookingId == bs.BookingId
                             && bs.ServiceId == s.ServiceId
-                            && s.ProviderId == userIdFromManager
-                            select b).Where(b => b.Type == "Service").Include(c => c.Customer);
-
-            var totalConfirmed = bookings
-                .Where(b => b.Status == "Confirmed" || b.Status == "paid")
-                .Sum(b => b.Price);
-
-            var totalCanceled = bookings
-                .Where(b => b.Status == "Cancelled" || b.Status == "pus")
-                .Sum(b => b.Price);
-            var totalPending = bookings
-               .Where(b => b.Status == "Pending" || b.Status == "pus")
-               .Sum(b => b.Price);
-
-            var model = new bookingViewModel
+                            && s.ProviderId == userIdFromManager && b.CustomerId == c.CustomerId && b.PaymentIncomeId == m.PaymentIncomeId
+                            select new
+                            {
+                                BookingId = b.BookingId,
+                                EventDate = b.EventDate,
+                                Quantity = b.Quantity,
+                                Price = b.Price,
+                                BookDate = b.BookDate,
+                                Status = b.Status,
+                                Type = b.Type,
+                                PaymentIncome = b.PaymentIncomeId != null ? m.Name : b.CashOrCashByHandOrInstallment,
+                                CustomerName = c.Name,
+                                ServiceName = s.Name,
+                            });
+            foreach (var item in bookings)
             {
-                Bookings = bookings.ToList(),
-                TotalIncome = totalConfirmed,
-                TotalCanceled = totalCanceled,
-                TotalPending = totalPending
-            };
-
-            return View(model);
+                BookingViewModel newBook = new BookingViewModel
+                {
+                    BookingId = item.BookingId,
+                    EventDate = item.EventDate,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    BookDate = item.BookDate,
+                    Type = item.Type,
+                    CustomerName = item.CustomerName,
+                    PaymentIncome = item.PaymentIncome,
+                    Status = item.Status,
+                    ServiceName = item.ServiceName,
+                };
+                books.Add(newBook);
+            }
+            return View(books);
         }
     }
 }
