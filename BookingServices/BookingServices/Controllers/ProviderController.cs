@@ -160,7 +160,7 @@ namespace BookingServices.Controllers
         {
             try
             {
-                model.Status = "Paid";
+                model.Status = "paid";
                 model.Type = "Service";
                 if (ModelState.IsValid)
                 {
@@ -270,8 +270,8 @@ namespace BookingServices.Controllers
 
             var result = await (from b in _context.Bookings
                           join bs in _context.BookingServices on b.BookingId equals bs.BookingId
-                          where bs.ServiceId == serviceId && b.EventDate == eventDate
-                          select new { b.StartTime, b.EndTime }).ToListAsync();
+                          where bs.ServiceId == serviceId && b.EventDate == eventDate && b.Status != "canceled"
+                                select new { b.StartTime, b.EndTime }).ToListAsync();
 
             var alltimebooked = result.Select(r => (r.StartTime, r.EndTime)).ToList();
             foreach (var book in alltimebooked)
