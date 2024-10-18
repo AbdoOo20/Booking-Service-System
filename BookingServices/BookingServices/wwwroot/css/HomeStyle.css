@@ -802,3 +802,94 @@ h6 {
     color: #012970;
     font-weight:bold;
 }
+.custom-dropdown-menu {
+    width: 275px;
+    height: 300px;
+    padding: 10px;
+    overflow-x: auto;
+    border-radius: 10px;
+}
+
+    .custom-dropdown-menu::before {
+        display: none;
+    }
+
+.notifications .badge-number {
+    position: absolute;
+    top: -5px;
+    right: -4px;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.notifications i {
+    cursor: pointer;
+}
+
+.custom-dropdown-menu {
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+    .notification-item:hover {
+        background-color: #eaeaea;
+    }
+
+.notification-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+}
+
+.hr-divider {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 0;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.btn-read {
+    align-self: flex-end;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-read:hover {
+        background-color: #0056b3;
+    }
+
+.no-notifications {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    padding: 10px 0;
+}

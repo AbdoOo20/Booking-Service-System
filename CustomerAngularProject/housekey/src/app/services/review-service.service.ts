@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, map, Observable, switchMap } from 'rxjs';
+import { map, Observable, switchMap, of, forkJoin, catchError, throwError } from 'rxjs';
 import { AllBookingsService } from './all-bookings.service';
 
 
@@ -8,47 +8,54 @@ import { AllBookingsService } from './all-bookings.service';
   providedIn: 'root'
 })
 export class ReviewServiceService {
-private readonly reviews_API="http://localhost:18105/api/Reviews";
-//private readonly bookingForservice="http://localhost:18105/api/Book/GetBookingsForService";
+private readonly _APIUrl="http://localhost:18105/api";
 
-  constructor(public http:HttpClient, public bookingServ:AllBookingsService) { 
+  constructor(public http:HttpClient, public bookingServ:AllBookingsService) { }
 
+  getCustomerBookings(customerId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this._APIUrl}/Book/GetBookingsForCustomer/${customerId}`)
   }
 
-  getReview(customerId:string){
-    return this.http.get(this.reviews_API+"/"+customerId);
+  getReview(bookingId: number): Observable<any> {
+    return this.http.get(`${this._APIUrl}/Reviews/${bookingId}`).pipe(
+      catchError(error => {
+        if (error.status === 404) {
+          // If the review is not found, return null
+          return of(null);
+        } else {
+          // Re-throw any other errors
+          return throwError(error);
+        }
+      })
+    );
   }
-  postReview( postReview:any){
-    return this.http.post(this.reviews_API,postReview);
+
+  getFilteredBookingsAndReviews(customerId: string, serviceId: number): Observable<any[]> {
+    return this.getCustomerBookings(customerId).pipe(
+      map(bookings => bookings.filter(booking => booking.serviceId === serviceId && booking.status == "Confirmed")),
+      switchMap(filteredBookings => {
+        if (filteredBookings.length > 0) {
+          console.log('Filtered Bookings:', filteredBookings);
+          const bookingWithReviewRequests = filteredBookings.map(booking =>
+            this.getReview(booking.bookId).pipe(
+              map(review => ({
+                booking, 
+                review: review || null
+              }))
+            )
+          );
+
+          return forkJoin(bookingWithReviewRequests);
+        } else {
+
+          return of([]);
+        }
+      })
+    );
   }
-
-// Method to get filtered bookings based on serviceId, then retrieve reviews
-getAllReviewsForBookings(customerId: string, serviceId: number): Observable<any[]> {
-  return this.bookingServ.getBooking(customerId).pipe(
-    switchMap((bookings: any) => {
-      // Ensure the result from bookings is an array
-      if (!Array.isArray(bookings)) {
-        throw new Error('Expected bookings to be an array');
-      }
-
-      // Filter bookings based on the serviceId
-      const filteredBookings = bookings.filter(booking => booking.serviceId === serviceId);
-      console.log(filteredBookings);
-      // For each filtered booking, get the reviews
-      const reviewObservables = filteredBookings.map((booking) => {
-        return this.getReview(customerId).pipe(
-          map((reviews) => ({
-            ...booking,  // Booking data for the service
-            reviews      // Review data (array of reviews for this customer)
-          }))
-        );
-      });
-
-      // Wait for all review requests to complete and return the final result
-      return forkJoin(reviewObservables);
-    }),
-   
-  );
-}
-
+  
+  
+  postReview(review: any): Observable<any>{
+    return this.http.post<any>(`${this._APIUrl}/Reviews`, review);
+  }
 }

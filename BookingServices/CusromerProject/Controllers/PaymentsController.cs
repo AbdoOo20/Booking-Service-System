@@ -65,11 +65,10 @@ namespace CusromerProject.Controllers
             {
 
                 var PaymentIncomes = await _context.PaymentIncomes
-                    .Include(p => p.Bookings)
-                    .Include(p => p.Discounts)
                     .Where(p => p.IsBlocked == false)
                     .Select(paymentIncome => new PaymentIncomeDTO
                     {
+                        Id = paymentIncome.PaymentIncomeId,
                         Name = paymentIncome.Name,
                         Percentage = paymentIncome.Percentage,
                     }).ToListAsync();

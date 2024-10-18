@@ -32,7 +32,7 @@ export class UserMenuComponent {
     isLoggedIn: boolean = !!localStorage.getItem("token");
     public customerid: string;
     public settings: Settings;
-    public customer: any;
+    public customer: string;
     constructor(
         public appService: AppService,
         public settingsService: SettingsService,
@@ -43,7 +43,8 @@ export class UserMenuComponent {
     ) {
         this.settings = this.settingsService.settings;
         this.customerid = this.decodingCustomerID.getUserIdFromToken();
-        this.getCustomerByID(this.customerid);
+        //this.getCustomerByID(this.customerid);
+        this.customer = this.decodingCustomerID.getUserNameFromToken();
     }
 
     logout() {
@@ -53,14 +54,14 @@ export class UserMenuComponent {
     //     localStorage.removeItem("token");
     //     this.router.navigate(["/login"]);
     // }
-    public getCustomerByID(id: string) {
-        this.myServ.getCustomerByID(id).subscribe({
-            next: (data) => {
-                this.customer = data;
-            },
-            error: (err) => {
-                console.log(err);
-            },
-        });
-    }
+    // public getCustomerByID(id: string) {
+    //     this.myServ.getCustomerByID(id).subscribe({
+    //         next: (data) => {
+    //             this.customer = data;
+    //         },
+    //         error: (err) => {
+    //             console.log(err);
+    //         },
+    //     });
+    // }
 }

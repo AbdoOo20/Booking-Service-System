@@ -46,8 +46,8 @@
         }
 
         .bg-glass {
-            background-color: hsla(0, 0%, 100%, 0.9) !important;
-            backdrop-filter: saturate(200%) blur(25px);
+            position: relative;
+            z-index: 10;
         }
 
         .container {
@@ -66,8 +66,8 @@
         }
     </style>
 
-    <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
-        <div class="row gx-lg-5 align-items-center mb-5">
+    <div class="container pb-5 px-4 py-5 px-md-5 text-center text-lg-start mb-3 mt-4">
+        <div class="row gx-lg-5 align-items-center">
             <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
                 <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
                     Lily Night <br />
@@ -75,10 +75,13 @@
                 </h1>
             </div>
 
-            <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
-                <div class="card bg-glass">
-                    <div class="card-body px-4 py-5 px-md-5 mt-5">
-                        <h3 class="text-center head-color m-3">Provider Registerion</h3>
+            <div class="col-lg-6 position-relative">
+                <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong mt-5"></div>
+                <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+
+                <div class="card-body bg-glass px-4 py-5 px-md-5">
+
+                        <form class="p-5 form-container" asp-action="Create">
 
                         @* Display Success or Error Messages *@
                         @if (TempData["SuccessMessage"] != null)
@@ -91,12 +94,10 @@
                         @if (TempData["ErrorMessage"] != null)
                         {
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong>Error:</strong> @TempData["ErrorMessage"]
+                                <strong></strong> @TempData["ErrorMessage"]
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         }
-
-                        <form class="p-5 form-container" asp-action="Create">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="form-floating input-group-lg mb-3 mt-3">
                                 <input asp-for="ProviderName" class="form-control" autocomplete="ProviderName" aria-required="true" placeholder="Your name" />
@@ -117,7 +118,7 @@
                             </div>
 
                             <div class="form-floating input-group-lg mb-3">
-                                <textarea asp-for="ServiceDetails" class="form-control" style="height: 150px;" autocomplete="ServiceDetails" aria-required="true" placeholder=""></textarea>
+                                <textarea asp-for="ServiceDetails" class="form-control" style="height: 150px; resize: none;" autocomplete="ServiceDetails" aria-required="true" placeholder=""></textarea>
                                 <label asp-for="ServiceDetails">Service Details</label>
                                 <span asp-validation-for="ServiceDetails" class="text-danger"></span>
                             </div>
@@ -127,7 +128,7 @@
                             </div>
                         </form>
                     </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -136,3 +137,15 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/AdminNotification").build();
+
+    connection.start().then(function () {
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+</script>

@@ -1,6 +1,5 @@
 import { Component, HostListener } from "@angular/core";
 import { Router, NavigationEnd } from "@angular/router";
-import { log } from "console";
 import { filter } from "rxjs/operators";
 
 @Component({

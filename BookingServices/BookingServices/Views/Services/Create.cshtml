@@ -57,7 +57,7 @@
                 </div>
                 <div class="col-md-4 form-group mb-3">
                     <label asp-for="EndTime" class="form-label"></label>
-                    <select asp-for="EndTime" asp-items="ViewBag.EndTime" class="form-control" id="EndTime">
+                    <select asp-for="EndTime" asp-items="ViewBag.EndTime" class="form-control" id="EndTime" disabled>
                         <option value="">-- Select End Time --</option>
                     </select>
                     <span asp-validation-for="EndTime" class="text-danger"></span>
@@ -126,7 +126,7 @@
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
                     <label for="Images" class="form-label">Upload Images</label>
-                    <input type="file" name="Images" class="form-control" multiple />
+                    <input type="file" name="Images" class="form-control" multiple  required/>
                 </div>
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="Details" class="form-label">Service Details</label>

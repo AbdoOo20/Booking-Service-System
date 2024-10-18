@@ -22,16 +22,7 @@ import { PassTokenWithHeaderService } from "./pass-token-with-header.service";
 @Injectable({
   providedIn: "root",
 })
-// Basma Code
-// export class wishList {
-//     customerId: string;
-//     serviceId: number;
 
-//     constructor(CustomerID: string, serviceID: number) {
-//         this.customerId = CustomerID;
-//         this.serviceId = serviceID;
-//     }
-// }
 export class ServicesService {
   API_URL = "http://localhost:18105/api/Services/all";
   CAT_URL = "http://localhost:18105/api/Categories";
@@ -43,7 +34,7 @@ export class ServicesService {
   API_GetServicebyID = "http://localhost:18105/api/Services/";
   ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
   API_getAgents = "";
- // API_get_allWishList = "http://localhost:18105/api/wishlist/";
+  // API_get_allWishList = "http://localhost:18105/api/wishlist/";
   Favourite_service: wishList;
 
   constructor(
@@ -53,7 +44,7 @@ export class ServicesService {
     public dialog: MatDialog,
     public translateService: TranslateService,
     private domHandlerService: DomHandlerService,
-    public header: PassTokenWithHeaderService
+    public header: PassTokenWithHeaderService,
   ) {}
 
   /*  getServiceById(id: number) {
@@ -231,29 +222,27 @@ export class ServicesService {
         headers,
         responseType: "text",
       })
-      .subscribe(
-        {
-          next: (response) => {
-            console.log('Success:', response);  // This will now log the plain text response
-            this.snackBar.open(
-              'The service "' + service.name + '" has been added to favorites.',
-              "×",
-              {
-                verticalPosition: "top",
-                duration: 3000,
-                direction: direction,
-              }
-            );
-          },
-          error: (err) => {
-            console.error('Error while adding to wishlist:', err);
-            this.snackBar.open("This Service Already In Wish List.", "×", {
+      .subscribe({
+        next: (response) => {
+          this.snackBar.open(
+            'The service "' + service.name + '" has been added to favorites.',
+            "×",
+            {
               verticalPosition: "top",
               duration: 3000,
               direction: direction,
-            });
-          }
-        });
+            }
+          );
+        },
+        error: (err) => {
+          console.error("Error while adding to wishlist:", err);
+          this.snackBar.open("This Service Already In Wish List.", "×", {
+            verticalPosition: "top",
+            duration: 3000,
+            direction: direction,
+          });
+        },
+      });
   }
 
   public addToFavoritesInServiceDetails(
@@ -271,32 +260,29 @@ export class ServicesService {
         headers,
         responseType: "text",
       })
-      .subscribe(
-        {
-          next: (response) => {
-            console.log('Success:', response);  // This will now log the plain text response
-            this.snackBar.open(
-              'The service "' + service.name + '" has been added to favorites.',
-              "×",
-              {
-                verticalPosition: "top",
-                duration: 3000,
-                direction: direction,
-              }
-            );
-          },
-          error: (err) => {
-            console.error('Error while adding to wishlist:', err);
-            this.snackBar.open("This Service Already In Wish List.", "×", {
+      .subscribe({
+        next: (response) => {
+          console.log("Success:", response); // This will now log the plain text response
+          this.snackBar.open(
+            'The service "' + service.name + '" has been added to favorites.',
+            "×",
+            {
               verticalPosition: "top",
               duration: 3000,
               direction: direction,
-            });
-          }
-        });
+            }
+          );
+        },
+        error: (err) => {
+          console.error("Error while adding to wishlist:", err);
+          this.snackBar.open("This Service Already In Wish List.", "×", {
+            verticalPosition: "top",
+            duration: 3000,
+            direction: direction,
+          });
+        },
+      });
   }
-
-
 
   getPropertyById(id: number): Observable<ServiceDetails> {
     return this.http.get<ServiceDetails>(this.API_GetServicebyID + "/" + id);

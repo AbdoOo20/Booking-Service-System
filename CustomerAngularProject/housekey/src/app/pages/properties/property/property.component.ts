@@ -35,7 +35,7 @@ import { RatingComponent } from "@shared-components/rating/rating.component";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatInputModule } from "@angular/material/input";
 import { PropertyItemComponent } from "@shared-components/property-item/property-item.component";
-import { CurrencyPipe, DatePipe, NgClass } from "@angular/common";
+import { CurrencyPipe, DatePipe, NgClass, CommonModule } from "@angular/common";
 import { GoogleMapsModule } from "@angular/google-maps";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { CommentsComponent } from "@shared-components/comments/comments.component";
@@ -50,7 +50,6 @@ import { provider } from "../../../common/interfaces/provider";
 import { AllBookingsService } from "@services/all-bookings.service";
 import { ReviewServiceService } from "@services/review-service.service";
 import { ReviewFormComponent } from "../ReviewForm/review-form.component";
-import { ReviewsComponent } from "../Reviews/reviews.component";
 import { DecodingTokenService } from "@services/decoding-token.service";
 import { Observable, throwIfEmpty } from "rxjs";
 import { WishlistService } from "@services/wishlist.service";
@@ -82,7 +81,7 @@ import { WishlistService } from "@services/wishlist.service";
     MatButtonModule,
     FlexLayoutModule,
     ReviewFormComponent,
-    ReviewsComponent,
+    CommonModule
   ],
   templateUrl: "./property.component.html",
   styleUrl: "./property.component.scss",
@@ -91,7 +90,7 @@ import { WishlistService } from "@services/wishlist.service";
     EmbedVideoService,
     AllBookingsService,
     ReviewServiceService,
-    DecodingTokenService,WishlistService
+    DecodingTokenService, WishlistService
   ],
 })
 export class PropertyComponent implements OnInit {
@@ -116,12 +115,12 @@ export class PropertyComponent implements OnInit {
   public contactForm: FormGroup;
   public provider: provider;
   public allBookings: any[];
-  public rev: any[] = [];
+  public finalReviews: any[] = [];
   public Services_WishList: any;
   public customerId: string;
   public servicesIDs: number[] = [];
   @Output() bookId: number[] = [];
-  public serviceID:number;
+  public serviceID: number;
   mapOptions: google.maps.MapOptions = {
     mapTypeControl: true,
     fullscreenControl: true,
@@ -129,7 +128,7 @@ export class PropertyComponent implements OnInit {
   lat: number = 0;
   lng: number = 0;
   token = localStorage.getItem("token");
-    
+
 
   constructor(
     public settingsService: SettingsService,
@@ -142,7 +141,7 @@ export class PropertyComponent implements OnInit {
     private domHandlerService: DomHandlerService,
     public bookservice: AllBookingsService, //bookingService
     public ReviewService: ReviewServiceService, //ReviewService
-    public DecodingCustomerID: DecodingTokenService,public wishListService:WishlistService
+    public DecodingCustomerID: DecodingTokenService, public wishListService: WishlistService
   ) {
     this.settings = this.settingsService.settings;
   }
@@ -152,10 +151,9 @@ export class PropertyComponent implements OnInit {
     //     this.getPropertyById(params["id"]);
     // });
     // this.customerId=this.DecodingCustomerID.getUserIdFromToken();
-    this.activatedRoute.paramMap.subscribe((params)=>{
-      this.serviceID=Number(params.get("id"));
-      console.log(this.serviceID)})
-
+    this.activatedRoute.paramMap.subscribe((params) => {
+      this.serviceID = Number(params.get("id"));
+    })
 
     this.sub = this.activatedRoute.params.subscribe((params) => {
       this.getSericeById(params["id"]);
@@ -343,7 +341,7 @@ export class PropertyComponent implements OnInit {
             return;
           }
         }
-  
+
         // Ensure the data is an array and populate service IDs
         if (Array.isArray(data)) {
           this.servicesIDs = data.map(service => service.id);
@@ -356,14 +354,14 @@ export class PropertyComponent implements OnInit {
       }
     });
   }
-  
+
   // Check if the service is already in favorites
   public onFavorites(): boolean {
     return this.servicesIDs.includes(this.service.id);  // Simplified check
   }
-  
 
- 
+
+
 
   public getRelatedProperties() {
     this.appService.getRelatedProperties().subscribe((data) => {
@@ -422,52 +420,55 @@ export class PropertyComponent implements OnInit {
     );
   }
 
- 
   checkForReview() {
-    // Get customer ID
-    this.customerId = this.DecodingCustomerID.getUserIdFromToken(); // Ensure this is returning a valid ID
-  
-    // Log before the API call
-    console.log('Fetching reviews for customer:', this.customerId, 'and service:', this.serviceID);
-  
-    // Fetch reviews
-    this.ReviewService.getAllReviewsForBookings(this.customerId, this.serviceID).subscribe({
+    this.customerId = this.DecodingCustomerID.getUserIdFromToken();
+    this.ReviewService.getFilteredBookingsAndReviews(this.customerId, this.serviceID).subscribe({
       next: (data) => {
-        console.log('Received review data:', data);  // Log the received data
-  
-        // Clear the rev array before adding new reviews
-        this.rev = [];
-  
-        // Process the bookings and reviews
-        data.forEach(booking => {
-          if (booking.reviews && booking.reviews.length > 0) {
-            // Append the reviews to the rev array
-            this.rev.push(...booking.reviews);
-          } else {
-            // If no reviews, add bookingId for future use
-            this.bookId.push(booking.bookId); 
+        console.log(data);
+        this.finalReviews = [];
+        this.bookId = [];
+
+        data.forEach(item => {
+          const {booking, review} = item;
+          this.finalReviews.push(review || null);
+          if (!review && booking?.bookId) {
+            this.bookId.push(booking.bookId);
           }
         });
-  
-        // Log the final reviews array
-        console.log('All reviews:', this.rev);
       },
       error: (err) => {
-        console.error('Error fetching reviews:', err);  // More detailed error logging
+        console.error('Error fetching reviews:', err);
       }
     });
   }
-  
+
+  hasLastReviewNull(): boolean {
+    if (this.finalReviews.length === 0) {
+      return false;
+    }
+    const lastReview = this.finalReviews[this.finalReviews.length - 1];
+
+    return lastReview === null;
+  }
+
+  hasAllReviewsNull(): boolean {
+    return this.finalReviews.every(item => item === null || item.review === null);
+  }
+
   // Handle review submission
   handleReviewSubmission(reviewData: { rating: number; reply: string }) {
-    // Add the new review to the rev array
-    this.rev.push(reviewData);
-    console.log('New review added:', reviewData);
-  
-    // Recheck reviews after adding a new one
+    const lastReview = this.finalReviews[this.finalReviews.length - 1];
+    const lastBookingId = lastReview ? lastReview.bookingId : null;
+
+    const newReview = {
+      ...reviewData,
+      bookingId: lastBookingId,
+      customerId: this.customerId,
+      customerCommentDate: new Date().toISOString()
+    };
+
+    this.finalReviews.push(newReview);
+    console.log('New review added:', newReview);
     this.checkForReview();
   }
-  
-    
-    }
-    
+}

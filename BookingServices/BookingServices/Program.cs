@@ -10,6 +10,7 @@ using Quartz.Impl;
 using Quartz.Spi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using BookingServices.Hubs;
 
 namespace BookingServices
 {
@@ -48,12 +49,13 @@ namespace BookingServices
             // Add Quartz.NET hosted service
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-
-
             // Add logging
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole(); // This will allow console logging
 
+
+            // SignalR Service
+            builder.Services.AddSignalR();
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -158,6 +160,13 @@ namespace BookingServices
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            // SignalR Middleware
+            //app.MapHub<Hubs.AdminNotification>("/AdminNotification");
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<AdminNotification>("/AdminNotification");
+            });
 
             app.Run();
         }

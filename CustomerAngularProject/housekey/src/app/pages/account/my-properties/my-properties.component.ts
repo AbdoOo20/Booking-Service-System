@@ -58,8 +58,7 @@ export class MyPropertiesComponent implements OnInit {
     this._allBookingService.getBookingWithService(decodedToken).subscribe({
       next:(res) => {
         this.customerBookings = res;
-        this.initDataSource(this.customerBookings);
-        console.log(res)  
+        this.initDataSource(this.customerBookings); 
       },
       error:(error) => {
         console.error('Error fetching customer bookings', error);

@@ -1,27 +1,15 @@
-<a
-    mat-button
-    [matMenuTriggerFor]="userMenu"
-    #userMenuTrigger="matMenuTrigger"
-    [dir]="settings.rtl ? 'rtl' : 'ltr'"
->
+<a mat-button [matMenuTriggerFor]="userMenu" #userMenuTrigger="matMenuTrigger" [dir]="settings.rtl ? 'rtl' : 'ltr'">
     <mat-icon class="mat-icon-sm m-0">person</mat-icon>
     <span fxShow="false" fxShow.gt-sm class="mx-1 uppercase">{{
-        customer?.name
-    }}</span>
-    <mat-icon class="mat-icon-sm caret" iconPositionEnd
-        >arrow_drop_down</mat-icon
-    >
+        customer
+        }}</span>
+    <mat-icon class="mat-icon-sm caret" iconPositionEnd>arrow_drop_down</mat-icon>
 </a>
-<mat-menu
-    #userMenu="matMenu"
-    [overlapTrigger]="false"
-    xPosition="before"
-    class="app-menu-panel user-menu"
->
+<mat-menu #userMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="app-menu-panel user-menu">
     <span (mouseleave)="userMenuTrigger.closeMenu()">
         <div fxLayout="row" fxLayoutAlign="start center" class="user-info">
             <img src="images/others/user.jpg" alt="user-image" width="50" />
-            <p class="m-0">{{ customer?.name }}</p>
+            <p class="m-0">{{ customer }}</p>
         </div>
         <div class="divider"></div>
         <a mat-menu-item routerLink="/account/profile">
@@ -34,16 +22,9 @@
         </a>
         <a mat-menu-item routerLink="/account/favorites">
             <mat-icon class="mat-icon-sm">favorite_border</mat-icon>
-            <span
-                [matBadge]="appService.Data.favorites.length"
-                [matBadgeHidden]="appService.Data.favorites.length == 0"
-                matBadgeSize="small"
-                matBadgeColor="warn"
-                matBadgeOverlap="false"
-                aria-hidden="false"
-            >
-                {{ "FAVORITES" | translate }}</span
-            >
+            <span [matBadge]="appService.Data.favorites.length" [matBadgeHidden]="appService.Data.favorites.length == 0"
+                matBadgeSize="small" matBadgeColor="warn" matBadgeOverlap="false" aria-hidden="false">
+                {{ "FAVORITES" | translate }}</span>
         </a>
         <!-- <a mat-menu-item routerLink="/"> 
             <mat-icon class="mat-icon-sm">search</mat-icon>
