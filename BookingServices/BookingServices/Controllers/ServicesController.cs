@@ -21,10 +21,10 @@ namespace BookingServices.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         string UserID;
         ErrorViewModel errorViewModel;
-        private readonly IHubContext<AdminNotification> _hubContext;
+        private readonly IHubContext<AdminNotificationHub> _hubContext;
 
 
-        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment, UserManager<IdentityUser> userManager , IHubContext<AdminNotification> hubContext)
+        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment, UserManager<IdentityUser> userManager , IHubContext<AdminNotificationHub> hubContext)
         {
             _context = context;
             _client = client;

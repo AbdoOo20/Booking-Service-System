@@ -893,3 +893,24 @@ h6 {
     color: #777;
     padding: 10px 0;
 }
+.text-button {
+    background: none;
+    border: none;
+    color: gray; 
+    text-decoration: none; 
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.text-button:hover {
+    color: darkgray; 
+}
+
+.text-button:focus {
+    outline: none; 
+}
+#noNotificationsMessage {
+    color: gray;
+    font-style: italic;
+    text-align: center;
+}

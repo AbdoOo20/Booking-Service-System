@@ -36,6 +36,7 @@
                             NotificationTitle: `requested to make the service ${serviceName} available online on the website`,
                             Time: new Date()
                         },
+
                         success: function (notificationResponse) {
                             if (notificationResponse.success) {
                                 // Get all notifications and update the count
