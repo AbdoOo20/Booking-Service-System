@@ -172,9 +172,21 @@
                                 <a asp-action="Prices" asp-route-id="@item.ServiceId" class="btn btn-outline-info me-2" title="View Prices">
                                     <i class="fa-solid fa-dollar-sign"></i>
                                 </a>
-                                <a asp-action="Delete" asp-route-id="@item.ServiceId" class="btn btn-outline-danger" title="Delete">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </a>
+                                @{
+                                    if (item.IsBlocked)
+      
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@item.ServiceId" class="btn btn-outline-success" title="Delete">
+                                            <i class="fa-solid fa-unlock"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@item.ServiceId" class="btn btn-outline-danger" title="Delete">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </a>
+                                    }
+                                }
                             </div>
                         </td>
                     }
