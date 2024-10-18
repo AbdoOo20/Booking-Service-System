@@ -26,40 +26,46 @@ namespace BookingServices.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             string userIdFromManager = user?.Id ?? "";
-            //var bookings = _context.Bookings.Where(b => b.Type == "Service").Include(c => c.Customer);
+            List<BookingViewModel> books = new List<BookingViewModel>();
             var bookings = (from b in _context.Bookings
-                                   from bs in _context.BookingServices
-                                   from s in _context.Services
-                                   where b.BookingId == bs.BookingId
-                                   && bs.ServiceId == s.ServiceId
-                                   && s.ProviderId == userIdFromManager
-                                   select b).Where(b => b.Type == "Service").Include(c => c.Customer);
-            if (startDate.HasValue && endDate.HasValue)
+                            from bs in _context.BookingServices
+                            from s in _context.Services
+                            from c in _context.Customers
+                            from m in _context.PaymentIncomes
+                            where b.BookingId == bs.BookingId
+                            && bs.ServiceId == s.ServiceId
+                            && s.ProviderId == userIdFromManager && b.CustomerId == c.CustomerId && b.PaymentIncomeId == m.PaymentIncomeId
+                            select new 
+                            {
+                                BookingId = b.BookingId,
+                                EventDate = b.EventDate,
+                                Quantity = b.Quantity,
+                                Price = b.Price,
+                                BookDate = b.BookDate,
+                                Status = b.Status,
+                                Type = b.Type,
+                                PaymentIncome = b.PaymentIncomeId != null ? m.Name : b.CashOrCashByHandOrInstallment,
+                                CustomerName = c.Name,
+                                ServiceName = s.Name,
+                            });
+            foreach (var item in bookings)
             {
-                bookings = bookings.Where(b => b.EventDate >= startDate.Value && b.EventDate <= endDate.Value).Include(C => C.Customer);
+                BookingViewModel newBook = new BookingViewModel
+                {
+                    BookingId = item.BookingId,
+                    EventDate = item.EventDate, 
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    BookDate = item.BookDate,
+                    Type = item.Type,   
+                    CustomerName= item.CustomerName,
+                    PaymentIncome = item.PaymentIncome,
+                    Status = item.Status,
+                    ServiceName = item.ServiceName, 
+                };
+                books.Add(newBook);
             }
-
-            var totalConfirmed = bookings
-                .Where(b => b.Status == "Confirmed" || b.Status == "paid")
-                .Sum(b => b.Price);
-
-            var totalCanceled = bookings
-                .Where(b => b.Status == "Cancelled" || b.Status == "pus")
-                .Sum(b => b.Price);
-            var totalPending = bookings
-               .Where(b => b.Status == "Pending" || b.Status == "pus")
-               .Sum(b => b.Price);
-
-            var model = new bookingViewModel
-            {
-                Bookings = bookings.ToList(),
-                TotalIncome = totalConfirmed,
-                TotalCanceled = totalCanceled,
-                TotalPending = totalPending
-            };
-
-            return View(model);
+            return View(books);
         }
-        //this is Booking controller 
     }
 }

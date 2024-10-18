@@ -84,7 +84,8 @@ namespace BookingServices.Controllers
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
                         IsRequestedOrNot = service.IsRequestedOrNot,
                         CategoryName = service.Category.Name ?? "Not Exists",
-                        ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists"
+                        ServiceProviderName = service.ServiceProvider.Name ?? "Not Exists",
+                        IsBlocked = service.IsBlocked,
                     })
                     .ToListAsync();
                 }
@@ -104,7 +105,8 @@ namespace BookingServices.Controllers
                             InitialPaymentPercentage = service.InitialPaymentPercentage,
                             IsOnlineOrOffline = service.IsOnlineOrOffline,
                             IsRequestedOrNot = service.IsRequestedOrNot,
-                            CategoryName = service.Category.Name ?? "Not Exists"
+                            CategoryName = service.Category.Name ?? "Not Exists",
+                            IsBlocked = service.IsBlocked,
                         })
                         .ToListAsync();
                 }
@@ -137,9 +139,9 @@ namespace BookingServices.Controllers
 
                 return View(servicesIndexModel);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return HandleError($"Error: {e.Message}, StackTrace: {e.StackTrace}", "ProviderHome", nameof(Index));
+                return HandleError("An error occurred while processing your request. Please try again later.", "ProviderHome", nameof(Index));
             }
         }
 
@@ -369,9 +371,12 @@ namespace BookingServices.Controllers
         {
             if (ModelState.IsValid)
             {
+                using var transaction = await _context.Database.BeginTransactionAsync(); // Begin a new transaction
+
                 try
                 {
                     UserID = await GetCurrentUserID();
+
                     // Create a new Service entity from the submitted form
                     var newService = new Service
                     {
@@ -379,9 +384,7 @@ namespace BookingServices.Controllers
                         Details = service.Details,
                         Location = service.Location,
                         StartTime = new TimeSpan(service.StartTime, 0, 0),
-                        EndTime = service.EndTime == 24
-                        ? new TimeSpan(service.StartTime - 1, 59, 59)
-                        : new TimeSpan(service.StartTime, 0, 0),
+                        EndTime = new TimeSpan(service.EndTime, 0, 0),
                         Quantity = service.Quantity ?? 0,
                         InitialPaymentPercentage = service.InitialPaymentPercentage,
                         IsOnlineOrOffline = service.IsOnlineOrOffline,
@@ -396,13 +399,21 @@ namespace BookingServices.Controllers
                     _context.Services.Add(newService); // Add the new service to the DbContext
                     await _context.SaveChangesAsync(); // Save the changes to the database
 
+                    // Upload images and associate them with the service
                     await FileUpload(Images, newService.ServiceId);
+
+                    // Add service prices
                     await ServicePrice(service.ServicePrice, newService.ServiceId);
+
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
 
                     return RedirectToAction(nameof(Index)); // Redirect to the list of services
                 }
                 catch (Exception ex)
                 {
+                    // Rollback the transaction in case of an error
+                    await transaction.RollbackAsync();
                     HandleError(ex.Message, "Services", nameof(Index));
                 }
             }
@@ -433,7 +444,7 @@ namespace BookingServices.Controllers
                 Details = service.Details,
                 Location = service.Location,
                 StartTime = service.StartTime.Hours,
-                EndTime = service.EndTime.Minutes > 0 ? 24 : service.EndTime.Hours,
+                EndTime = service.EndTime.Hours,
                 Quantity = service.Quantity,
                 InitialPaymentPercentage = service.InitialPaymentPercentage,
                 CategoryId = service.CategoryId,
@@ -441,6 +452,13 @@ namespace BookingServices.Controllers
                 BaseServiceId = service.BaseServiceId,
                 ProviderContractId = service.ProviderContractId,
             };
+            var price = await _context.ServicePrices
+                .Where(s => s.ServiceId == id && s.PriceDate.Date == DateTime.Now.Date)
+                .Select(s => s.Price)
+                .FirstOrDefaultAsync();
+
+            serviceModel.ServicePrice = ( price > 0) ? price : 1;
+
 
             await AddSelectLists(serviceModel);
             return View(serviceModel);
@@ -458,17 +476,14 @@ namespace BookingServices.Controllers
 
                 if (service == null)
                     HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
-
+                
                 if (ModelState.IsValid)
                 {
                     service.Name = serviceModel.Name;
                     service.Details = serviceModel.Details;
                     service.Location = serviceModel.Location;
                     service.StartTime = new TimeSpan(serviceModel.StartTime, 0, 0);
-                    if (serviceModel.EndTime == 24)
-                        service.EndTime = new TimeSpan(serviceModel.EndTime - 1, 59, 59);
-                    else
-                        service.EndTime = new TimeSpan(serviceModel.EndTime, 0, 0);
+                    service.EndTime = new TimeSpan(serviceModel.EndTime, 0, 0);
                     service.Quantity = serviceModel.Quantity ?? 0;
                     service.InitialPaymentPercentage = serviceModel.InitialPaymentPercentage;
                     service.CategoryId = serviceModel.CategoryId;
@@ -529,7 +544,7 @@ namespace BookingServices.Controllers
 
             var hasBookings = _context.BookingServices
                 .Include(bs => bs.Booking)
-                .Where(b => b.Booking.EventDate > DateTime.Now)
+                .Where(b => b.Booking.EventDate.Date > DateTime.Now.Date)
                 .Any(b => b.ServiceId == id);
             if (hasBookings)
             {
@@ -542,9 +557,9 @@ namespace BookingServices.Controllers
                 service.IsBlocked = !service.IsBlocked;
                 await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                HandleError(ex.Message, "Services", "Index");
+                HandleError("Unexpected Error", "Services", "Index");
             }
             return RedirectToAction(nameof(Index));
         }
@@ -638,18 +653,26 @@ namespace BookingServices.Controllers
         {
             if (!ServiceExists(id))
             {
-                return HandleError("Services Does Not Exists", "Services", nameof(Prices));
+                return HandleError("Service Does Not Exist", "Services", $"/Prices/{id}");
             }
 
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (servicePriceModel.EndDate.Date != DateTime.Now.Date) // Compare only date part
+                    DateTime startDate = servicePriceModel.StartDate.Date;
+                    DateTime endDate = servicePriceModel.EndDate.Date != DateTime.Now.Date ? servicePriceModel.EndDate.Date : servicePriceModel.PriceDate.Date;
+
+                    // Loop through the dates from StartDate to EndDate
+                    for (DateTime currentDate = startDate; currentDate <= endDate; currentDate = currentDate.AddDays(1))
                     {
-                        DateTime currentDate = servicePriceModel.StartDate;
-                        while (currentDate <= servicePriceModel.EndDate)
+                        // Check if the price already exists for the given ServiceId and current date
+                        var existingPrice = await _context.ServicePrices
+                            .AnyAsync(sp => sp.ServiceId == servicePriceModel.ServiceId && sp.PriceDate.Date == currentDate.Date);
+
+                        if (!existingPrice)
                         {
+                            // Add the new ServicePrice only if it doesn't already exist
                             var servicePrice = new ServicePrice
                             {
                                 ServiceId = servicePriceModel.ServiceId,
@@ -657,30 +680,34 @@ namespace BookingServices.Controllers
                                 PriceDate = currentDate
                             };
                             _context.ServicePrices.Add(servicePrice);
-                            currentDate = currentDate.AddDays(1); // Increment the date by 1 day
+                        }
+                        else
+                        {
+                            // If the price exists, return a message to the view for that date
+                            ViewData["PriceAlreayExists"] = $"A price for the date {currentDate.ToShortDateString()} already exists.";
+                            ViewData["ServiceId"] = id;
+                            return View(servicePriceModel);
                         }
                     }
-                    else
+
+                    // Save all the changes if there are any new prices added
+                    if (_context.ChangeTracker.HasChanges())
                     {
-                        var servicePrice = new ServicePrice
-                        {
-                            ServiceId = servicePriceModel.ServiceId,
-                            Price = servicePriceModel.Price,
-                            PriceDate = servicePriceModel.PriceDate
-                        };
-                        _context.ServicePrices.Add(servicePrice);
+                        await _context.SaveChangesAsync();
                     }
 
-                    await _context.SaveChangesAsync();
+                    // Redirect to Prices after saving changes
                     return RedirectToAction(nameof(Prices), new { id = id });
                 }
 
+                // If model state is not valid, return the view with validation messages
+                return View(servicePriceModel);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                HandleError(ex.Message, "Services", nameof(Prices));
+                // Handle general exceptions
+                return HandleError("Unexpected Error: ", "Services", $"/Prices/{id}");
             }
-            return View(servicePriceModel);
         }
         public async Task<IActionResult> EditPrice(int id, [FromQuery] DateTime date)
         {
@@ -802,9 +829,9 @@ namespace BookingServices.Controllers
         private async Task AddSelectLists(ServiceModel? service = null)
         {
             // Generate hours dictionary using a single line LINQ statement
-            var StartTimehours = Enumerable.Range(0, 24)
+            var StartTimehours = Enumerable.Range(0, 23)
                 .ToDictionary(i => i.ToString("D2") + " :00", i => i);
-            var EndTimehours = Enumerable.Range(0, 25)
+            var EndTimehours = Enumerable.Range(1, 23)
                 .ToDictionary(i => i.ToString("D2") + " :00", i => i);
 
             UserID = await GetCurrentUserID();
@@ -836,11 +863,15 @@ namespace BookingServices.Controllers
                 var uploadPath = Path.Combine(_environment.WebRootPath, "uploads");
                 Directory.CreateDirectory(uploadPath); // Ensure directory exists
 
+                var invalidFiles = new List<string>();
+
                 foreach (var image in Images)
                 {
                     if (image.Length > 0 && AllowedImageTypes.Contains(image.ContentType))
                     {
-                        var filePath = Path.Combine(uploadPath, image.FileName);
+                        // Sanitize the filename to avoid illegal characters
+                        var fileName = Path.GetFileName(image.FileName);
+                        var filePath = Path.Combine(uploadPath, fileName);
 
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
@@ -850,17 +881,26 @@ namespace BookingServices.Controllers
                         var serviceImage = new ServiceImage
                         {
                             ServiceId = serviceId,
-                            URL = $"/uploads/{image.FileName}"
+                            URL = $"/uploads/{fileName}" // Use sanitized filename
                         };
 
                         _context.ServiceImages.Add(serviceImage);
-                        await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        // Handle invalid files (optional: throw an exception, log, or return a message)
-                        throw new InvalidDataException("Only image files are allowed.");
+                        // Collect invalid files instead of throwing an exception immediately
+                        invalidFiles.Add(image.FileName);
                     }
+                }
+
+                // Save all valid images to the database
+                await _context.SaveChangesAsync();
+
+                // Handle invalid files (optional: log, throw exception, or return a message)
+                if (invalidFiles.Any())
+                {
+                    var invalidFilesMessage = $"The following files were not accepted: {string.Join(", ", invalidFiles)}.";
+                    throw new InvalidDataException(invalidFilesMessage);
                 }
             }
         }

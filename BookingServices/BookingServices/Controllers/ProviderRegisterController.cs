@@ -95,9 +95,7 @@ namespace BookingServices.Controllers
 
                     await _hubContext.Clients.All.SendAsync("ReceiveMessage", $"The Provider {providerVM.ProviderName} Request To Join Our Site", DateTime.Now , length);
 
-
-
-                    return RedirectToAction("Create");
+                    return Redirect("http://localhost:4200/");
                 }
 
                 return View(providerVM);

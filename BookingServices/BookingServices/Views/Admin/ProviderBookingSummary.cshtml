@@ -12,6 +12,7 @@
                 <th>Provider Name</th>
                 <th>Total Booked Services</th>
                 <th>Total Amount (Accepted Bookings)</th>
+                <th>Booking Details</th>
             </tr>
         </thead>
         <tbody>
@@ -21,6 +22,7 @@
                     <td>@provider.ProviderName</td>
                     <td>@provider.TotalBookings</td>
                     <td>@provider.TotalAmount.ToString("C")</td>
+                    <td> <a class="btn btn-outline-warning btn-sm" asp-action="BookingDetails" asp-route-id="@provider.providerId"><i class="fa-solid fa-circle-info"></i></a> </td>
                 </tr>
             }
         </tbody>

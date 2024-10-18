@@ -35,7 +35,16 @@
             <td>
                 <div class="d-flex">
                             <a asp-action="Edit" asp-route-id="@item.ContractId" class="btn btn-outline-primary me-2"><i class="fa-solid fa-pen-to-square"></i></a> 
-                            <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger me-2"><i class="fa-solid fa-trash-can"></i></a>
+                            @{
+                                if (item.IsBlocked ?? false)
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-success me-2"><i class="fa-solid fa-unlock"></i></a>
+                                }
+                                else
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger me-2"><i class="fa-solid fa-trash-can"></i></a>
+                                }
+                            }
                         </div>    
             </td>
         </tr>

@@ -6,12 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookingServices.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class testNotify : Migration
+    public partial class Notify : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.CreateTable(
                 name: "NotificationAdmins",
                 columns: table => new
@@ -27,6 +26,12 @@ namespace BookingServices.Data.Migrations
                 });
         }
 
-        
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "NotificationAdmins");
+
+        }
     }
 }

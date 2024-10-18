@@ -23,23 +23,22 @@ namespace CusromerProject.DTO.Review
         }
 
         // Method to get a review by customerId and bookingId
-        public async Task<Result<List<ReviewDTO>>> GetReviewByIdAsync(string customerId)
+        public async Task<Result<ReviewDTO>> GetReviewByIdAsync(int bookingId)
         {
-            List<ReviewDTO> reviewDTOs;
+            ReviewDTO reviewDTOs;
             // If not found in cache, query the database
-            var reviews = await _context.Reviews
+            var review = await _context.Reviews
                                         .AsNoTracking()
-                                        .Where(r => r.CustomerId == customerId)
-                                        .ToListAsync()
+                                        .FirstOrDefaultAsync(r => r.BookingId == bookingId)
                                         .ConfigureAwait(false);
 
-            if (!reviews.Any())
+            if (review == null)
             {
-                return Result<List<ReviewDTO>>.Failure("No reviews found for the specified customer.");
+                return Result<ReviewDTO>.Failure("No reviews found for the specified customer.");
             }
 
             // Map the list of Review entities to a list of ReviewDTOs
-            reviewDTOs = reviews.Select(review => new ReviewDTO()
+            reviewDTOs = new ReviewDTO()
             {
                 CustomerId = review.CustomerId,
                 BookingId = review.BookingId,
@@ -48,10 +47,10 @@ namespace CusromerProject.DTO.Review
                 CustomerCommentDate = review.CustomerCommentDate,
                 ProviderReplayComment = review.ProviderReplayComment,
                 ProviderReplayCommentDate = review.ProviderReplayCommentDate
-            }).ToList();
+            };
 
             // Return the list of ReviewDTOs (whether from cache or DB)
-            return Result<List<ReviewDTO>>.Success(reviewDTOs);
+            return Result<ReviewDTO>.Success(reviewDTOs);
         }
 
         // Method to add a review with validation and caching

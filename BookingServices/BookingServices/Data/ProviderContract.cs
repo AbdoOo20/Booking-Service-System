@@ -10,6 +10,7 @@ namespace BookingServices.Data
         public int ContractId { get; set; }
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Contract Name can only contain letters, numbers and spaces.")]
         public string? ContractName { get; set; }
 
         [Required]
