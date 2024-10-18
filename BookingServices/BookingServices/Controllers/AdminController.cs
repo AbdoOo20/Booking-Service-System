@@ -2,8 +2,10 @@
 using BookingServices.Models;
 using BookingServices.ViewModel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Mail;
 
 
 namespace BookingServices.Controllers
@@ -13,6 +15,7 @@ namespace BookingServices.Controllers
     {
         private ApplicationDbContext _appcontext;
         ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
+
 
         public AdminController(ApplicationDbContext appcontext) {
             _appcontext = appcontext;
@@ -145,7 +148,8 @@ namespace BookingServices.Controllers
                         TotalAmount = provider.Services
                                             .SelectMany(s => s.BookingServices)
                                             .Where(bs => bs.Booking.Status == "Accepted")
-                                            .Sum(bs => bs.Booking.Price)
+                                            .Sum(bs => bs.Booking.Price),
+                        providerId = provider.ProviderId
                     }).ToListAsync();
 
                 return View(providerSummary);
@@ -155,6 +159,40 @@ namespace BookingServices.Controllers
                 errorViewModel = new ErrorViewModel { Message = "An unexpected error occurred. Please try again later.", Controller = " Admin", Action = "Index" };
                 return View("Error", errorViewModel);
             }
+        }
+
+        [HttpGet]
+        public IActionResult BookingDetails(string Id)
+        {
+            string userIdFromManager = Id;
+            var bookings = (from b in _appcontext.Bookings
+                            from bs in _appcontext.BookingServices
+                            from s in _appcontext.Services
+                            where b.BookingId == bs.BookingId
+                            && bs.ServiceId == s.ServiceId
+                            && s.ProviderId == userIdFromManager
+                            select b).Where(b => b.Type == "Service").Include(c => c.Customer);
+
+            var totalConfirmed = bookings
+                .Where(b => b.Status == "Confirmed" || b.Status == "paid")
+                .Sum(b => b.Price);
+
+            var totalCanceled = bookings
+                .Where(b => b.Status == "Cancelled" || b.Status == "pus")
+                .Sum(b => b.Price);
+            var totalPending = bookings
+               .Where(b => b.Status == "Pending" || b.Status == "pus")
+               .Sum(b => b.Price);
+
+            var model = new bookingViewModel
+            {
+                Bookings = bookings.ToList(),
+                TotalIncome = totalConfirmed,
+                TotalCanceled = totalCanceled,
+                TotalPending = totalPending
+            };
+
+            return View(model);
         }
     }
 }
