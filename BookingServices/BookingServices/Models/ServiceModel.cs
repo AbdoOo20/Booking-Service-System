@@ -9,12 +9,14 @@ namespace BookingServices.Models
         public int ServiceId { get; set; }
 
         [Display(Name = "Name")]
+        [RegularExpression(@"^[a-zA-Z\s]+$",ErrorMessage = "Name can only contain letters and spaces.")]
         [Required(ErrorMessage = "Please enter the name of the service.")]
         [StringLength(50, ErrorMessage = "The service name must be between 3 and 50 characters.", MinimumLength = 3)]
         public string? Name { get; set; }
 
         [Display(Name = "Details")]
         [Required(ErrorMessage = "Please provide details about the service.")]
+        [Length(minimumLength: 3, maximumLength: 450, ErrorMessage = "Please write at least 3 charcters")]
         public string? Details { get; set; }
 
         [Display(Name = "Location")]
@@ -22,17 +24,18 @@ namespace BookingServices.Models
         public required string Location { get; set; }
 
         [Display(Name = "Start Time")]
-        [Range(0, 23, ErrorMessage = "Start Time must be between 0 and 23 (24-hour format).")]
+        [Range(0, 22, ErrorMessage = "Start Time must be between 0 and 22 (24-hour format).")]
         [Required(ErrorMessage = "Please select the service start time.")]
         public int StartTime { get; set; }
 
         [Display(Name = "End Time")]
-        [Range(1, 24, ErrorMessage = "End Time must be between 1 and 24 (24-hour format).")]
+        [Range(1, 23, ErrorMessage = "End Time must be between 1 and 23 (24-hour format).")]
         [Required(ErrorMessage = "Please select the service end time.")]
         public int EndTime { get; set; }
 
         [Display(Name = "Quantity")]
-        [Range(0, int.MaxValue, ErrorMessage = "Quantity must be a non-negative number.")]
+        [Range(0, 10000, ErrorMessage = "Quantity must be between 0 and 10000.")]
+        [Required]
         public int? Quantity { get; set; } = 0;
 
         [Required(ErrorMessage = "Please specify the deposit percentage.")]
@@ -42,7 +45,7 @@ namespace BookingServices.Models
 
         [Required(ErrorMessage = "Please provide the price of the service.")]
         [Display(Name = "Price")]
-        [Range(1.00, (double)decimal.MaxValue, ErrorMessage = "The service price must be greater than 0.")]
+        [Range(100, 10000, ErrorMessage = "Price must be between 1 and 100000.")]
         public decimal ServicePrice { get; set; } = 0;
 
         [Display(Name = "Online / Offline")]
@@ -62,11 +65,14 @@ namespace BookingServices.Models
         public int? ProviderContractId { get; set; }
 
         [Display(Name = "Admin Contract")]
+        [Required(ErrorMessage = "Admin Contract is required.")]
         public int? AdminContractId { get; set; }
 
         [Display(Name = "Service Provider")]
         public string? ServiceProviderName { get; set; }
 
         public string? ServiceProviderId { get; set; }
+
+        public bool IsBlocked { get; set; } = true;
     }
 }
