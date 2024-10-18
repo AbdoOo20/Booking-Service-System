@@ -90,7 +90,7 @@
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="AdminContractId" class="form-label"></label>
                     <div class="d-flex">
-                        <select asp-for="AdminContractId" asp-items="ViewBag.AdminContractId" class="form-control me-2" id="AdminContractId" style="flex: 1;">
+                        <select asp-for="AdminContractId" asp-items="ViewBag.AdminContractId" class="form-control me-2" id="AdminContractId" style="flex: 1;" required>
                             <option value="">-- Select Admin Contract --</option>
                         </select>
                         <button type="button" id="viewContractBtn" class="btn btn-outline-info" disabled>
