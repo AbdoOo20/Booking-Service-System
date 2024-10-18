@@ -10,11 +10,13 @@ namespace BookingServices.ViewModels
         public int ProviderRegisterId { get; set; }
 
         [Required, Display(Name = "Name")]
+        [RegularExpression(@"^[a-zA-Z\s]+$",
+            ErrorMessage = "Name can only contain letters and spaces.")]
         public string? ProviderName { get; set; }
 
         [Display(Name = "Email")]
         [Required(ErrorMessage = "Email is required.")]
-        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", 
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.com$", 
             ErrorMessage = "Invalid email format. It should be like (example@gmail.com)")]
         public string? ProviderEmail { get; set; }
 
