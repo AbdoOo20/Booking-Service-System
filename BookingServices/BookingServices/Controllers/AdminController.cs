@@ -2,8 +2,10 @@
 using BookingServices.Models;
 using BookingServices.ViewModel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Mail;
 
 
 namespace BookingServices.Controllers
@@ -13,6 +15,7 @@ namespace BookingServices.Controllers
     {
         private ApplicationDbContext _appcontext;
         ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
+
 
         public AdminController(ApplicationDbContext appcontext) {
             _appcontext = appcontext;
@@ -145,7 +148,8 @@ namespace BookingServices.Controllers
                         TotalAmount = provider.Services
                                             .SelectMany(s => s.BookingServices)
                                             .Where(bs => bs.Booking.Status == "Accepted")
-                                            .Sum(bs => bs.Booking.Price)
+                                            .Sum(bs => bs.Booking.Price),
+                        providerId = provider.ProviderId
                     }).ToListAsync();
 
                 return View(providerSummary);
@@ -155,6 +159,52 @@ namespace BookingServices.Controllers
                 errorViewModel = new ErrorViewModel { Message = "An unexpected error occurred. Please try again later.", Controller = " Admin", Action = "Index" };
                 return View("Error", errorViewModel);
             }
+        }
+
+        [HttpGet]
+        public IActionResult BookingDetails(string Id)
+        {
+            string userIdFromManager = Id;
+            List<BookingViewModel> books = new List<BookingViewModel>();
+            var bookings = (from b in _appcontext.Bookings
+                            from bs in _appcontext.BookingServices
+                            from s in _appcontext.Services
+                            from c in _appcontext.Customers
+                            from m in _appcontext.PaymentIncomes
+                            where b.BookingId == bs.BookingId
+                            && bs.ServiceId == s.ServiceId
+                            && s.ProviderId == userIdFromManager && b.CustomerId == c.CustomerId && b.PaymentIncomeId == m.PaymentIncomeId
+                            select new
+                            {
+                                BookingId = b.BookingId,
+                                EventDate = b.EventDate,
+                                Quantity = b.Quantity,
+                                Price = b.Price,
+                                BookDate = b.BookDate,
+                                Status = b.Status,
+                                Type = b.Type,
+                                PaymentIncome = b.PaymentIncomeId != null ? m.Name : b.CashOrCashByHandOrInstallment,
+                                CustomerName = c.Name,
+                                ServiceName = s.Name,
+                            });
+            foreach (var item in bookings)
+            {
+                BookingViewModel newBook = new BookingViewModel
+                {
+                    BookingId = item.BookingId,
+                    EventDate = item.EventDate,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    BookDate = item.BookDate,
+                    Type = item.Type,
+                    CustomerName = item.CustomerName,
+                    PaymentIncome = item.PaymentIncome,
+                    Status = item.Status,
+                    ServiceName = item.ServiceName,
+                };
+                books.Add(newBook);
+            }
+            return View(books);
         }
     }
 }

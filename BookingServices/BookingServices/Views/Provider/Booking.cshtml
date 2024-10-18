@@ -89,16 +89,16 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label asp-for="CashOrCashByHandOrInstallment" class="form-label">Payment Type</label>
+                            <label asp-for="CashOrCashByHandOrInstallment" class="form-label">Payment Method</label>
                             <select asp-for="CashOrCashByHandOrInstallment" class="form-select" id="paymentType">
                                 <option value="">-- Select Payment Type --</option>
                                 <option value="CashByHand">Cash By Hand</option>
-                                <option value="Cash">Cash</option>
+                                @* <option value="Cash">Cash</option> *@
                             </select>
                             <span asp-validation-for="CashOrCashByHandOrInstallment" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    @* <div class="col-md-4">
                         <div class="form-group">
                             <label asp-for="PaymentIncomeId" class="form-label" id="paymentMethodLabel">Payment Method</label>
                             <select asp-for="PaymentIncomeId" class="form-select" id="paymentMethod">
@@ -111,7 +111,7 @@
                             </select>
                             <span asp-validation-for="PaymentIncomeId" class="text-danger"></span>
                         </div>
-                    </div>
+                    </div> *@
                 </div>
 
                 <!-- Submit Booking Button on the left -->
@@ -129,32 +129,32 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        document.getElementById('paymentType').addEventListener('change', function () {
-            var paymentMethod = document.getElementById('paymentMethod');
-            var existingOption = document.querySelector("#paymentMethod option[value='CashByHand']");
+        // document.getElementById('paymentType').addEventListener('change', function () {
+        //     // var paymentMethod = document.getElementById('paymentMethod');
+        //     var existingOption = document.querySelector("#paymentMethod option[value='CashByHand']");
 
-            if (this.value === 'CashByHand') {
-                if (!existingOption) {  // Check if the option doesn't already exist
-                    var newOption = document.createElement("option");
-                    newOption.value = "CashByHand";
-                    newOption.text = "Cash By Hand";
-                    paymentMethod.insertBefore(newOption, paymentMethod.firstChild);
+        //     if (this.value === 'CashByHand') {
+        //         if (!existingOption) {  // Check if the option doesn't already exist
+        //             var newOption = document.createElement("option");
+        //             newOption.value = "CashByHand";
+        //             newOption.text = "Cash By Hand";
+        //             paymentMethod.insertBefore(newOption, paymentMethod.firstChild);
 
-                    paymentMethod.style.display = 'none';
-                    document.getElementById('paymentMethodLabel').style.display = 'none';
-                }
-                paymentMethod.value = 'CashByHand';
-                paymentMethod.disabled = true;
-            } else {
-                if (existingOption) {
-                    paymentMethod.removeChild(existingOption);  // Remove the 'CashByHand' option
-                }
-                paymentMethod.style.display = 'block';
-                document.getElementById('paymentMethodLabel').style.display = 'block';
+        //             paymentMethod.style.display = 'none';
+        //             document.getElementById('paymentMethodLabel').style.display = 'none';
+        //         }
+        //         paymentMethod.value = 'CashByHand';
+        //         paymentMethod.disabled = true;
+        //     } else {
+        //         if (existingOption) {
+        //             paymentMethod.removeChild(existingOption);  // Remove the 'CashByHand' option
+        //         }
+        //         paymentMethod.style.display = 'block';
+        //         document.getElementById('paymentMethodLabel').style.display = 'block';
 
-                paymentMethod.disabled = false;
-            }
-        });
+        //         paymentMethod.disabled = false;
+        //     }
+        // });
 
 
         document.getElementById('fetchCustomer').addEventListener('click', function () {
@@ -175,6 +175,7 @@
         });
 
 
+        /******************************************************************************/
         document.getElementById('eventDate').addEventListener('change', function () {
             var serviceId = @ViewBag.ServiceId;
             var eventDate = this.value;
@@ -184,7 +185,7 @@
                 .then(data => {
                     var startTimeDropdown = document.getElementById('startTime');
                     startTimeDropdown.innerHTML = '';
-
+                   
                     // Add default "please select" option
                     var defaultOption = document.createElement('option');
                     defaultOption.value = '';
@@ -192,6 +193,9 @@
                     defaultOption.disabled = true;
                     defaultOption.selected = true;
                     startTimeDropdown.appendChild(defaultOption);
+                    // if (data.success) console.log("Eslam her1");
+                    // else console.log("Eslam her2");
+                    
 
                     // Populate the dropdown with available times
                     data.forEach(time => {
@@ -201,9 +205,11 @@
                         option.textContent = formattedTime;
                         startTimeDropdown.appendChild(option);
                     });
+                    // console.log("Eslam her3");
 
                     startTimeDropdown.disabled = false;
                 });
+
 
             fetch(`/Provider/GetQuantityout?serviceId=${serviceId}&eventDate=${eventDate}`)
                 .then(response => response.json())
@@ -228,6 +234,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                 });
+
         });
 
         document.getElementById('startTime').addEventListener('change', function () {
@@ -260,13 +267,15 @@
                     endTimeDropdown.disabled = false;
                 });
         });
-
+        /******************************************************************************/
     
-            window.setTimeout(function() {
-                var alertMessage = document.getElementById('alertMessage');
-            if (alertMessage) {
-                alertMessage.style.display = 'none';
-                }
-            }, 3000);
+
+
+        window.setTimeout(function() {
+            var alertMessage = document.getElementById('alertMessage');
+        if (alertMessage) {
+            alertMessage.style.display = 'none';
+            }
+        }, 3000);
     </script>
 }

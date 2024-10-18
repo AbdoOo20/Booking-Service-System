@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 //using System.Drawing;
 using BookingServices.Models;
 using Microsoft.CodeAnalysis.Operations;
+using System.Collections.Specialized;
+using NuGet.Protocol;
+using System.Reflection;
 
 namespace BookingServices.Controllers
 {
@@ -21,7 +24,7 @@ namespace BookingServices.Controllers
         ErrorViewModel errorViewModel = new ErrorViewModel { Message = "", Controller = "", Action = "" };
         public ProviderController([FromServices] ApplicationDbContext context, HttpClient client, UserManager<IdentityUser> userManager)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _userManager = userManager;
             SaudiArabiaRegionsCitiesAndDistricts = "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
             _client = client;
@@ -48,13 +51,30 @@ namespace BookingServices.Controllers
         {
             if (ModelState.IsValid)
             {
-                var findcustomer = await _context.Customers.FirstOrDefaultAsync(x => x.SSN == model.SSN && x.IsOnlineOrOfflineUser == false);
+                var findcustomer = await _context.Customers.FirstOrDefaultAsync(x => x.SSN == model.SSN);
                 if (findcustomer != null)
                 {
                     TempData["Message"] = "Customer with this SSN already exists!";
                     TempData["MessageType"] = "error";
                     return RedirectToAction("Register");
                 }
+
+                var findcustomeralternatphone = await _context.Customers.FirstOrDefaultAsync(x => x.AlternativePhone == model.AlternativePhone);
+                if (findcustomeralternatphone != null)
+                {
+                    TempData["Message"] = "Customer with this Alternative Phone already exists!";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Register");
+                }
+                var findcustomerphone = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.Phone);
+                if (findcustomerphone != null)
+                {
+                    TempData["Message"] = "Customer with this Phone already exists!";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Register");
+                }
+
+
                 string tt = DateTime.Now.ToString();
                 string _TempUserNameAndPassword = "";
                 foreach (var x in tt) if (char.IsLetterOrDigit(x)) _TempUserNameAndPassword += x;
@@ -107,9 +127,8 @@ namespace BookingServices.Controllers
             try
             {
                 var today = DateTime.Now.Date;
-                int result = GetQuantity(id, today);
                 SharedserviceId = id;
-                ViewBag.AvailableQuantity = result;
+                ViewBag.AvailableQuantity = GetQuantity(id, today);
 
                 ViewBag.ServiceName = _context.Services
                     .Where(s => s.ServiceId == id)
@@ -199,13 +218,15 @@ namespace BookingServices.Controllers
             {
                 return Json(new { success = true, customerName = customer.Name });
             }
+
             return Json(new { success = false });
         }
 
         [HttpGet]
-        public IActionResult GetAvailableTimes(int serviceId, DateTime eventDate)
+        public async Task<IActionResult> GetAvailableTimes(int serviceId, DateTime eventDate)
         {
-            return Json(GetTheAvailableTime(serviceId, eventDate));
+            var availableTimes = await GetTheAvailableTime(serviceId, eventDate);
+            return Json(availableTimes);
         }
 
         [HttpGet]
@@ -220,36 +241,31 @@ namespace BookingServices.Controllers
                     availableEndTime.Add(availableTimes[i]);
                 }
             }
-            availableEndTime.RemoveAt(0);
+            //availableEndTime.RemoveAt(0);
             return Json(availableEndTime);
         }
 
+
         private async Task<List<string>> GetTheAvailableTime(int serviceId, DateTime eventDate)
         {
-            var StartEndTime = await _context.Services.Select(x => new { id = x.ServiceId, from = x.StartTime, to = x.EndTime }).Where(x => x.id == serviceId).ToListAsync();
+            var StartEndTime = await _context.Services.Where(x => x.ServiceId == serviceId).Select(x => new { id = x.ServiceId, from = x.StartTime, to = x.EndTime }).ToListAsync();
             var allTimes = new List<string>();
             for (int i = StartEndTime[0].from.Hours; i <= StartEndTime[0].to.Hours; i++)
-            {
                 allTimes.Add(i.ToString());
-            }
 
-            var result = (from b in _context.Bookings
+            var result = await (from b in _context.Bookings
                           join bs in _context.BookingServices on b.BookingId equals bs.BookingId
                           where bs.ServiceId == serviceId && b.EventDate == eventDate
-                          select new { b.StartTime, b.EndTime }).ToList();
+                          select new { b.StartTime, b.EndTime }).ToListAsync();
 
             var alltimebooked = result.Select(r => (r.StartTime, r.EndTime)).ToList();
-            var allTimesBookedInOneDay = new List<string>();
             foreach (var book in alltimebooked)
-            {
                 for (int i = book.StartTime.Hour; i <= book.EndTime.Hour; i++)
-                {
-                    allTimesBookedInOneDay.Add(i.ToString());
-                }
-            }
-
-            return allTimes.Except(allTimesBookedInOneDay).ToList();
+                    allTimes.Remove(i.ToString());
+            
+            return allTimes;
         }
+
 
         private int GetAllquantity(int serviceId, DateTime eventDate)
         {

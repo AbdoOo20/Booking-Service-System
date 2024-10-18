@@ -42,6 +42,8 @@ namespace BookingServices.Jobs
                         _logger.LogError($"Failed to send payout for BankAccount {customer.BankAccount}");
                     }
                 }
+                _context.RemainingCustomerBalances.RemoveRange(customershaveremainmony);
+                _context.SaveChanges();
                 //Console.WriteLine($"Eslam Waheed => Service Provider Balances Updated at: {DateTime.Now}");
                 _logger.LogInformation($"Service Provider Balances Updated at: {DateTime.Now}");
             }
