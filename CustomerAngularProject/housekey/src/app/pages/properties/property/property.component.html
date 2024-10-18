@@ -286,6 +286,54 @@
                     </mat-card-header>
                 </mat-card>
                 }
+
+                @if(hasLastReviewNull()){
+                    <mat-card class="p-3 mt-3">
+                        <mat-card-header class="pt-0" fxLayoutAlign="center center">
+                        </mat-card-header>
+                        <mat-card-content class="p-0 pt-2">
+                            <div class="mt-1">
+                                <app-review-form (reviewSubmitted)="handleReviewSubmission($event)" [bookids]="bookId"></app-review-form>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                }
+
+                @if (!hasAllReviewsNull()) {
+                <mat-card class="p-3 mt-3"
+                    style="width: 100%; max-width: 100%; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);">
+                    <mat-card-header class="pt-0" fxLayoutAlign="center center">
+                        <mat-card-title class="uppercase">Reviews</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content class="p-0 pt-2">
+                        @for (review of finalReviews; track $index; let i = $index;) {
+                        @if(review) {
+                        <div class="mb-3 review-item" style="padding: 16px; background: #ebe9e9; border-radius: 4px;">
+                            <p style="margin: 0; font-size: 15px;"><strong>Review:</strong> {{review.customerComment}}</p>
+                            <!-- Display the rating as stars -->
+                            <p style="margin: 0; font-size: 15px;">
+                                <strong>Rating:</strong>
+                                <span *ngFor="let star of [1, 2, 3, 4, 5]">
+                                    <span style="color: orange; font-size: 20px;" *ngIf="star <= review.rating">★</span>
+                                    <span style="font-size: 20px;" *ngIf="star > review.rating">☆</span>
+                                </span>
+                            </p>
+                            <p style="font-size: 15px; margin: 0;"><strong>Date:</strong> {{review.customerCommentDate |
+                                date: 'short'}}</p>
+                            @if(review.providerReplayComment){
+                            <hr style="margin: 16px 0; border: 1px solid #ddd;" />
+                            <p style="margin: 0; font-size: 15px;"><strong>Reply:</strong> {{review.providerReplayComment}}</p>
+                            <p style="font-size: 15px; margin: 0;"><strong>Reply Date:</strong>
+                                {{review.providerReplayCommentDate | date: 'short'}}</p>
+                            <mat-divider style="margin: 16px 0;"></mat-divider>
+                            }
+                        </div>
+                        }
+                        }
+                    </mat-card-content>
+                </mat-card>
+                }
+                
             </mat-sidenav-content>
         </mat-sidenav-container>
     </div>
@@ -311,42 +359,9 @@
         <div style="width: 100%; max-width: 100%;">
             <app-review-form  (reviewSubmitted)="handleReviewSubmission($event)" [bookids]="bookId"></app-review-form>
         </div> -->
-    @if (!hasAllReviewsNull()) {
-        <mat-card class="p-3 mt-3" style="width: 100%; max-width: 80%; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-            <mat-card-header class="pt-0" fxLayoutAlign="center center">
-                <mat-card-title class="uppercase">Your Reviews</mat-card-title>
-            </mat-card-header>
-            <mat-card-content class="p-0 pt-2">
-            @for (review of finalReviews; track $index; let i = $index;) {
-                @if(review) {
-                    <div class="mb-3 review-item" style="padding: 16px; background: #f9f9f9; border-radius: 4px;">
-                        <p style="margin: 0; font-size: 15px;"><strong>Review:</strong> {{review.customerComment}}</p>
-                        <!-- Display the rating as stars -->
-                        <p style="margin: 0; font-size: 15px;">
-                            <strong>Rating:</strong>
-                            <span *ngFor="let star of [1, 2, 3, 4, 5]">
-                                <span style="color: orange;" *ngIf="star <= review.rating">★</span>
-                                <span *ngIf="star > review.rating">☆</span>
-                            </span>
-                        </p>
-                        <p style="color: #777; font-size: 15px; margin: 0;"><strong>Date:</strong> {{review.customerCommentDate | date: 'short'}}</p>
-                        <hr style="margin: 16px 0; border: 1px solid #ddd;" />
-                        @if(review.providerReplayComment){
-                            <p style="margin: 0; font-size: 15px;"><strong>Reply:</strong> {{review.providerReplayComment}}</p>
-                            <p style="color: #777; font-size: 15px; margin: 0;"><strong>Reply Date:</strong> {{review.providerReplayCommentDate | date: 'short'}}</p>
-                        }
-                        <mat-divider style="margin: 16px 0;"></mat-divider>
-                    </div>
-                }
-            }
-            </mat-card-content>
-        </mat-card>
-    }
-    @if(hasLastReviewNull()){
-        <div style="width: 100%; max-width: 100%;">
-            <app-review-form (reviewSubmitted)="handleReviewSubmission($event)" [bookids]="bookId"></app-review-form>
-        </div>
-    }
+    
+    
     
 </div>
+
 <app-get-in-touch></app-get-in-touch>
