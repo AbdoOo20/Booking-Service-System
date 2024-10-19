@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BookingServices.Data;
 using Microsoft.AspNetCore.Authorization;
+using BookingServices.Data;
+using BookingServices.Models;
 
 namespace BookingServices.Controllers
 {
@@ -23,116 +19,137 @@ namespace BookingServices.Controllers
         // GET: PaymentIncomes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.PaymentIncomes.ToListAsync());
+            try
+            {
+                var paymentIncomes = await _context.PaymentIncomes
+                    .Select(pi => new PaymentMethodDTO
+                    {
+                        PaymentIncomeId = pi.PaymentIncomeId,
+                        Name = pi.Name,
+                        Percentage = pi.Percentage,
+                        IsBlocked = pi.IsBlocked
+                    })
+                    .ToListAsync();
+
+                return View(paymentIncomes);
+            }
+            catch (Exception)
+            {
+                ViewData["ErrorMessage"] = "An error occurred while loading the data. Please try again.";
+                return View(Enumerable.Empty<PaymentMethodDTO>());
+            }
         }
 
         // GET: PaymentIncomes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var paymentIncome = await _context.PaymentIncomes
-                .FirstOrDefaultAsync(m => m.PaymentIncomeId == id);
-            if (paymentIncome == null)
+            try
             {
-                return NotFound();
-            }
+                var paymentIncome = await _context.PaymentIncomes
+                    .FirstOrDefaultAsync(m => m.PaymentIncomeId == id);
 
-            return View(paymentIncome);
+                if (paymentIncome == null) return NotFound();
+
+                return View(ToDTO(paymentIncome));
+            }
+            catch (Exception)
+            {
+                ViewData["ErrorMessage"] = "An error occurred while loading the details. Please try again.";
+                return View();
+            }
         }
 
         // GET: PaymentIncomes/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new PaymentMethodDTO());
         }
 
         // POST: PaymentIncomes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PaymentIncomeId,Name,Percentage")] PaymentIncome paymentIncome)
+        public async Task<IActionResult> Create([Bind("Name,Percentage")] PaymentMethodDTO dto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(dto);
+
+            try
             {
+                var paymentIncome = FromDTO(dto);
+                paymentIncome.IsBlocked = false;
+
                 _context.Add(paymentIncome);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(paymentIncome);
+            catch (DbUpdateException)
+            {
+                ViewData["ErrorMessage"] = "An error occurred while saving the data. Please try again later.";
+                return View(dto);
+            }
+            catch (Exception)
+            {
+                ViewData["ErrorMessage"] = "An unexpected error occurred. Please try again.";
+                return View(dto);
+            }
         }
 
         // GET: PaymentIncomes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var paymentIncome = await _context.PaymentIncomes.FindAsync(id);
-            if (paymentIncome == null)
+            try
             {
-                return NotFound();
+                var paymentIncome = await _context.PaymentIncomes.FindAsync(id);
+                if (paymentIncome == null) return NotFound();
+
+                return View(ToDTO(paymentIncome));
             }
-            return View(paymentIncome);
+            catch (Exception)
+            {
+                ViewData["ErrorMessage"] = "An error occurred while loading the data. Please try again.";
+                return View();
+            }
         }
 
         // POST: PaymentIncomes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PaymentIncomeId,Name,Percentage")] PaymentIncome paymentIncome)
+        public async Task<IActionResult> Edit(int id, [Bind("PaymentIncomeId,Name,Percentage")] PaymentMethodDTO dto)
         {
-            if (id != paymentIncome.PaymentIncomeId)
-            {
-                return NotFound();
-            }
+            if (id != dto.PaymentIncomeId) return NotFound();
+            if (!ModelState.IsValid) return View(dto);
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(paymentIncome);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PaymentIncomeExists(paymentIncome.PaymentIncomeId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                var paymentIncome = await _context.PaymentIncomes.FindAsync(id);
+                if (paymentIncome == null) return NotFound();
+
+                paymentIncome.Name = dto.Name;
+                paymentIncome.Percentage = dto.Percentage;
+
+                _context.Update(paymentIncome);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(paymentIncome);
-        }
-
-        // GET: PaymentIncomes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (DbUpdateConcurrencyException)
             {
-                return NotFound();
+                if (!PaymentIncomeExists(dto.PaymentIncomeId))
+                    return NotFound();
+                throw;
             }
-
-            var paymentIncome = await _context.PaymentIncomes
-                .FirstOrDefaultAsync(m => m.PaymentIncomeId == id);
-            if (paymentIncome == null)
+            catch (DbUpdateException)
             {
-                return NotFound();
+                ViewData["ErrorMessage"] = "An error occurred while saving the changes. Please try again.";
+                return View(dto);
             }
-
-            return View(paymentIncome);
+            catch (Exception)
+            {
+                ViewData["ErrorMessage"] = "An unexpected error occurred. Please try again.";
+                return View(dto);
+            }
         }
 
         // POST: PaymentIncomes/Delete/5
@@ -140,14 +157,40 @@ namespace BookingServices.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var paymentIncome = await _context.PaymentIncomes.FindAsync(id);
-            if (paymentIncome != null)
+            try
             {
-                _context.PaymentIncomes.Remove(paymentIncome);
-            }
+                var paymentIncome = await _context.PaymentIncomes.FindAsync(id);
+                if (paymentIncome == null) return NotFound();
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                _context.PaymentIncomes.Remove(paymentIncome);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ViewData["ErrorMessage"] = "An error occurred while deleting the item. Please try again.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleBlock(int id)
+        {
+            try
+            {
+                var gateway = await _context.PaymentIncomes.FindAsync(id);
+                if (gateway == null)
+                    return Json(new { success = false, message = "Payment Method Not Found" });
+
+                gateway.IsBlocked = !(gateway.IsBlocked ?? false);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, isBlocked = gateway.IsBlocked });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "An error occurred. Please try again." });
+            }
         }
 
         private bool PaymentIncomeExists(int id)
@@ -155,17 +198,26 @@ namespace BookingServices.Controllers
             return _context.PaymentIncomes.Any(e => e.PaymentIncomeId == id);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ToggleBlock(int id)
+        private PaymentMethodDTO ToDTO(PaymentIncome income)
         {
-            var gatway = await _context.PaymentIncomes.FindAsync(id);
-            if (gatway == null)
+            return new PaymentMethodDTO
             {
-                return Json(new { success = false, message = "Payment Method Not Found" });
-            }
-            gatway.IsBlocked = !(gatway.IsBlocked ?? false);
-            await _context.SaveChangesAsync();
-            return Json(new { success = true, isBlocked = gatway.IsBlocked });
+                PaymentIncomeId = income.PaymentIncomeId,
+                Name = income.Name,
+                Percentage = income.Percentage,
+                IsBlocked = income.IsBlocked
+            };
+        }
+
+        private PaymentIncome FromDTO(PaymentMethodDTO dto)
+        {
+            return new PaymentIncome
+            {
+                PaymentIncomeId = dto.PaymentIncomeId,
+                Name = dto.Name,
+                Percentage = dto.Percentage,
+                IsBlocked = dto.IsBlocked
+            };
         }
     }
 }
