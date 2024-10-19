@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.dataTables.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
-    <link rel="icon" href="images/logo.png" />
+        <link rel="icon" href="~/images/logo.png" />
     </head>
 <body>
     <!-- ======= Header ======= -->
@@ -30,7 +30,7 @@
         @* Logo *@
         <div class="d-flex align-items-center justify-content-between">
             <a asp-area="" asp-controller="AdminHome" asp-action="Index" class="logo d-flex align-items-center">
-                    <img src="images/logo.png">
+                    <img src="~/images/logo.png">
                 <span class="d-none d-lg-block">Lily Night</span>
             </a>
             <i class="fa-solid fa-bars toggle-sidebar-btn"></i>
@@ -49,8 +49,16 @@
                                 <span class="badge bg-primary badge-number"></span>
                             </span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" id="dropDownCustomer">
+                            
+                        <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" >
+                            <div id="noNotificationsMessage" style="display:none; color: gray; font-style: italic;">
+                                Not Found Notifications
+                            </div>
 
+                            <div>
+                                <button id="readAllBtn" style="display:none;" onclick="deleteAllNotifications()" class="text-button">Read All</button>
+                            </div>
+                            <div id="dropDownCustomer"><div/>
                         </div>
                     </li>
                 <!-- Start Notification Icon -->
@@ -441,76 +449,120 @@
         <script src="js/signalr/dist/browser/signalr.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script>
-            "use strict";
+    "use strict";
 
-            var connection = new signalR.HubConnectionBuilder().withUrl("/AdminNotification").build();
+    var connection = new signalR.HubConnectionBuilder().withUrl("/AdminNotification").build();
 
-            connection.on("ReceiveMessage", function (title, time , length) {
-                var notificationTime = new Date(time);
-                var currentTime = new Date();
-                var timeDifference = getTimeDifference(notificationTime, currentTime);
-                toastr.warning(`${title}`);
-                var text = `<div class="notification-item">
-                            <div class="notification-title">${title}</div>
-                            <div class="notification-time">${timeDifference}</div></div><hr/>`;
-                document.getElementById("dropDownCustomer").innerHTML += text;
-                $('.badge-number').text(length);
-            });
+    connection.on("ReceiveMessage", function (title, time, length) {
+        var notificationTime = new Date(time);
+        var currentTime = new Date();
+        var timeDifference = getTimeDifference(notificationTime, currentTime);
+        toastr.warning(`${title}`);
+        var text = `<div class="notification-item">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-time">${timeDifference}</div>
+                    </div><hr/>`;
 
-            connection.start().then(function () {
-            }).catch(function (err) {
-                return console.error(err.toString());
-            });
-            $(document).ready(function () {
-                function loadNotifications() {
-                    $.ajax({
-                        url: '@Url.Action("GetAllNotifications", "AdminNotification")',
-                        method: 'GET',
-                        success: function (data) {
-                            console.log(data);
+        document.getElementById("dropDownCustomer").innerHTML = text + document.getElementById("dropDownCustomer").innerHTML;
 
-                            $('#dropDownCustomer').empty();
+     
+        $('.badge-number').text(length);
 
-                            $.each(data, function (index, notification) {
-                                var notificationTime = new Date(notification.time);
-                                var currentTime = new Date();
-                                var timeDifference = getTimeDifference(notificationTime, currentTime);
+ 
+        if (length > 0) {
+            $("#readAllBtn").show();
+            $("#noNotificationsMessage").hide();
+        }
+    });
 
-                                $('#dropDownCustomer').append(`
-                                 <div class="notification-item">
-                                     <div class="notification-title">${notification.notificationTitle}</div>
-                                     <div class="notification-time">${timeDifference}</div>
-                                 </div>
-                             `);
-                            });
-                            $('.badge-number').text(data.length);
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("Error fetching notifications:", error);
-                        }
-                    });
+    connection.start().then(function () {
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    $(document).ready(function () {
+        function loadNotifications() {
+            $.ajax({
+                url: '@Url.Action("GetAllNotifications", "AdminNotification")',
+                method: 'GET',
+                success: function (data) {
+                    $('#dropDownCustomer').empty();
+
+                    if (data.length > 0) {
+                        $.each(data, function (index, notification) {
+                            var notificationTime = new Date(notification.time);
+                            var currentTime = new Date();
+                            var timeDifference = getTimeDifference(notificationTime, currentTime);
+
+                            $('#dropDownCustomer').append(`
+                                <div class="notification-item">
+                                    <div class="notification-title">${notification.notificationTitle}</div>
+                                    <div class="notification-time">${timeDifference}</div>
+                                </div>
+                            `);
+                        });
+                        $("#readAllBtn").show();
+                        $("#noNotificationsMessage").hide(); 
+                    } else {
+   
+                        $("#readAllBtn").hide();
+                        $("#noNotificationsMessage").show(); 
+                    }
+
+                    $('.badge-number').text(data.length);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching notifications:", error);
                 }
-
-                loadNotifications();
             });
-            function getTimeDifference(startTime, endTime) {
-                var timeDiff = Math.abs(endTime - startTime);
+        }
 
-                var seconds = Math.floor(timeDiff / 1000);
-                var minutes = Math.floor(seconds / 60);
-                var hours = Math.floor(minutes / 60);
-                var days = Math.floor(hours / 24);
+        loadNotifications();
+    });
 
-                if (days > 0) {
-                    return `${days} day(s) ago`;
-                } else if (hours > 0) {
-                    return `${hours} hour(s) ago`;
-                } else if (minutes > 0) {
-                    return `${minutes} minute(s) ago`;
+    function getTimeDifference(startTime, endTime) {
+        var timeDiff = Math.abs(endTime - startTime);
+
+        var seconds = Math.floor(timeDiff / 1000);
+        var minutes = Math.floor(seconds / 60);
+        var hours = Math.floor(minutes / 60);
+        var days = Math.floor(hours / 24);
+
+        if (days > 0) {
+            return `${days} day(s) ago`;
+        } else if (hours > 0) {
+            return `${hours} hour(s) ago`;
+        } else if (minutes > 0) {
+            return `${minutes} minute(s) ago`;
+        } else {
+            return `${seconds} second(s) ago`;
+        }
+    }
+
+    function deleteAllNotifications() {
+        $.ajax({
+            url: '@Url.Action("DeleteAllNotifications", "AdminNotification")', // تأكد من أن اسم الـ Action صحيح
+            type: 'POST',
+            success: function (response) {
+                if (response.success) {
+
+                    $("#dropDownCustomer").empty();
+
+                    $("#readAllBtn").hide();
+
+                    $("#noNotificationsMessage").show();
+
+                    $('.badge-number').text(0);
                 } else {
-                    return `${seconds} second(s) ago`;
+                    console.error("Error: " + response.message);
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error("An error occurred while deleting all notifications: " + error);
             }
+        });
+    }
+
         </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

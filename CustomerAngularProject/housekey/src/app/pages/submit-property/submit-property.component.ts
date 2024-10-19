@@ -46,7 +46,10 @@ import { Router } from "@angular/router";
 import { PaymentIncome } from "../../common/interfaces/payment-income";
 import { PaymentsService } from "@services/payments.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { ConfirmDialogComponent, ConfirmDialogModel } from "@shared-components/confirm-dialog/confirm-dialog.component";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogModel,
+} from "@shared-components/confirm-dialog/confirm-dialog.component";
 import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
 
 @Component({
@@ -137,6 +140,9 @@ export class SubmitPropertyComponent implements OnInit {
   paymentMethodId: number;
   isPaymentMethodSelected: boolean = false;
 
+  //Quantity
+  public QuantityForPayment: number;
+
   constructor(
     public appService: AppService,
     private fb: FormBuilder,
@@ -167,13 +173,14 @@ export class SubmitPropertyComponent implements OnInit {
   }
 
   ngOnInit() {
+    localStorage.setItem('firstCall', 'false');
     if (!localStorage.getItem("token")) {
       const targetPage = "/login";
       this.router.navigate([targetPage]);
     }
     this.activatedRoute.paramMap.subscribe((params) => {
       this.serviceID = Number(params.get("id")); // استقبال الـ id
-      console.log(this.serviceID); // طباعة الـ id
+      //this.serviceID); // طباعة الـ id
     });
     this.features = this.appService.getFeatures();
     this.propertyTypes = this.appService.getPropertyTypes();
@@ -199,8 +206,8 @@ export class SubmitPropertyComponent implements OnInit {
         eventDate: ["", Validators.required],
         startTime: ["", Validators.required],
         endTime: ["", Validators.required],
-        quantity: ["", [Validators.required, Validators.min(1)]],
-      }),
+        quantity: ["", [Validators.required, Validators.min(0)]],
+      }), //as
       payment: this.fb.group({
         amount: ["", [Validators.required, Validators.maxLength(5)]],
         maxValue: ["", [Validators.required, Validators.maxLength(5)]],
@@ -216,6 +223,7 @@ export class SubmitPropertyComponent implements OnInit {
     );
     this.maxDate = new Date();
     this.maxDate.setMonth(this.maxDate.getMonth() + 3);
+
     this.bookService.getService(this.serviceID).subscribe({
       next: (data) => {
         this.hasQuantity = false;
@@ -227,24 +235,29 @@ export class SubmitPropertyComponent implements OnInit {
             quantity: null,
           },
         });
-        this.submitForm.patchValue({
-          payment: {
-            minValue: this.service.initialPayment,
-            maxValue: this.service.priceForTheCurrentDay,
-            paymentMethod: [1, Validators.required],
-          },
-        });
+        // this.submitForm.patchValue({
+        //   payment: {
+        //     minValue: this.service.initialPayment * this.QuantityForPayment,
+        //     maxValue: this.service.priceForTheCurrentDay * this.QuantityForPayment,
+        //     paymentMethod: [1, Validators.required],
+        //   },
+        // });
         this.hasQuantity = this.service.quantity > 0 ? true : false;
         this.calculateTotal();
         this.initializeTimeOptions();
 
         const quantityControl = this.submitForm.get("booking.quantity");
         if (this.service.quantity > 0) {
-          quantityControl?.setAsyncValidators(
-            this.asyncQuantityValidator(this.service.quantity)
-          );
+          // quantityControl?.setAsyncValidators(
+          //   this.asyncQuantityValidator(this.service.quantity)
+          // );
+          quantityControl?.setValidators([
+            Validators.required,
+            Validators.min(1),
+          ]);
         } else {
-          quantityControl?.clearAsyncValidators(); // Clear async validators if not needed
+          //quantityControl?.clearAsyncValidators();
+          quantityControl?.clearValidators();
         }
         quantityControl?.updateValueAndValidity();
       },
@@ -260,12 +273,6 @@ export class SubmitPropertyComponent implements OnInit {
       });
   }
 
-  printDate() {
-    console.log("Event Date: ");
-    console.log(this.submitForm.get("booking.eventDate").value);
-    console.log("Book Date: ");
-    console.log(new Date().toISOString());
-  }
   shareData(): void {
     // Convert booking form data
     const selectedDate = this.submitForm.get("booking.eventDate").value;
@@ -275,11 +282,11 @@ export class SubmitPropertyComponent implements OnInit {
     const convertedEndTime = this.convertTo24HourFormat(
       this.submitForm.get("booking.endTime").value
     );
-    console.log(selectedDate);
-    console.log("----------------------------------------");
+    //selectedDate);
+    //"----------------------------------------");
     const formatedEvantDate = this.formatEventDate(selectedDate);
-    console.log(formatedEvantDate);
-    console.log("-----------------------------------------------------");
+    //formatedEvantDate);
+    //"-----------------------------------------------------");
     localStorage.setItem("NewDataFormat", formatedEvantDate);
 
     this.bookingData = {
@@ -290,7 +297,7 @@ export class SubmitPropertyComponent implements OnInit {
       initialPaymentPercentage: this.service.initialPayment,
       status: "",
       quantity: Number(this.submitForm.get("booking.quantity").value),
-      price: parseFloat(this.submitForm.get("booking.priceEuro").value),
+      price: parseFloat(this.submitForm.get('payment.maxValue').value),
       cashOrCashByHandOrInstallment: "",
       bookDate: new Date().toISOString(),
       type: "Service",
@@ -299,7 +306,7 @@ export class SubmitPropertyComponent implements OnInit {
       paymentIncomeId: this.paymentMethodId,
     };
 
-    console.log(this.bookingData);
+    //this.bookingData);
 
     // Save data in local storage
     localStorage.setItem("bookingData", JSON.stringify(this.bookingData));
@@ -351,6 +358,18 @@ export class SubmitPropertyComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      this.QuantityForPayment = Number(this.submitForm.get("booking.quantity").value);
+      if (this.QuantityForPayment == 0) {
+        this.QuantityForPayment = 1;
+      }
+      this.submitForm.patchValue({
+        payment: {
+          minValue: ((this.service.initialPayment * this.service.priceForTheCurrentDay) / 100) * this.QuantityForPayment,
+          maxValue: this.service.priceForTheCurrentDay * this.QuantityForPayment,
+          paymentMethod: [1, Validators.required],
+        },
+      });
+
       if (result) {
         this.acceptContract = true;
       } else {
@@ -376,7 +395,7 @@ export class SubmitPropertyComponent implements OnInit {
 
   onSelectMethod(methodId: number): void {
     this.selectedPaymentMethodId = methodId;
-    console.log("Selected Payment Method ID:", this.selectedPaymentMethodId);
+    //"Selected Payment Method ID:", this.selectedPaymentMethodId);
   }
 
   // Custom validator function
@@ -391,82 +410,82 @@ export class SubmitPropertyComponent implements OnInit {
   };
   loading: boolean = false;
 
-
   CreatePayment() {
     // Step 1: Retrieve form values and validate the amount
-    const amount = this.submitForm.get('payment.amount')?.value;
+    const amount = this.submitForm.get('payment.minValue')?.value;
     this.minValue = parseFloat(this.submitForm.get('payment.minValue')?.value);
     this.maxValue = parseFloat(this.submitForm.get('payment.maxValue')?.value);
-  
+
     if (
-      amount < (this.minValue * this.maxValue) / 100 ||
-      amount > this.maxValue ||
-      amount <= 0
+      amount < this.minValue ||
+      amount > this.maxValue
     ) {
       console.warn('Total must be between minimum and maximum values:', amount);
-  
+
       // Open an alert dialog to notify the user about the invalid amount
       this.dialog.open(AlertDialogComponent, {
-        maxWidth: '500px',
-        data: 'The amount must be between the specified minimum and maximum values.',
+        maxWidth: "500px",
+        data: "The amount must be between the specified minimum and maximum values.",
       });
-  
+
       return; // Exit the function if validation fails
     }
-  
+
     // Step 2: Open a confirmation dialog for saving the bank account
-    const dialogData = new ConfirmDialogModel('Confirm', 'Save Your Account Bank !!');
+    const dialogData = new ConfirmDialogModel(
+      "Confirm",
+      "Save Your Account Bank !!"
+    );
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      minWidth: '500px',
-      maxWidth: '500px',
+      minWidth: "500px",
+      maxWidth: "500px",
       data: dialogData,
     });
-  
+
     // Step 3: Wait for the user's response and proceed with the payment
     dialogRef.afterClosed().subscribe((result) => {
       localStorage.setItem('SetBankAccount', result ? 'true' : 'false');
-  
+
       if (!result) {
-        console.warn('User canceled bank account saving.');
+        console.warn("User canceled bank account saving.");
         // Continue with the payment even if the user cancels saving the account
       }
-  
+
       // Set loading to true when the payment process starts
       this.loading = true;
-  
+
       // Share the booking data
       this.shareData();
-  
+
       // Prepare payment data
       const paymentData = {
         total: amount,
-        currency: 'USD',
-        description: 'New Transaction',
-        returnUrl: 'http://localhost:4200/confirmation',
-        cancelUrl: 'http://localhost:4200/submit-property',
+        currency: "USD",
+        description: "New Transaction",
+        returnUrl: "http://localhost:4200/confirmation",
+        cancelUrl: "http://localhost:4200/submit-property",
       };
-  
+
       // Proceed with PayPal payment
       this.PayPal.addPayment(paymentData).subscribe({
         next: (response) => {
+          localStorage.setItem('firstCall', 'true');
           window.location.href = response.approvalUrl;
         },
         error: (error) => {
-          console.error('Payment Error:', error);
+          console.error("Payment Error:", error);
           this.loading = false;
         },
       });
     });
   }
-  
+
   onSelectionChange2(event: MatSelectChange) {
-    console.log("Selected Payment Method:", event.value);
+    //"Selected Payment Method:", event.value);
     // Update the selected payment method ID and mark it as selected
     this.paymentMethodId = event.value;
     this.isPaymentMethodSelected = !!event.value; // Ensure it's set only if valid
   }
-
-
 
   private initializeTimeOptions() {
     this.timeOptions = [];
@@ -527,19 +546,20 @@ export class SubmitPropertyComponent implements OnInit {
         break;
       }
     }
-    if (startHour + 1 === this.endHour) {
-      for (let hour = startHour + 1; hour <= this.endHour; hour++) {
-        const amPm = hour >= 12 ? "PM" : "AM";
-        const displayHour = hour > 12 ? hour - 12 : hour;
-        this.endTimeOptions.push(`${displayHour} ${amPm}`);
-      }
-    } else {
-      for (let hour = startHour + 1; hour <= this.endHour - 1; hour++) {
-        const amPm = hour >= 12 ? "PM" : "AM";
-        const displayHour = hour > 12 ? hour - 12 : hour;
-        this.endTimeOptions.push(`${displayHour} ${amPm}`);
-      }
+    for (let hour = startHour + 1; hour <= this.endHour; hour++) {
+      const amPm = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour > 12 ? hour - 12 : hour;
+      this.endTimeOptions.push(`${displayHour} ${amPm}`);
     }
+    // if (startHour + 1 === this.endHour) {
+
+    // } else {
+    //   for (let hour = startHour + 1; hour <= this.endHour; hour++) {
+    //     const amPm = hour >= 12 ? "PM" : "AM";
+    //     const displayHour = hour > 12 ? hour - 12 : hour;
+    //     this.endTimeOptions.push(`${displayHour} ${amPm}`);
+    //   }
+    // }
   }
 
   onTimeSelected(selectedDate: Date) {
@@ -581,7 +601,7 @@ export class SubmitPropertyComponent implements OnInit {
   public onSelectionChange(e: any) {
     if (e.selectedIndex == 2) {
       this.horizontalStepper._steps.forEach((step) => (step.editable = false));
-      console.log(this.submitForm.value);
+      //this.submitForm.value);
     }
   }
   public reset() {

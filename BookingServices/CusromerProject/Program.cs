@@ -1,5 +1,4 @@
 using BookingServices.Data;
-using BookingServices.Services;
 using CusromerProject.DTO.Book;
 using CusromerProject.DTO.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,6 +10,8 @@ using System.Text;
 using System.Text.Json.Serialization;
 using CusromerProject.DTO.Categories;
 using CusromerProject.DTO.Review;
+using BookingServices.Services;
+using BookingServices.Services;
 using CustomerProject.Services;
 
 namespace CusromerProject

@@ -8,9 +8,12 @@ export class AuthServiceService {
     private loggedIn = new BehaviorSubject<boolean>(this.isLoggedIn());
 
     isLoggedIn$ = this.loggedIn.asObservable();
-    constructor() {}
+    constructor() { }
     private isLoggedIn(): boolean {
-        return !!localStorage.getItem("token");
+        if (localStorage.getItem("token"))
+            return !!localStorage.getItem("token");
+        else (sessionStorage.getItem("token"))
+        return !!sessionStorage.getItem("token");
     }
 
     login(token: string): void {
@@ -19,6 +22,7 @@ export class AuthServiceService {
     }
     logout(): void {
         localStorage.clear();
+        sessionStorage.clear();
         this.loggedIn.next(false);
     }
 }

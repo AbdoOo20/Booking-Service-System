@@ -17,9 +17,9 @@ namespace BookingServices.Controllers
         ApplicationDbContext _context;
         ErrorViewModel errorViewModel = new ErrorViewModel();
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IHubContext<AdminNotification> _hubContext;
+        private readonly IHubContext<AdminNotificationHub> _hubContext;
 
-        public ProviderRegisterController(ApplicationDbContext context, UserManager<IdentityUser> userManager , IHubContext<AdminNotification> hubContext)
+        public ProviderRegisterController(ApplicationDbContext context, UserManager<IdentityUser> userManager , IHubContext<AdminNotificationHub> hubContext)
         {
             _context = context;
             _userManager = userManager;
@@ -50,7 +50,7 @@ namespace BookingServices.Controllers
                     var existingProvider = await  _userManager.FindByEmailAsync(providerVM.ProviderEmail);
                     var existingWaitingProvider = await _context.ProviderRegisters
                         .Where(p => p.ProviderEmail == providerVM.ProviderEmail).FirstOrDefaultAsync();
-                    if (existingWaitingProvider != null || existingProvider != null && await _userManager.IsInRoleAsync(existingProvider, "Provider"))
+                    if (existingWaitingProvider != null || existingProvider != null)
                     {
                         ModelState.AddModelError("ProviderEmail", "The email address is already exists.");
                         return View(providerVM);
@@ -95,9 +95,7 @@ namespace BookingServices.Controllers
 
                     await _hubContext.Clients.All.SendAsync("ReceiveMessage", $"The Provider {providerVM.ProviderName} Request To Join Our Site", DateTime.Now , length);
 
-
-
-                    return RedirectToAction("Create");
+                    return Redirect("http://localhost:4200/");
                 }
 
                 return View(providerVM);

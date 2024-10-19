@@ -64,7 +64,7 @@
                                 </mat-form-field>
                             </div>
 
-                            @if(hasQuantity){
+                            @if(hasQuantity && maxQuantity > 0){
                             <div fxFlex="100" class="px-2">
                                 <mat-form-field appearance="outline" class="w-100">
                                     <mat-label>Quantity</mat-label>
@@ -75,19 +75,27 @@
                             </div>
                             }
 
-                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center"></div>
+                            @if(hasQuantity && maxQuantity === 0){
+                                <h1 class="fw-500 text-center">
+                                    No Availabe Quantity For this Day
+                                </h1>
+                            }
 
-                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center">
-                                <button mat-raised-button class="mr-3" color="primary" fxLayout="row"
-                                    fxLayoutAlign="center center" (click)="openContractDialog()">
-                                    <span class="mx-1 uppercase">Contract</span>
-                                </button>
-                                <button mat-raised-button color="primary" matStepperNext fxLayout="row"
-                                    fxLayoutAlign="center center" type="button" [disabled]="!acceptContract">
-                                    <span class="mx-1 uppercase">Next</span>
-                                    <mat-icon iconPositionEnd>navigate_next</mat-icon>
-                                </button>
-                            </div>
+                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center"></div>
+                            <!-- <label>{{hasQuantity}} {{maxQuantity}}</label> -->
+                            @if((hasQuantity && maxQuantity > 0) || (!hasQuantity)){
+                                                            <div fxFlex="100" class="mt-3 p-2" fxLayoutAlign="end center">
+                                                                <button mat-raised-button class="mr-3" color="primary" fxLayout="row" fxLayoutAlign="center center"
+                                                                    (click)="openContractDialog()">
+                                                                    <span class="mx-1 uppercase">Contract</span>
+                                                                </button>
+                                                                <button mat-raised-button color="primary" matStepperNext fxLayout="row" fxLayoutAlign="center center" type="button"
+                                                                    [disabled]="!acceptContract">
+                                                                    <span class="mx-1 uppercase">Next</span>
+                                                                    <mat-icon iconPositionEnd>navigate_next</mat-icon>
+                                                                </button>
+                                                            </div>
+                            }
                         </form>
                     </div>
                 </mat-step>
@@ -111,7 +119,7 @@
                                     <mat-form-field fxFlex="50" appearance="outline" class="w-50">
                                         <mat-label>Initial Payment</mat-label>
                                         <input matInput placeholder="Initial Payment" autocomplete="off"
-                                            formControlName="amount" onlyNumber maxlength="5" required readonly />
+                                            formControlName="minValue" onlyNumber maxlength="5" required readonly />
                                         <mat-error
                                             *ngIf="submitForm.get('payment').get('amount')?.hasError('required')">Initial
                                             Payment is required</mat-error>
@@ -150,8 +158,8 @@
 
                                     <mat-form-field appearance="outline" class="w-100">
                                         <mat-label>Amount For Payment</mat-label>
-                                        <input matInput placeholder="Amount" autocomplete="off" formControlName="amount"
-                                            onlyNumber maxlength="5" required />
+                                        <input matInput placeholder="Amount" autocomplete="off"
+                                            formControlName="minValue" onlyNumber maxlength="5" required />
                                         <!-- Error messages -->
                                         <mat-error
                                             *ngIf="submitForm.get('payment').get('amount')?.hasError('required')">

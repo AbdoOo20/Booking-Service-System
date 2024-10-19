@@ -25,7 +25,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize]
+        [Authorize]
         public ActionResult<CustomerCrudDTO> GetByID(string id) 
         {
             if (id == null) return NotFound();
@@ -43,7 +43,7 @@ namespace CusromerProject.Controllers
             return customerData;
         }
         [HttpPut("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Update(string id, CustomerCrudDTO customerData)
         {
             if (id == null) return NotFound();
@@ -69,25 +69,26 @@ namespace CusromerProject.Controllers
             else return BadRequest(ModelState);
         }
 
-        [HttpPut("block{id}")]
-        //[Authorize]
+        [HttpPut("block/{id}")]
+        [Authorize]
         public IActionResult Block(string id)
         {
             if (id == null) return NotFound();
             var customer = context.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null) return NotFound();
-            int haveBooking = context.Bookings.Where(b => (b.CustomerId == id) && (b.Status == "Pending")).Count();
-            if(haveBooking == 0)
+            //int haveBooking = context.Bookings.Where(b => (b.CustomerId == id) && (b.Status == "Pending")).Count();
+            if(true) //haveBooking == 0
             {
                 customer.IsBlocked = true;
                 context.SaveChanges();
-                return Ok();
+                return Ok(new { message = "Blocked Successfully" });
             }
-            else return BadRequest();
+            else 
+                return BadRequest("You have book now and can not deactivate account");
         }
 
         [HttpPut("changePassword{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(string id , ChangeCustomerPasswordDTO chPassword) 
         {
             if (id == null) return NotFound();
@@ -123,6 +124,27 @@ namespace CusromerProject.Controllers
             }
             else return BadRequest(new { Message = ModelState });
             return Ok(new { Message = "Bank Account Set Successfully" });
+        }
+
+        [HttpGet("GetBanckAccount/{id}")]
+        public async Task<IActionResult> GetBanckAccount(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound(new { Message = "Insert the correct data" });
+            }
+
+            var bankAccount = await context.Customers
+                            .Where(c => c.CustomerId == id)
+                            .Select(c => c.BankAccount)
+                            .FirstOrDefaultAsync();
+
+            if (bankAccount == null)
+            {
+                return NotFound(new { Message = "bankAccount Not Found" });
+            }
+            
+            return Ok(new { bankAccount = bankAccount });
         }
     }
 }

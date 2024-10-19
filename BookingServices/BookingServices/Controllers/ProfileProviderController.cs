@@ -82,7 +82,6 @@ namespace BookingServices.Controllers
         {
             return View();
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(Provider_ResetPassowrd model)
@@ -104,11 +103,15 @@ namespace BookingServices.Controllers
                     return View(model);
                 }
 
+              
                 var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
                 if (result.Succeeded)
                 {
-                    TempData["SuccessMessage"] = "Password changed successfully.";
-                    return RedirectToAction(nameof(Index));
+                    
+                    await _signInManager.SignOutAsync();
+
+                    TempData["SuccessMessage"] = "Password changed successfully. Please log in with your new password.";
+                    return Redirect("/Identity/Account/Login");
                 }
 
                 foreach (var error in result.Errors)
@@ -116,8 +119,10 @@ namespace BookingServices.Controllers
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
             return View(model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Payout()
@@ -125,9 +130,12 @@ namespace BookingServices.Controllers
             var user = await _userManager.GetUserAsync(User);
             string userIdFromManager = user?.Id ?? "";
             var provider = context.ServiceProviders.Find(userIdFromManager);
-            provider.Balance = 0;
-            context.SaveChanges();
-            return Json(new { success = true, message = "Withdrawal successful!", newBalance = provider?.Balance });
+            if (provider != null)
+            {
+                provider.Balance = 0;
+                await context.SaveChangesAsync();
+            }
+            return Json(new { success =  true , newBalance = 0});
         }
     }
 }

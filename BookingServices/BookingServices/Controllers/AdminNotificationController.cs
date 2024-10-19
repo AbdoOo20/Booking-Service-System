@@ -30,6 +30,26 @@ namespace BookingServices.Controllers
             return NotFound();
         }
         [HttpPost]
+        public IActionResult DeleteAllNotifications()
+        {
+            try
+            {
+                var notifications = context.NotificationAdmins.ToList();
+                if (notifications.Any())
+                {
+                    context.NotificationAdmins.RemoveRange(notifications);
+                    context.SaveChanges();
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        
+        }
+        [HttpPost]
         public IActionResult AddNotification(NotificationAdmin notification)
         {
             try

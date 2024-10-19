@@ -2,7 +2,7 @@
 
 namespace BookingServices.Hubs
 {
-    public class AdminNotification : Hub
+    public class AdminNotificationHub : Hub
     {
         public async Task SendMessage(string user, string message , int length)
         {

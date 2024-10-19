@@ -21,10 +21,10 @@ namespace BookingServices.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         string UserID;
         ErrorViewModel errorViewModel;
-        private readonly IHubContext<AdminNotification> _hubContext;
+        private readonly IHubContext<AdminNotificationHub> _hubContext;
 
 
-        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment, UserManager<IdentityUser> userManager , IHubContext<AdminNotification> hubContext)
+        public ServicesController(ApplicationDbContext context, HttpClient client, IWebHostEnvironment environment, UserManager<IdentityUser> userManager , IHubContext<AdminNotificationHub> hubContext)
         {
             _context = context;
             _client = client;
@@ -475,8 +475,8 @@ namespace BookingServices.Controllers
                     .FirstOrDefaultAsync(s => s.ServiceId == serviceModel.ServiceId);
 
                 if (service == null)
-                    HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
-                
+                    return HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
+
                 if (ModelState.IsValid)
                 {
                     service.Name = serviceModel.Name;
@@ -491,9 +491,11 @@ namespace BookingServices.Controllers
                     service.BaseServiceId = serviceModel.BaseServiceId;
                     service.ProviderContractId = serviceModel.ProviderContractId;
 
+                    // Check for valid EndTime
                     if (service.EndTime == TimeSpan.Zero || service.EndTime <= service.StartTime)
                     {
-                        await AddSelectLists();
+                        ModelState.AddModelError("EndTime", "End Time must be greater than Start Time.");
+                        await AddSelectLists(serviceModel);
                         return View(serviceModel);
                     }
 
