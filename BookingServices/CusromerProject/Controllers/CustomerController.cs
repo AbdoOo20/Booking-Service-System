@@ -124,5 +124,26 @@ namespace CusromerProject.Controllers
             else return BadRequest(new { Message = ModelState });
             return Ok(new { Message = "Bank Account Set Successfully" });
         }
+
+        [HttpGet("GetBanckAccount/{id}")]
+        public async Task<IActionResult> GetBanckAccount(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound(new { Message = "Insert the correct data" });
+            }
+
+            var bankAccount = await context.Customers
+                            .Where(c => c.CustomerId == id)
+                            .Select(c => c.BankAccount)
+                            .FirstOrDefaultAsync();
+
+            if (bankAccount == null)
+            {
+                return NotFound(new { Message = "bankAccount Not Found" });
+            }
+            
+            return Ok(new { bankAccount = bankAccount });
+        }
     }
 }
