@@ -11,6 +11,7 @@ namespace BookingServices.Data
         public int ContractId { get; set; }
 
         [Required, Display(Name = "Title"), MinLength(10, ErrorMessage = "Length must be at least 10 character")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Title can only contain letters and spaces.")]
         public string? ContractName { get; set; }
 
         [Required, Display(Name = "Details"), MinLength(20, ErrorMessage = "Length must be at least 20 character")]

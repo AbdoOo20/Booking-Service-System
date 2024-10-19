@@ -13,18 +13,34 @@
     <div class="loading-message">Loading...</div>
 </div>
 
-<div id="responseMessage" class="mt-2 mb-2"></div>
+  <div id="message"></div>  
+
+@{
+     // if (TempData["SuccessMessage"] != null)
+     // {
+     //     <h1> IN IF</h1>
+     //     <div class="alert alert-success">
+     //         @TempData["SuccessMessage"]
+     //     </div>
+     // }
+     // if (TempData["ErrorMessage"] != null)
+     // {
+     //     <div class="alert alert-danger">
+     //         @TempData["ErrorMessage"]
+     //     </div>
+     // }
+ }
 
 <div class="container my-5">
     <h1 class="text-center head-color">Profile</h1>
     @* Balance *@ 
     <div class="container-fluid bg-light border border-dark rounded p-4">
         <input type="hidden" id="serviceProviderEmail" value="@Model.BankAccount" />
-        <input type="hidden" c value="@Model.Balance" />
+        <input type="hidden" id="totalAmount" value="@Model.Balance" />
         <div class="row text-center mb-4">
             <div class="col">
                 <h5>Money can be withdrawn</h5>
-                <span id="balanceDisplay">@Html.DisplayFor(model => model.Balance)</span>
+                <span id="balanceDisplay"> @Html.DisplayFor(model => model.Balance) </span>
             </div>
             <div class="col">
                 <h5>Pending Balance</h5>
@@ -32,7 +48,7 @@
             </div>
             <div class="col">
                 <h5>Total Balance</h5>
-                <p>@(Model.Balance + Model.ReservedBalance) $</p> 
+                <span id="totalBalanceDisplay"> @(Model.Balance + Model.ReservedBalance) $ </span>
             </div>
         </div>
         <div class="d-flex justify-content-center align-items-center">
@@ -61,37 +77,42 @@
     @* Information *@
     <form asp-action="Edit" method="post">
         @Html.HiddenFor(model => model.ProviderId)
+
         <div class="col-12 my-2">
             <h5>Name</h5>
-            <input class="form-control" name="Name" value="@Model.Name" />
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
+
         <div class="col-12 my-2">
             <h5>Details</h5>
-            <textarea class="form-control" name="ServiceDetails" rows="4">@Model.ServiceDetails</textarea>
+            @Html.TextAreaFor(m => m.ServiceDetails, new { @class = "form-control", rows = 4 })
             <span asp-validation-for="ServiceDetails" class="text-danger"></span>
         </div>
+
         <div class="col-12 my-2">
             <h5>Phone</h5>
-            <input class="form-control" name="Phone" value="@Model.Phone" />
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
             <span asp-validation-for="Phone" class="text-danger"></span>
         </div>
+
         <div class="col-12 my-2">
             <h5>Bank Account</h5>
-            <input class="form-control" name="BankAccount" value="@Model.BankAccount" />
+            @Html.TextBoxFor(m => m.BankAccount, new { @class = "form-control" })
             <span asp-validation-for="BankAccount" class="text-danger"></span>
         </div>
 
-         <br/>
-          <br/>
         <button type="submit" class="btn btn-outline-primary btn-lg w-100">Edit</button>
         <a asp-action="ResetPassword" class="btn btn-outline-secondary btn-lg w-100 mt-3">Change Password</a>
-
     </form>
+
 
 </div>
 
 
 @section Scripts {
-	<script src="~/js/withdraw.js"></script>
+	<script src="~/js/profile.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

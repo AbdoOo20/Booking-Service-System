@@ -15,10 +15,6 @@
             <th class="col-1">
                 @Html.DisplayNameFor(model => model.ContractName)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Details)
-            </th>
-            <th></th>
             <th></th>
         </tr>
     </thead>
@@ -29,14 +25,10 @@
                         @Html.DisplayFor(modelItem => item.ContractName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Details)
-                    </td>
-                    <td>
-                    <a asp-action="Edit" asp-route-id="@item.ContractId" class="btn btn-outline-primary" title="Edit">
+                        <a asp-action="Edit" asp-route-id="@item.ContractId" class="btn btn-outline-primary" title="Edit">
                             <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
-                    </td>
-                    <td>
+                        </a>
+
                         <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger">
                             @{
                                 if (item.IsBlocked ?? false)
