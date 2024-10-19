@@ -52,6 +52,8 @@ export class ConfirmationComponent implements OnInit {
     // Retrieve the payment ID from query parameters
     this.route.queryParams.subscribe((queryParams) => {
       this.paymentId = queryParams["paymentId"];
+      console.log(localStorage.getItem("bookingID"));
+
       this.BookingIdFromPayInstallment = localStorage.getItem("bookingID");
 
       // Retrieve booking data from local storage if available
@@ -78,6 +80,7 @@ export class ConfirmationComponent implements OnInit {
   getPaymentDetails(paymentId: string): void {
 
     if (localStorage.getItem('firstCall') == 'true') {
+
       // Call the API for the first time    
       this.payPal.getPaymentsById(paymentId).subscribe({
         next: (response) => {
@@ -100,9 +103,11 @@ export class ConfirmationComponent implements OnInit {
 
   // A method to process the payment details, reducing redundancy
   processPaymentDetails(response: any): void {
+
     let bankAccount;
-    if (localStorage.getItem('SetBankAccount') == 'true')
+    if (localStorage.getItem('SetBankAccount') == 'true') {
       bankAccount = response.payer.payer_info.email;
+    }
 
     if (this.bookingData) {
       this.totalPrice = this.bookingData.price;
@@ -148,12 +153,18 @@ export class ConfirmationComponent implements OnInit {
         }
       });
     } else if (this.BookingIdFromPayInstallment) {
+
       this.paymentsService.addPayment({
         customerId: this.CustomerID,
         bookingId: this.BookingIdFromPayInstallment,
         paymentDate: new Date().toISOString(),
         paymentValue: this.amount,
       }).subscribe();
+    }
+    else {
+      localStorage.removeItem("bookingID");
+      localStorage.removeItem("bookingData");
+      localStorage.removeItem("firstCall");
     }
   }
 

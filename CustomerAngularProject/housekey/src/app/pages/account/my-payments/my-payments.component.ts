@@ -85,11 +85,13 @@ export class MyPymentsComponent implements OnInit {
     return remainingAmount;
   }
 
-   navigateToPaymentPage() {
+  navigateToPaymentPage() {
     const bookingID = this.route.snapshot.paramMap.get('id');
     const lastPayment = this.customerPayments[this.customerPayments.length - 1];
     if (lastPayment) {
-      const remainingValue = this.calculateResidual(lastPayment); 
+      localStorage.setItem("bookingID", bookingID);
+      localStorage.setItem('firstCall', 'true');
+      const remainingValue = this.calculateResidual(lastPayment);
       const targetPage = '/NewPayment';
       this.router.navigate([targetPage], { queryParams: { bookingID, remainingValue } });
     } else {

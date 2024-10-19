@@ -151,7 +151,7 @@
                                     <mat-form-field appearance="outline" class="w-100">
                                         <mat-label>Amount For Payment</mat-label>
                                         <input matInput placeholder="Amount" autocomplete="off"
-                                            formControlName="minValue" onlyNumber maxlength="5" required />
+                                            formControlName="amount" type="number" min="0" onlyNumber maxlength="5" required />
                                         <!-- Error messages -->
                                         <mat-error
                                             *ngIf="submitForm.get('payment').get('amount')?.hasError('required')">
