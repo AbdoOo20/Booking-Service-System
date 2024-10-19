@@ -64,6 +64,31 @@
         form {
             margin-bottom: 0;
         }
+
+        .validation-message {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-height: 30px;
+            padding: 5px 10px;
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            visibility: hidden;
+        }
+
+        span.text-danger:empty {
+            visibility: hidden;
+        }
+
+        span.text-danger:not(:empty) {
+            visibility: visible;
+        }
+
+
     </style>
 
     <div class="container pb-5 px-4 py-5 px-md-5 text-center text-lg-start mb-3 mt-4">
@@ -81,7 +106,7 @@
 
                 <div class="card-body bg-glass px-4 py-5 px-md-5">
 
-                        <form class="p-5 form-container" asp-action="Create">
+                        <form class="p-5" asp-action="Create">
 
                         @* Display Success or Error Messages *@
                         @if (TempData["SuccessMessage"] != null)
@@ -99,34 +124,37 @@
                             </div>
                         }
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <div class="form-floating input-group-lg mb-3 mt-3">
+                            <div class="form-floating input-group-lg">
                                 <input asp-for="ProviderName" class="form-control" autocomplete="ProviderName" aria-required="true" placeholder="Your name" />
                                 <label asp-for="ProviderName">Name</label>
-                                <span asp-validation-for="ProviderName" class="text-danger"></span>
+                            <span asp-validation-for="ProviderName" class="text-danger validation-message"></span>
                             </div>
 
-                            <div class="form-floating input-group-lg mb-3">
+                            <div class="form-floating input-group-lg">
                                 <input asp-for="ProviderEmail" class="form-control" autocomplete="ProviderEmail" aria-required="true" placeholder="name@example.com" />
                                 <label asp-for="ProviderEmail">Email</label>
-                                <span asp-validation-for="ProviderEmail" class="text-danger"></span>
+                            <span asp-validation-for="ProviderEmail" class="text-danger validation-message"></span>
                             </div>
       
-                            <div class="form-floating input-group-lg mb-3">
+                            <div class="form-floating input-group-lg">
                                 <input asp-for="ProviderPhoneNumber" class="form-control" autocomplete="ProviderPhoneNumber" aria-required="true" placeholder="" />
                                 <label asp-for="ProviderPhoneNumber">Phone Number</label>
-                                <span asp-validation-for="ProviderPhoneNumber" class="text-danger"></span>
+                            <span asp-validation-for="ProviderPhoneNumber" class="text-danger validation-message"></span>
                             </div>
 
-                            <div class="form-floating input-group-lg mb-3">
+                            <div class="form-floating input-group-lg">
                                 <textarea asp-for="ServiceDetails" class="form-control" style="height: 150px; resize: none;" autocomplete="ServiceDetails" aria-required="true" placeholder=""></textarea>
                                 <label asp-for="ServiceDetails">Service Details</label>
-                                <span asp-validation-for="ServiceDetails" class="text-danger"></span>
+                            <span asp-validation-for="ServiceDetails" class="text-danger validation-message"></span>
                             </div>
-       
-                            <div class="form-group">
-                                <input type="submit" value="Submit" class="btn btn-primary w-100" />
-                            </div>
-                        </form>
+      
+                        <div class="d-flex justify-content-between">
+                            <input type="submit" value="Submit" class="btn btn-primary w-100" />
+                        </div>
+                        <div class="mt-3">
+                            <a href="/Identity/Account/Login" class="btn btn-outline-secondary btn-lg  w-100">Back</a>
+                        </div>
+                    </form>
                     </div>
 
             </div>

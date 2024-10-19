@@ -55,17 +55,71 @@
 
                     <hr />
 
-                    <a asp-controller="Admin" asp-action="Accept" asp-route-id="@Model.Id" class="btn btn-outline-success shadow-0">
+                    @* <a asp-controller="Admin" asp-action="Accept" asp-route-id="@Model.Id" class="btn btn-outline-success shadow-0">
                         <i class="fa-regular fa-circle-check"></i> Accept
                     </a>
 
                     <a asp-controller="Admin" asp-action="Reject" asp-route-id="@Model.Id" class="btn btn-outline-danger shadow-0">
                         <i class="me-1 fa fa-ban"></i> Reject
+                    </a> *@
+
+
+
+                    <!-- Accept Button -->
+                    <a href="javascript:void(0);" class="btn btn-outline-success shadow-0" data-bs-toggle="modal" data-bs-target="#acceptConfirmationModal">
+                        <i class="fa-regular fa-circle-check"></i> Accept
                     </a>
+
+                    <!-- Reject Button -->
+                    <a href="javascript:void(0);" class="btn btn-outline-danger shadow-0" data-bs-toggle="modal" data-bs-target="#rejectConfirmationModal">
+                        <i class="me-1 fa fa-ban"></i> Reject
+                    </a>
+
                 </div>
             </main>
         </div>
     </div>
+
+    @* ********************************** *@
+    <!-- Accept Confirmation Modal -->
+    <div class="modal fade" id="acceptConfirmationModal" tabindex="-1" aria-labelledby="acceptModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="acceptModalLabel">Confirm Accept</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to accept this service?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="@Url.Action("Accept", "Admin", new { id = Model.Id })" class="btn btn-primary">Yes, Accept</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Confirmation Modal -->
+    <div class="modal fade" id="rejectConfirmationModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectModalLabel">Confirm Reject</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to reject this service?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="@Url.Action("Reject", "Admin", new { id = Model.Id })" class="btn btn-danger">Yes, Reject</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ********************************** *@
 </section>
 <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-lg">Back to List</a>
 

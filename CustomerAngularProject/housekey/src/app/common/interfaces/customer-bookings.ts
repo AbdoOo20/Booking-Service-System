@@ -5,5 +5,8 @@ export interface CustomerBookings {
     serviceName : string,
     bookDate : string,
     status : string,
-    price : number
+    price : number,
+    eventDate: string,
+    startTime: string,
+    endTime: string,
 }

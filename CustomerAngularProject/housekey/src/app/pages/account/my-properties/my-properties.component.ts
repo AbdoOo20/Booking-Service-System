@@ -34,7 +34,8 @@ import { ConfirmDialogComponent, ConfirmDialogModel } from '@shared-components/c
   templateUrl: './my-properties.component.html' 
 })
 export class MyPropertiesComponent implements OnInit {
-  displayedColumns: string[] = [ 'bookNum', 'serviceImage', 'serviceName', 'bookDate', 'status', 'price', 'actions'];
+  displayedColumns: string[] = [ 'bookNum', 'serviceImage', 'serviceName', 
+    'bookDate', 'eventDate', 'startTime', 'endTime','status', 'price', 'actions'];
   dataSource: MatTableDataSource<CustomerBookings>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -57,6 +58,7 @@ export class MyPropertiesComponent implements OnInit {
     const decodedToken = this.decodeService.getUserIdFromToken();   
     this._allBookingService.getBookingWithService(decodedToken).subscribe({
       next:(res) => {
+        console.log(res);
         this.customerBookings = res;
         this.initDataSource(this.customerBookings); 
       },
@@ -95,6 +97,14 @@ export class MyPropertiesComponent implements OnInit {
       }
     });
   }
+
+  convertToFullDate(time: string): Date {
+    const today = new Date();
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    today.setHours(hours, minutes, seconds);
+    return today;
+  }
+  
 
   public initDataSource(data: CustomerBookings[]) {
     this.dataSource = new MatTableDataSource<CustomerBookings>(data);
