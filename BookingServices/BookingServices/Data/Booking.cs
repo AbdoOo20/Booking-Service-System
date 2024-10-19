@@ -40,7 +40,7 @@ namespace BookingServices.Data
 
         [ForeignKey("PaymentIncome")]
         public int? PaymentIncomeId { get; set; }
-        
+
         public virtual Customer? Customer { get; set; }
         public virtual PaymentIncome? PaymentIncome { get; set; }
 

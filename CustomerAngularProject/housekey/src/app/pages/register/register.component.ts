@@ -64,15 +64,11 @@ export class RegisterComponent implements OnInit {
                         Validators.required,
                         Validators.minLength(3),
                         Validators.maxLength(75),
+                        Validators.pattern('^[A-Za-z ]+$')
                     ],
                 ],
                 username: [
-                    "",
-                    [
-                        Validators.required,
-                        Validators.minLength(3),
-                        Validators.maxLength(100),
-                    ],
+                    "", [ ],
                 ],
                 email: [
                     "",
@@ -169,6 +165,8 @@ export class RegisterComponent implements OnInit {
             if (field === "ssn") return "Invalid Saudi SSN number";
             if (field === "password")
                 return "Password must contain uppercase, lowercase letters, digits, and special characters";
+            if (field === "name")
+                return "Name must contain only letters";
         }
         if (control?.hasError("passwordMismatch")) {
             return "Passwords do not match";
@@ -193,7 +191,7 @@ export class RegisterComponent implements OnInit {
 
         const registerData = {
             Name: this.registerForm.value.name,
-            Username: this.registerForm.value.username,
+            Username: this.registerForm.value.email,
             Email: this.registerForm.value.email,
             Phone: this.registerForm.value.phone,
             AlternativePhone: this.registerForm.value.alternativePhone,
@@ -201,9 +199,10 @@ export class RegisterComponent implements OnInit {
             City: this.registerForm.value.city,
             Password: this.registerForm.value.password,
         };
+        //debugger;
 
         this.http
-            .post("http://localhost:18105/api/Account/Register", registerData)
+            .post("http://localhost:5285/api/Account/Register", registerData)
             .subscribe(
                 (response) => {
                     // Successful registration message

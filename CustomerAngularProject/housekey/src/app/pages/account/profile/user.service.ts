@@ -40,6 +40,6 @@ export class UserService {
       "Content-Type": "application/json",
     };
     console.log(headers); //
-    return this.http.put(`${this.apiUrl}block/${id}`, { headers });
+    return this.http.put(`${this.apiUrl}block/${id}`, null, { headers });
   }
 }
