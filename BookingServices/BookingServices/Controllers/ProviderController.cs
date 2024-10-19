@@ -169,12 +169,12 @@ namespace BookingServices.Controllers
         {
             try
             {
-                model.Status = "paid";
+                model.Status = "Paid";
                 model.Type = "Service";
                 if (ModelState.IsValid)
                 {
 
-                    var isOverlapping = _context.Bookings.Where(b => b.EventDate == model.EventDate && b.Status != "canceled")  // Only check for the same day and exclude canceled bookings
+                    var isOverlapping = _context.Bookings.Where(b => b.EventDate == model.EventDate && b.Status != "Canceled")  // Only check for the same day and exclude canceled bookings
                                         .Any(b => (model.StartTime < b.EndTime && model.EndTime > b.StartTime));  // Check if times overlap
                     if (isOverlapping)
                     {
@@ -289,7 +289,7 @@ namespace BookingServices.Controllers
 
             var result = await (from b in _context.Bookings
                           join bs in _context.BookingServices on b.BookingId equals bs.BookingId
-                          where bs.ServiceId == serviceId && b.EventDate == eventDate && b.Status != "canceled"
+                          where bs.ServiceId == serviceId && b.EventDate == eventDate && b.Status != "Canceled"
                                 select new { b.StartTime, b.EndTime }).ToListAsync();
 
             var alltimebooked = result.Select(r => (r.StartTime, r.EndTime)).ToList();
