@@ -15,7 +15,7 @@ namespace BookingServices.Data
         public required string ProviderName { get; set; }
 
         [Required]
-        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.com$", ErrorMessage = "Invalid email format. It should be like (example@gmail.com)")]
         public string? ProviderEmail { get; set; }
 
         [Required]
