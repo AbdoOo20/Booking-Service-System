@@ -28,6 +28,8 @@ export class ConfirmationComponent implements OnInit {
   BookingIdFromPayInstallment: any;
   CustomerID: string;
   formattedEventDate: string; // New property to hold formatted date
+  paymentDetails: any; // To store the payment details after the first call
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -58,12 +60,12 @@ export class ConfirmationComponent implements OnInit {
       if (savedBookingData) {
         this.bookingData = JSON.parse(savedBookingData);
         let eventDate = new Date(this.bookingData.eventDate);
-        //eventDate.setHours(eventDate.getHours() + 0);
+        eventDate.setHours(eventDate.getHours() + 3);
         this.bookingData.eventDate = eventDate;
+
         let bookDate = new Date(this.bookingData.bookDate);
-        // bookDate.setHours(bookDate.getHours() + 0);
+        bookDate.setHours(bookDate.getHours() + 3);
         this.bookingData.bookDate = bookDate;
-        console.log("Booking data retrieved:", this.bookingData); // Log the booking data
       }
 
       if (this.paymentId) {
@@ -74,79 +76,85 @@ export class ConfirmationComponent implements OnInit {
   }
 
   getPaymentDetails(paymentId: string): void {
-    this.payPal.getPaymentsById(paymentId).subscribe({
-      next: (response) => {
-        if (response.state === "created") {
-          this.amount = response.transactions[0].amount.total;
-          console.log(response);
 
-          let bankAccount;
+    if (localStorage.getItem('firstCall') == 'true') {
+      // Call the API for the first time    
+      this.payPal.getPaymentsById(paymentId).subscribe({
+        next: (response) => {
+          localStorage.setItem('firstCall', 'false');
+          this.paymentDetails = response; // Store the response for later use
+
+          if (response.state === "created") {
+            this.amount = response.transactions[0].amount.total;
+
+            this.processPaymentDetails(response); // Process payment details
+          }
+        },
+        error: (err) => {
+          console.error("Error fetching payment details:", err);
+        },
+      });
+    } else if (localStorage.getItem('firstCall') == 'false') return;
+
+  }
+
+  // A method to process the payment details, reducing redundancy
+  processPaymentDetails(response: any): void {
+    let bankAccount;
+    if (localStorage.getItem('SetBankAccount') == 'true')
+      bankAccount = response.payer.payer_info.email;
+
+    if (this.bookingData) {
+      this.totalPrice = this.bookingData.price;
+
+      if (this.amount == this.bookingData.price) {
+        this.bookingData.status = "Paid";
+        this.bookingData.cashOrCashByHandOrInstallment = "Cash";
+      } else {
+        this.bookingData.status = "Pending";
+        this.bookingData.cashOrCashByHandOrInstallment = "Installment";
+      }
+
+      this.eventDate = this.bookingData.eventDate;
+      this.formattedEventDate = this.formatEventDate(this.eventDate);
+      this.bookingStatus = this.bookingData.status;
+
+      this.ServiceForConfirmation.getServiceName(this.bookingData.serviceId).subscribe({
+        next: (data) => {
+          this.serviceName = data.serviceName; // Adjust based on your response
+        },
+      });
+
+      this.customerName = this.decodeService.getUserNameFromToken();
+
+      this.bookingService.addBooking(this.bookingData).subscribe({
+        next: (bookingResponse) => {
+          this.paymentsService.addPayment({
+            customerId: this.CustomerID,
+            bookingId: bookingResponse.id,
+            paymentDate: this.bookingData.selectedDate,
+            paymentValue: this.amount,
+          }).subscribe();
+
           if (localStorage.getItem('SetBankAccount') == 'true')
-            bankAccount = response.payer.payer_info.email;
-          console.log(bankAccount);
-
-          if (this.bookingData) {
-            this.totalPrice = this.bookingData.price; // Assign totalPrice from booking data
-
-            if (this.amount == this.bookingData.price) {
-              this.bookingData.status = "Paid";
-              this.bookingData.cashOrCashByHandOrInstallment = "Cash";
-            } else {
-              this.bookingData.status = "Pending";
-              this.bookingData.cashOrCashByHandOrInstallment = "Installment";
-            }
-            this.eventDate = this.bookingData.eventDate;
-            this.formattedEventDate = this.formatEventDate(this.eventDate);
-            this.bookingStatus = this.bookingData.status;
-
-            // Fetch service name
-            this.ServiceForConfirmation.getServiceName(
-              this.bookingData.serviceId
+            this.ServiceForConfirmation.setBankAccount(
+              this.decodeService.getUserIdFromToken(),
+              { bankAccount: bankAccount }
             ).subscribe({
-              next: (data) => {
-                this.serviceName = data.serviceName; // Adjust based on your response
-              },
-            });
-
-            // Fetch customer name
-            this.customerName = this.decodeService.getUserNameFromToken();
-
-            // Add booking
-            this.bookingService.addBooking(JSON.stringify(this.bookingData)).subscribe({
-              next: (bookingResponse) => {
-                this.paymentsService.addPayment({
-                  customerId: this.CustomerID,
-                  bookingId: bookingResponse.id,
-                  paymentDate: this.bookingData.selectedDate,
-                  paymentValue: this.amount,
-                }).subscribe();
-                if (localStorage.getItem('SetBankAccount') == 'true')
-                  this.ServiceForConfirmation.setBankAccount(this.decodeService.getUserIdFromToken(), { bankAccount: bankAccount })
-                    .subscribe({
-                      next: () => {
-                        console.log("Added Successfully");
-
-                      }
-                    });
+              next: () => {
+                //console.log("Added Successfully");
               }
             });
-          } else if (this.BookingIdFromPayInstallment) {
-            // Payment without booking
-            this.paymentsService
-              .addPayment({
-                customerId: this.CustomerID,
-                bookingId: this.BookingIdFromPayInstallment,
-                paymentDate: new Date().toISOString(),
-                paymentValue: this.amount,
-              })
-              .subscribe();
-          }
         }
-      },
-      error: (err) => {
-        console.error("Error fetching payment details:", err);
-      },
-    });
+      });
+    } else if (this.BookingIdFromPayInstallment) {
+      this.paymentsService.addPayment({
+        customerId: this.CustomerID,
+        bookingId: this.BookingIdFromPayInstallment,
+        paymentDate: new Date().toISOString(),
+        paymentValue: this.amount,
+      }).subscribe();
+    }
   }
 
   formatEventDate(dateString: string): string {
@@ -154,11 +162,8 @@ export class ConfirmationComponent implements OnInit {
       year: "numeric",
       month: "long", // 'short' for abbreviated month names
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true, // Set to false for 24-hour format
     };
-    return new Date(dateString).toLocaleString("en-US", options);
+    return new Date(dateString).toLocaleDateString("en-US", options);
   }
 
   // Redirect to home page
@@ -166,6 +171,7 @@ export class ConfirmationComponent implements OnInit {
     this.router.navigate(["/home"]);
     localStorage.removeItem("bookingData");
     localStorage.removeItem("bookingID");
+    localStorage.removeItem("firstCall");
   }
 
   // Print the confirmation
