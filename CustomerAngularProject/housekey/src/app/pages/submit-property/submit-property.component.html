@@ -119,7 +119,7 @@
                                     <mat-form-field fxFlex="50" appearance="outline" class="w-50">
                                         <mat-label>Initial Payment</mat-label>
                                         <input matInput placeholder="Initial Payment" autocomplete="off"
-                                            formControlName="amount" onlyNumber maxlength="5" required readonly />
+                                            formControlName="minValue" onlyNumber maxlength="5" required readonly />
                                         <mat-error
                                             *ngIf="submitForm.get('payment').get('amount')?.hasError('required')">Initial
                                             Payment is required</mat-error>
@@ -158,8 +158,8 @@
 
                                     <mat-form-field appearance="outline" class="w-100">
                                         <mat-label>Amount For Payment</mat-label>
-                                        <input matInput placeholder="Amount" autocomplete="off" formControlName="amount"
-                                            onlyNumber maxlength="5" required />
+                                        <input matInput placeholder="Amount" autocomplete="off"
+                                            formControlName="minValue" onlyNumber maxlength="5" required />
                                         <!-- Error messages -->
                                         <mat-error
                                             *ngIf="submitForm.get('payment').get('amount')?.hasError('required')">

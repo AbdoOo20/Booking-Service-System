@@ -10,7 +10,7 @@
         <div class="col-12 col-md-8">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <form asp-action="Edit" method="post">
+                    <form asp-action="Edit" method="post" id="editProviderForm">
                         <input asp-for="ProviderId" type="hidden" />
 
                         <!-- Email Input Section -->
@@ -18,9 +18,8 @@
                             <label asp-for="Email" class="form-label"></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                <input asp-for="Email" class="form-control" placeholder="Enter provider email" />
+                                <input asp-for="Email" class="form-control" placeholder="Enter provider email" readonly />
                             </div>
-                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
                         <!-- Password Input Section -->
@@ -57,4 +56,14 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <!-- JavaScript to trigger validation in real-time -->
+    <script>
+        $(document).ready(function () {
+            // Trigger validation on field blur (when field loses focus)
+            $('#editProviderForm input').on('blur input', function () {
+                $(this).valid(); // Check the field validation when leaving the field or typing
+            });
+        });
+    </script>
 }

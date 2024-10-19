@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar, // For displaying messages
     private authService: AuthServiceService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Initialize login form
@@ -99,8 +99,13 @@ export class LoginComponent implements OnInit {
             this.authService.login(response.token);
             if (this.loginForm.value.rememberMe) {
               localStorage.setItem("token", response.token);
-            } else {
+              sessionStorage.clear();
+            } else if (!this.loginForm.value.rememberMe) {
               sessionStorage.setItem("token", response.token);
+              localStorage.clear();
+            } else {
+              localStorage.clear();
+              sessionStorage.clear();
             }
             this.router.navigate(["/home"]);
             this.snackBar.open("Login successful!", "×", {
