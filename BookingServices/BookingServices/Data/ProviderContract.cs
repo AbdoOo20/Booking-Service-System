@@ -9,7 +9,7 @@ namespace BookingServices.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ContractId { get; set; }
 
-        [Required]
+        [Required, Display(Name = "Title"), MinLength(3, ErrorMessage = "Length must be at least 3 character")]
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Contract Name can only contain letters, numbers and spaces.")]
         public string? ContractName { get; set; }
 

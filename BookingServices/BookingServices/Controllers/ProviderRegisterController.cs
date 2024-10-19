@@ -50,7 +50,7 @@ namespace BookingServices.Controllers
                     var existingProvider = await  _userManager.FindByEmailAsync(providerVM.ProviderEmail);
                     var existingWaitingProvider = await _context.ProviderRegisters
                         .Where(p => p.ProviderEmail == providerVM.ProviderEmail).FirstOrDefaultAsync();
-                    if (existingWaitingProvider != null || existingProvider != null && await _userManager.IsInRoleAsync(existingProvider, "Provider"))
+                    if (existingWaitingProvider != null || existingProvider != null)
                     {
                         ModelState.AddModelError("ProviderEmail", "The email address is already exists.");
                         return View(providerVM);

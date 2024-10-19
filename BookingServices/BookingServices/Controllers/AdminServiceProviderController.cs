@@ -22,7 +22,7 @@ namespace BookingServices.Controllers
         public AdminServiceProviderController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
-            _userManager = userManager; 
+            _userManager = userManager;
         }
         public async Task<IActionResult> Index()
         {
@@ -53,7 +53,7 @@ namespace BookingServices.Controllers
 
             foreach (var p in providers)
             {
-               
+
                 var numberOfServices = numberOfServicesPerProvider
                     .FirstOrDefault(ns => ns.ServiceProviderId == p.providerID)?.NumberOfServices ?? 0;
 
@@ -66,7 +66,7 @@ namespace BookingServices.Controllers
                     Rate = p.providerRate,
                     Balance = p.providerBalance,
                     ReservedBalance = p.providerReservedBalance,
-                    NumberOfServices = numberOfServices ,
+                    NumberOfServices = numberOfServices,
                     Isblocked = p.Isblocked,
                 };
 
@@ -153,7 +153,7 @@ namespace BookingServices.Controllers
                 return NotFound();
             }
 
-         
+
             var model = new EditProviderViewModel
             {
                 ProviderId = provider.ProviderId,
@@ -213,32 +213,35 @@ namespace BookingServices.Controllers
             // Return the view with the current model if the state is invalid
             return View(model);
         }
-       /* [Authorize(Roles = "Admin")]
-        [HttpGet]
-        public async Task<IActionResult> SearchProviders(string search)
-        {
-            var providers = await (from a in _context.Users
-                                   join sp in _context.ServiceProviders on a.Id equals sp.ProviderId
-                                   where sp.Name.Contains(search) || a.Email.Contains(search) || a.PhoneNumber.Contains(search)
-                                   select new ProviderDataVM
-                                   {
-                                       ProviderId = sp.ProviderId,
-                                       Name = sp.Name,
-                                       Email = a.Email,
-                                       Phone = a.PhoneNumber,
-                                       Rate = sp.Rate,
-                                       Balance = sp.Balance,
-                                       ReservedBalance = sp.ReservedBalance,
-                                       NumberOfServices = (from s in _context.Services where s.ProviderId == sp.ProviderId select s).Count()
-                                   }).ToListAsync();
+        /* [Authorize(Roles = "Admin")]
+         [HttpGet]
+         public async Task<IActionResult> SearchProviders(string search)
+         {
+             var providers = await (from a in _context.Users
+                                    join sp in _context.ServiceProviders on a.Id equals sp.ProviderId
+                                    where sp.Name.Contains(search) || a.Email.Contains(search) || a.PhoneNumber.Contains(search)
+                                    select new ProviderDataVM
+                                    {
+                                        ProviderId = sp.ProviderId,
+                                        Name = sp.Name,
+                                        Email = a.Email,
+                                        Phone = a.PhoneNumber,
+                                        Rate = sp.Rate,
+                                        Balance = sp.Balance,
+                                        ReservedBalance = sp.ReservedBalance,
+                                        NumberOfServices = (from s in _context.Services where s.ProviderId == sp.ProviderId select s).Count()
+                                    }).ToListAsync();
 
-            return PartialView("_ProviderTablePartial", providers);
-        }*/
+             return PartialView("_ProviderTablePartial", providers);
+         }*/
 
         [HttpPost]
         public async Task<IActionResult> ToggleBlock(string id)
         {
+            
             var provider = await _context.ServiceProviders.FindAsync(id);
+
+        
             if (provider == null)
             {
                 return Json(new { success = false, message = "Provider not found" });
@@ -261,7 +264,5 @@ namespace BookingServices.Controllers
 
             return Json(new { success = true, isBlocked = provider.IsBlocked });
         }
-
-
     }
-}
+    }
