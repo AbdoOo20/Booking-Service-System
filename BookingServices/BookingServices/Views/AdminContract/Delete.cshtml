@@ -1,0 +1,40 @@
+﻿@model BookingServices.Data.AdminContract
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_LayoutProvider.cshtml";
+}
+
+<h1 class="text-center head-color">Block</h1>
+
+<h3>Are you sure you want to block this ?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <div class="form-group">
+            <label asp-for="ContractName" class="control-label">Title</label>
+            <input asp-for="ContractName" class="form-control" readonly />
+            <span asp-validation-for="ContractName" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-2">
+            <label asp-for="Details" class="control-label"></label>
+            <textarea asp-for="Details" class="form-control" readonly rows="3" style="resize: none;"></textarea>
+            <span asp-validation-for="Details" class="text-danger"></span>
+        </div>
+    </dl>
+
+    <form asp-action="Delete" class="d-flex justify-content-between mt-4">
+        <input type="hidden" asp-for="ContractId" />
+        @{
+            if (Model.IsBlocked ?? false)
+            {
+                <input type="submit" value="Un Block" class="btn btn-outline-danger" />
+            }
+            else
+            {
+                <input type="submit" value="Block" class="btn btn-outline-danger" />
+            }
+        }
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+    </form>
+</div>

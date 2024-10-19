@@ -7,6 +7,7 @@ namespace BookingServices.ViewModel
     {
         [Required]
         [StringLength(50, MinimumLength = 3)]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain letters and spaces.")]
         public string Name { get; set; }
 
         [Required]

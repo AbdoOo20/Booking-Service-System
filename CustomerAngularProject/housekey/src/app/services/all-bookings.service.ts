@@ -18,6 +18,12 @@ _apiURL = "http://localhost:18105/api";
     });
   }
 
+  gerCustomerBankAccount(CustomerId: string): Observable<any> {
+    return this._httpClient.get(`${this._apiURL}/Customer/GetBanckAccount/${CustomerId}`, {
+        headers: this._passToken.getHeaders()
+      })
+  }
+
   getBooking(id : string): Observable<any> {
     return this._httpClient.get(`${this._apiURL}/Book/GetBookingsForCustomer/${id}`); 
   }

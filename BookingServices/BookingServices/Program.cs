@@ -165,7 +165,7 @@ namespace BookingServices
             //app.MapHub<Hubs.AdminNotification>("/AdminNotification");
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<AdminNotification>("/AdminNotification");
+                endpoints.MapHub<AdminNotificationHub>("/AdminNotification");
             });
 
             app.Run();

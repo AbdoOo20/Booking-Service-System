@@ -15,13 +15,15 @@ namespace BookingServices.Models
 
         public decimal Rate { get; set; }
 
-        [Required]
+        [Required, Display(Name = "Name")]
         [MinLength(3, ErrorMessage = "Name must be at least 3 character")]
+        [RegularExpression(@"^[a-zA-Z\s]+$",ErrorMessage = "Name can only contain letters and spaces.")]
         public string? Name { get; set; }
 
         public string? Email { get; set; }
 
-        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]
+        [Display(Name = "Bank Account")]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.com$", ErrorMessage = "Invalid email format. It should be like (example@gmail.com)")]
         public string? BankAccount { get; set; }
 
         [Required]
@@ -30,19 +32,5 @@ namespace BookingServices.Models
         public string? Phone { get; set; }
 
         public bool? Isblocked { get; set; }
-
-      /*  [DataType(DataType.Password)]
-        [Display(Name = "Current Password")]
-        public string CurrentPassword { get; set; }
-
-        [DataType(DataType.Password)]
-        [Display(Name = "New Password")]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        public string NewPassword { get; set; }
-
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm New Password")]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-        public string ConfirmNewPassword { get; set; }*/
     }
 }

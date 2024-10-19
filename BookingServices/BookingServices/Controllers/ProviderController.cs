@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Specialized;
 using NuGet.Protocol;
 using System.Reflection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookingServices.Controllers
 {
@@ -130,9 +131,10 @@ namespace BookingServices.Controllers
                 SharedserviceId = id;
                 ViewBag.AvailableQuantity = GetQuantity(id, today);
 
-                ViewBag.ServiceName = _context.Services
+                var Name = await _context.Services
                     .Where(s => s.ServiceId == id)
-                    .Select(s => s.Name).FirstOrDefault().ToString();
+                    .Select(s => s.Name).FirstOrDefaultAsync();
+                ViewBag.ServiceName = Name?.ToString();
 
                 ViewBag.paymentMethod = await _context.PaymentIncomes.ToListAsync();
 
@@ -140,6 +142,7 @@ namespace BookingServices.Controllers
                     .Where(s => s.ServiceId == id && s.PriceDate == DateTime.Now.Date)
                     .Select(s => s.Price).FirstOrDefaultAsync();
                 ViewBag.ServiceId = id;
+                TempData["serviceQuentity"] = await _context.Services.Where(q => q.ServiceId == id).Select(s => s.Quantity).FirstOrDefaultAsync();
                 return View();
             }
             catch (Exception e)
@@ -157,7 +160,7 @@ namespace BookingServices.Controllers
         {
             try
             {
-                model.Status = "pendding";
+                model.Status = "paid";
                 model.Type = "Service";
                 if (ModelState.IsValid)
                 {
@@ -226,6 +229,11 @@ namespace BookingServices.Controllers
         public async Task<IActionResult> GetAvailableTimes(int serviceId, DateTime eventDate)
         {
             var availableTimes = await GetTheAvailableTime(serviceId, eventDate);
+            if (availableTimes.IsNullOrEmpty())
+            {
+                TempData["Message"] = "Booking Completed in this Day";
+                TempData["MessageType"] = "success";
+            }
             return Json(availableTimes);
         }
 
@@ -241,7 +249,9 @@ namespace BookingServices.Controllers
                     availableEndTime.Add(availableTimes[i]);
                 }
             }
-            //availableEndTime.RemoveAt(0);
+            var lasthour = int.Parse(availableEndTime.Last()) + 1;
+            availableEndTime.Add(lasthour.ToString());
+            availableEndTime.RemoveAt(0);
             return Json(availableEndTime);
         }
 
@@ -249,14 +259,19 @@ namespace BookingServices.Controllers
         private async Task<List<string>> GetTheAvailableTime(int serviceId, DateTime eventDate)
         {
             var StartEndTime = await _context.Services.Where(x => x.ServiceId == serviceId).Select(x => new { id = x.ServiceId, from = x.StartTime, to = x.EndTime }).ToListAsync();
+            var From = StartEndTime[0].from.Hours;
+            if (eventDate.Date == DateTime.Now.Date)
+            {
+                From = DateTime.Now.Hour;
+            }
             var allTimes = new List<string>();
-            for (int i = StartEndTime[0].from.Hours; i <= StartEndTime[0].to.Hours; i++)
+            for (int i = From; i < StartEndTime[0].to.Hours; i++)
                 allTimes.Add(i.ToString());
 
             var result = await (from b in _context.Bookings
                           join bs in _context.BookingServices on b.BookingId equals bs.BookingId
-                          where bs.ServiceId == serviceId && b.EventDate == eventDate
-                          select new { b.StartTime, b.EndTime }).ToListAsync();
+                          where bs.ServiceId == serviceId && b.EventDate == eventDate && b.Status != "canceled"
+                                select new { b.StartTime, b.EndTime }).ToListAsync();
 
             var alltimebooked = result.Select(r => (r.StartTime, r.EndTime)).ToList();
             foreach (var book in alltimebooked)
@@ -265,6 +280,8 @@ namespace BookingServices.Controllers
             
             return allTimes;
         }
+
+
 
 
         private int GetAllquantity(int serviceId, DateTime eventDate)
