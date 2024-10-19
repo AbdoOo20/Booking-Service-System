@@ -475,8 +475,8 @@ namespace BookingServices.Controllers
                     .FirstOrDefaultAsync(s => s.ServiceId == serviceModel.ServiceId);
 
                 if (service == null)
-                    HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
-                
+                    return HandleError("The Service Does Not Exist !!!", "Services", nameof(Index));
+
                 if (ModelState.IsValid)
                 {
                     service.Name = serviceModel.Name;
@@ -491,9 +491,11 @@ namespace BookingServices.Controllers
                     service.BaseServiceId = serviceModel.BaseServiceId;
                     service.ProviderContractId = serviceModel.ProviderContractId;
 
+                    // Check for valid EndTime
                     if (service.EndTime == TimeSpan.Zero || service.EndTime <= service.StartTime)
                     {
-                        await AddSelectLists();
+                        ModelState.AddModelError("EndTime", "End Time must be greater than Start Time.");
+                        await AddSelectLists(serviceModel);
                         return View(serviceModel);
                     }
 
