@@ -141,8 +141,17 @@ namespace BookingServices.Controllers
                 ViewBag.priceOfCurrentDay = await _context.ServicePrices
                     .Where(s => s.ServiceId == id && s.PriceDate == DateTime.Now.Date)
                     .Select(s => s.Price).FirstOrDefaultAsync();
+
                 ViewBag.ServiceId = id;
-                TempData["serviceQuentity"] = await _context.Services.Where(q => q.ServiceId == id).Select(s => s.Quantity).FirstOrDefaultAsync();
+                var service = await _context.Services.FindAsync(id);
+                if (service == null)
+                {
+                    TempData["Message"] = "Service not found.";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Index");
+                }
+                
+                TempData["serviceQuentity"] = service.Quantity;
                 return View();
             }
             catch (Exception e)
@@ -164,6 +173,16 @@ namespace BookingServices.Controllers
                 model.Type = "Service";
                 if (ModelState.IsValid)
                 {
+
+                    var isOverlapping = _context.Bookings.Where(b => b.EventDate == model.EventDate && b.Status != "canceled")  // Only check for the same day and exclude canceled bookings
+                                        .Any(b => (model.StartTime < b.EndTime && model.EndTime > b.StartTime));  // Check if times overlap
+                    if (isOverlapping)
+                    {
+                        TempData["Message"] = "The selected time slot is already booked by another user.";
+                        TempData["MessageType"] = "error";
+                        return View(model);
+                    }
+
                     var customer = await _context.Customers.FirstOrDefaultAsync(x => x.SSN == model.CustomerId);
                     if (customer == null)
                     {
