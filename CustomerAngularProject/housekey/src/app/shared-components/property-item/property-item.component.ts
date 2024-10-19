@@ -26,6 +26,7 @@ import { RatingComponent } from "@shared-components/rating/rating.component";
 import { ServicesService } from "@services/services.service";
 import { Service } from "../../common/interfaces/service";
 import { DecodingTokenService } from "@services/decoding-token.service";
+import { WishlistService } from "@services/wishlist.service";
 
 @Component({
   selector: "app-property-item",
@@ -51,7 +52,7 @@ export class PropertyItemComponent implements OnInit {
   @Input() viewType: string = "grid";
   @Input() viewColChanged: number = 0;
   @Input() fullWidthPage: boolean = true;
-  @Input() servIds:number[] ;
+  @Input() servIds: number[];
   public column: number = 4;
   public customerid: string;
   @ViewChild(SwiperDirective) directiveRef: SwiperDirective;
@@ -62,12 +63,14 @@ export class PropertyItemComponent implements OnInit {
   };
   public settings: Settings;
   public Services_WishList: any;
+  isInWishlist: boolean = false;
   constructor(
     public settingsService: SettingsService,
     public appService: AppService,
     public cdr: ChangeDetectorRef,
     public decodingCustomerID: DecodingTokenService,
-    public myServ: ServicesService
+    public myServ: ServicesService,
+    public wishListService: WishlistService
   ) {
     this.settings = this.settingsService.settings;
     this.customerid = this.decodingCustomerID.getUserIdFromToken();
@@ -87,7 +90,20 @@ export class PropertyItemComponent implements OnInit {
     //         console.log(err);
     //     },
     // });
+    this.isInWishlist = this.wishListService.isInWishlist(this.service.id);
   }
+
+  toggleWishlist() {
+    if (this.isInWishlist) {
+      this.wishListService.deleteServiceFromWishlist(
+        this.customerid,
+        this.service.id
+      );
+    } else {
+      this.wishListService.addToFavorites(this.service, null, this.customerid);
+    }
+    this.isInWishlist = !this.isInWishlist;
+  } //ss
 
   ngAfterViewInit() {
     this.initCarousel();
@@ -177,17 +193,15 @@ export class PropertyItemComponent implements OnInit {
 
   public onFavorites() {
     let isFavorite = false;
-  if(this.servIds==null){
-    return isFavorite = false ;
-  }
-    this.servIds.forEach(SId => {
+    if (this.servIds == null) {
+      return (isFavorite = false);
+    }
+    this.servIds.forEach((SId) => {
       if (this.service.id === SId) {
-        isFavorite = true;  // Set to true if the service is already in favorites
+        isFavorite = true; // Set to true if the service is already in favorites
       }
     });
-  
+
     return isFavorite;
   }
-  
-  
 }

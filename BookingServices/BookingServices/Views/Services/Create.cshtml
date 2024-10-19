@@ -64,7 +64,7 @@
                 </div>
                 <div class="col-md-4 form-group mb-3">
                     <label asp-for="Quantity" class="form-label"></label>
-                    <input asp-for="Quantity" class="form-control" type="number" min="0" placeholder="0" value="0" />
+                    <input asp-for="Quantity" class="form-control" type="number" min="0" placeholder="0" />
                     <span asp-validation-for="Quantity" class="text-danger"></span>
                 </div>
             </div>
@@ -90,13 +90,15 @@
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="AdminContractId" class="form-label"></label>
                     <div class="d-flex">
-                        <select asp-for="AdminContractId" asp-items="ViewBag.AdminContractId" class="form-control me-2" id="AdminContractId" style="flex: 1;">
+                        <select asp-for="AdminContractId" asp-items="ViewBag.AdminContractId" class="form-control me-2" id="AdminContractId" style="flex: 1;" required>
                             <option value="">-- Select Admin Contract --</option>
                         </select>
                         <button type="button" id="viewContractBtn" class="btn btn-outline-info" disabled>
                             <i class="fa-solid fa-circle-info"></i>
                         </button>
                     </div>
+                    <!-- Validation message -->
+                    <span asp-validation-for="AdminContractId" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6 form-group mb-3">
@@ -126,11 +128,11 @@
             <div class="row">
                 <div class="col-md-6 form-group mb-3">
                     <label for="Images" class="form-label">Upload Images</label>
-                    <input type="file" name="Images" class="form-control" multiple />
+                    <input type="file" name="Images" class="form-control" accept=".jpg, .jpeg, .png, .gif" multiple required />
                 </div>
                 <div class="col-md-6 form-group mb-3">
                     <label asp-for="Details" class="form-label">Service Details</label>
-                    <textarea asp-for="Details" class="form-control" placeholder="Provide additional information about the service"></textarea>
+                    <textarea asp-for="Details" class="form-control" placeholder="Provide additional information about the service" style="resize: none;"></textarea>
                     <span asp-validation-for="Details" class="text-danger"></span>
                 </div>
             </div>

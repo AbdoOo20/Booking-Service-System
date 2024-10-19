@@ -61,12 +61,6 @@
                                         <i class="fa-regular fa-circle-check"></i> UnBlock
                                     </button>
                                 }
-                                else
-                                {
-                                    <button id="blockButton-@item.CustomerId" class="btn btn-sm btn-outline-danger mx-1" onclick="toggleBlock('@item.CustomerId')">
-                                        <i class="fas fa-trash-alt"></i> Block
-                                    </button>
-                                }
                             }
                         </td>
                     </tr>
@@ -126,13 +120,13 @@ else
             },
             success: function (response) {
                 if (response.success) {
-                    var button = $("#blockButton-" + customerId);
                     if (response.isBlocked) {
+                        var button = $("#blockButton-" + customerId);
                         button.html('<i class="fa-regular fa-circle-check"></i> UnBlock');
                         button.removeClass('btn-outline-danger').addClass('btn-outline-success');
                     } else {
-                        button.html('<i class="fas fa-trash-alt"></i> Block');
-                        button.removeClass('btn-outline-success').addClass('btn-outline-danger');
+                        // Optionally hide or remove the button if the user is no longer blocked
+                        $("#blockButton-" + customerId).closest("td").empty(); // Remove the button
                     }
                 } else {
                     alert(response.message);

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PayPalService } from '@services/pay-pal.service';
-import { log } from 'console';
 
 @Component({
   selector: 'app-pay-installments',
@@ -15,8 +14,9 @@ export class PayInstallmentsComponent implements OnInit {
   bookingID: string | null = null;
   remainingValue: number | null = null;
   amount: number | null = null;
+  loading: boolean = false; // Add this property to handle the loader
 
-  constructor(private route: ActivatedRoute, private payPal: PayPalService) {}
+  constructor(private route: ActivatedRoute, private payPal: PayPalService) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -25,13 +25,12 @@ export class PayInstallmentsComponent implements OnInit {
     });
     localStorage.setItem('bookingID', this.bookingID.toString());
     console.log(this.bookingID.toString());
-    
   }
 
   submitPayment() {
     if (this.amount && this.amount <= (this.remainingValue || 0)) {
-      // Handle payment submission logic here
-      console.log(`Paying ${this.amount} for booking ID ${this.bookingID}`);
+      this.loading = true; // Show loader when starting the payment process
+
       const paymentData = {
         total: this.amount,
         currency: "USD",
@@ -39,14 +38,16 @@ export class PayInstallmentsComponent implements OnInit {
         returnUrl: "http://localhost:4200/confirmation",
         cancelUrl: "http://localhost:4200/submit-property",
       };
-      // Call the addPayment method
+
       this.payPal.addPayment(paymentData).subscribe({
         next: (response) => {
+          this.loading = false; // Hide loader when payment is complete
           window.location.href = response.approvalUrl;
         },
         error: (error) => {
+          this.loading = false; // Hide loader on error
           console.error("Payment Error:", error);
-        },
+        }
       });
     } else {
       alert('Please enter a valid amount to pay.');

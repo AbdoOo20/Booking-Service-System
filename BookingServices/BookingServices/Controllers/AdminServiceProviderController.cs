@@ -247,28 +247,18 @@ namespace BookingServices.Controllers
                 return Json(new { success = false, message = "Provider not found" });
             }
 
-            
+            // Toggle provider's block status
             provider.IsBlocked = !(provider.IsBlocked ?? false);
 
-       
-            if (provider.IsBlocked == true)
-            {
-           
-                var services = _context.Services.Where(s => s.ProviderId == id);
-                foreach (var service in services)
-                {
-                    service.IsBlocked = true;  
-                }
-            }
-            else
-            {
-  
-                var services = _context.Services.Where(s => s.ProviderId == id);
-                foreach (var service in services)
-                {
-                    service.IsBlocked = false;
-                }
-            }
+            // Use batch update to block/unblock all related services
+            bool isProviderBlocked = provider.IsBlocked ?? false;
+
+            await _context.Services
+                .Where(s => s.ProviderId == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(
+                    service => service.IsBlocked,
+                    _ => isProviderBlocked
+                ));
 
             await _context.SaveChangesAsync();
 

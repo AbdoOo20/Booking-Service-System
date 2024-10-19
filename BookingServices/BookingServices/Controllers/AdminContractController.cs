@@ -24,6 +24,17 @@ namespace BookingServices.Controllers
             return View(context.AdminContracts.ToList());
         }
 
+        private IActionResult HandleError(string message, string controller, string action)
+        {
+            var errorViewModel = new ErrorViewModel
+            {
+                Message = message,
+                Controller = controller,
+                Action = action
+            };
+            return View("Error", errorViewModel);
+        }
+
 
         // Action to return the Admin Contract details view
         [HttpGet]
@@ -102,6 +113,33 @@ namespace BookingServices.Controllers
             return View(adminContract);
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                // Bad request handled by HandleError function
+                return HandleError("Contract ID cannot be null.", "AdminContract", nameof(Index));
+            }
+
+            try
+            {
+                var adminContract = await context.AdminContracts.FindAsync(id);
+
+                if (adminContract == null)
+                {
+                    return HandleError($"Contract with ID {id} not found.", "AdminContract", nameof(Index));
+                }
+
+                return View(adminContract);
+            }
+            catch (Exception e)
+            {
+                return HandleError($"An error occurred while fetching the contract: {e.Message}", "AdminContract", nameof(Index));
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
         [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {

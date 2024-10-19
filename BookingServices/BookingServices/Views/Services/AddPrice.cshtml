@@ -6,8 +6,18 @@
 }
 
 <h1 class="text-center head-color">Add New Price</h1>
+@{
+    if (@ViewData["PriceAlreayExists"] is not null)
+    {
+        <div class="w-100 alert alert-danger">
+            <p>
+                @ViewData["PriceAlreayExists"];
+            </p>
+        </div>
+    }
+}
 
-<form asp-action="AddPrice" method="post">
+<form asp-action="AddPrice" method="post" onsubmit="return validateDates();">
     <div class="form-group mb-4">
         <span class="me-4 btn btn-outline-primary">
             <label class="control-label" for="single">Single Value</label>
@@ -28,19 +38,19 @@
     <div class="form-group d-none" id="RangeOfPrices">
         <div class="form-group">
             <label asp-for="StartDate" class="control-label">From Date</label>
-            <input asp-for="StartDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+            <input asp-for="StartDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="StartDate" />
             <span asp-validation-for="StartDate" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="EndDate" class="control-label">To Date</label>
-            <input asp-for="EndDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+            <input asp-for="EndDate" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="EndDate" disabled />
             <span asp-validation-for="EndDate" class="text-danger"></span>
         </div>
     </div>
 
     <div class="form-group">
         <label asp-for="Price" class="control-label"></label>
-        <input asp-for="Price" class="form-control" />
+        <input asp-for="Price" class="form-control" type="number"/>
         <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
@@ -59,6 +69,8 @@
             const rangeRadio = document.getElementById('range');
             const singlePriceDiv = document.getElementById('SinglePrice');
             const rangePriceDiv = document.getElementById('RangeOfPrices');
+            const startDateInput = document.getElementById('StartDate');
+            const endDateInput = document.getElementById('EndDate');
 
             // Toggle visibility based on selected radio button
             function togglePriceType() {
@@ -77,6 +89,42 @@
             // Add event listeners to toggle the visibility
             singleRadio.addEventListener('change', togglePriceType);
             rangeRadio.addEventListener('change', togglePriceType);
+
+            // Enable/disable the end date input based on the start date selection
+            startDateInput.addEventListener('change', function() {
+                if (startDateInput.value) {
+                    endDateInput.disabled = false; // Enable end date
+                    endDateInput.min = startDateInput.value; // Set min for end date
+                } else {
+                    endDateInput.disabled = true; // Disable end date if no start date
+                    endDateInput.value = ''; // Clear end date value
+                }
+            });
+
+            // Validate end date against start date
+            endDateInput.addEventListener('change', function() {
+                if (new Date(endDateInput.value) <= new Date(startDateInput.value)) {
+                    alert("End date must be after the start date.");
+                    endDateInput.value = ''; // Clear invalid end date
+                }
+            });
         });
+
+        function validateDates() {
+            const startDateInput = document.querySelector('[asp-for="StartDate"]');
+            const endDateInput = document.querySelector('[asp-for="EndDate"]');
+
+            if (startDateInput && endDateInput && endDateInput.disabled === false) {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
+
+                if (startDate >= endDate) {
+                    alert("End date must be after the start date.");
+                    return false; // Prevent form submission
+                }
+            }
+
+            return true; // Allow form submission
+        }
     </script>
 }

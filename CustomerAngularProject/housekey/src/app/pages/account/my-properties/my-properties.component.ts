@@ -34,11 +34,13 @@ import { ConfirmDialogComponent, ConfirmDialogModel } from '@shared-components/c
   templateUrl: './my-properties.component.html' 
 })
 export class MyPropertiesComponent implements OnInit {
-  displayedColumns: string[] = [ 'bookNum', 'serviceImage', 'serviceName', 'bookDate', 'status', 'price', 'actions'];
+  displayedColumns: string[] = [ 'bookNum', 'serviceImage', 'serviceName', 
+    'bookDate', 'eventDate', 'startTime', 'endTime','status', 'price', 'actions'];
   dataSource: MatTableDataSource<CustomerBookings>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   customerBookings: CustomerBookings[] = [];
+  public decodedToken = this.decodeService.getUserIdFromToken();
 
   constructor(
     public appService: AppService, 
@@ -54,12 +56,10 @@ export class MyPropertiesComponent implements OnInit {
   }
 
   getCustomerBookings(): void {
-    const decodedToken = this.decodeService.getUserIdFromToken();   
-    this._allBookingService.getBookingWithService(decodedToken).subscribe({
+    this._allBookingService.getBookingWithService(this.decodedToken).subscribe({
       next:(res) => {
         this.customerBookings = res;
-        this.initDataSource(this.customerBookings);
-        console.log(res)  
+        this.initDataSource(this.customerBookings); 
       },
       error:(error) => {
         console.error('Error fetching customer bookings', error);
@@ -68,34 +68,62 @@ export class MyPropertiesComponent implements OnInit {
   }
 
   cancelBook(id: number): void {
-    const dialogData = new ConfirmDialogModel('Confirm Cancelation', 'Are you sure you want to cancel this book?');
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      maxWidth: "800px",
-      data: dialogData
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true){
-        this._allBookingService.cancelBooking(id).subscribe({
-          next: () => {
-            // Remove the deleted item from the local array
-            // this.customerBookings = this.customerBookings.filter(item => item.bookId !== id);
-            this.dialog.open(AlertDialogComponent, {
-              maxWidth: "500px",
-              data: 'Item canceled successfully.'
-            });
-            this.getCustomerBookings();
-          },
-          error: (err) => {
-            console.error('Error deleting item', err);
-            this.dialog.open(AlertDialogComponent, {
-              maxWidth: "500px",
-              data: 'Failed to cancel item.'
-            });
-          }
+    this._allBookingService.gerCustomerBankAccount(this.decodedToken).subscribe({
+      next:(res) => {
+        if(res && res.bankAccount != 'null')
+        {
+          const dialogData = new ConfirmDialogModel('Confirm Cancelation', 'Are you sure you want to cancel this book?');
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            maxWidth: "800px",
+            data: dialogData
+          });
+          dialogRef.afterClosed().subscribe(result => {
+            if (result === true){
+              this._allBookingService.cancelBooking(id).subscribe({
+                next: () => {
+                  // Remove the deleted item from the local array
+                  // this.customerBookings = this.customerBookings.filter(item => item.bookId !== id);
+                  this.dialog.open(AlertDialogComponent, {
+                    maxWidth: "500px",
+                    data: 'Item canceled successfully.'
+                  });
+                  this.getCustomerBookings();
+                },
+                error: (err) => {
+                  console.error('Error deleting item', err);
+                  this.dialog.open(AlertDialogComponent, {
+                    maxWidth: "500px",
+                    data: 'Failed to cancel item.'
+                  });
+                }
+              });
+            }
+          });
+        } else {
+          // Handle case where there is no bank account
+          this.dialog.open(AlertDialogComponent, {
+            maxWidth: "500px",
+            data: 'No bank account found. Cannot proceed with cancellation.'
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching bank account', err);
+        this.dialog.open(AlertDialogComponent, {
+          maxWidth: "500px",
+          data: 'Failed to fetch bank account information.'
         });
       }
     });
   }
+
+  convertToFullDate(time: string): Date {
+    const today = new Date();
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    today.setHours(hours, minutes, seconds);
+    return today;
+  }
+  
 
   public initDataSource(data: CustomerBookings[]) {
     this.dataSource = new MatTableDataSource<CustomerBookings>(data);

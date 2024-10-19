@@ -23,50 +23,35 @@ namespace CusromerProject.DTO.Review
         }
 
         // Method to get a review by customerId and bookingId
-        public async Task<Result<List<ReviewDTO>>> GetReviewByIdAsync(string customerId)
+        public async Task<Result<ReviewDTO>> GetReviewByIdAsync(int bookingId)
         {
-            string cacheKey = $"review_{customerId}";
+            ReviewDTO reviewDTOs;
+            // If not found in cache, query the database
+            var review = await _context.Reviews
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(r => r.BookingId == bookingId)
+                                        .ConfigureAwait(false);
 
-            // Try to get a list of ReviewDTO from the cache
-            if (!_cache.TryGetValue(cacheKey, out List<ReviewDTO> reviewDTOs))
+            if (review == null)
             {
-                // If not found in cache, query the database
-                var reviews = await _context.Reviews
-                                            .AsNoTracking()
-                                            .Where(r => r.CustomerId == customerId)
-                                            .ToListAsync()
-                                            .ConfigureAwait(false);
-
-                if (!reviews.Any())
-                {
-                    return Result<List<ReviewDTO>>.Failure("No reviews found for the specified customer.");
-                }
-
-                // Map the list of Review entities to a list of ReviewDTOs
-                reviewDTOs = reviews.Select(review => new ReviewDTO()
-                {
-                    CustomerId = review.CustomerId,
-                    BookingId = review.BookingId,
-                    Rating = review.Rating,
-                    CustomerComment = review.CustomerComment,
-                    CustomerCommentDate = review.CustomerCommentDate,
-                    ProviderReplayComment = review.ProviderReplayComment,
-                    ProviderReplayCommentDate = review.ProviderReplayCommentDate
-                }).ToList();
-
-                // Cache the list of ReviewDTOs
-                _cache.Set(cacheKey, reviewDTOs, _cacheDuration);
+                return Result<ReviewDTO>.Failure("No reviews found for the specified customer.");
             }
 
+            // Map the list of Review entities to a list of ReviewDTOs
+            reviewDTOs = new ReviewDTO()
+            {
+                CustomerId = review.CustomerId,
+                BookingId = review.BookingId,
+                Rating = review.Rating,
+                CustomerComment = review.CustomerComment,
+                CustomerCommentDate = review.CustomerCommentDate,
+                ProviderReplayComment = review.ProviderReplayComment,
+                ProviderReplayCommentDate = review.ProviderReplayCommentDate
+            };
+
             // Return the list of ReviewDTOs (whether from cache or DB)
-            return Result<List<ReviewDTO>>.Success(reviewDTOs);
+            return Result<ReviewDTO>.Success(reviewDTOs);
         }
-
-
-
-
-
-
 
         // Method to add a review with validation and caching
         public async Task<Result<bool>> AddReviewAsync(PostedReviewDTO reviewDTO)
@@ -93,11 +78,14 @@ namespace CusromerProject.DTO.Review
                 CustomerCommentDate = DateTime.Now
             };
 
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
-
-            // Invalidate cache for any related reviews if necessary
-            // e.g., _cache.Remove($"review_{review.CustomerId}_{review.BookingId}");
+            try
+            {
+                _context.Reviews.Add(review);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+            } catch (Exception ex) {
+                
+                return Result<bool>.Failure(ex.ToString());
+            }
 
             return Result<bool>.Success(true);
         }

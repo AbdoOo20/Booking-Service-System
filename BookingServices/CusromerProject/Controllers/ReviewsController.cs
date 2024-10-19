@@ -17,11 +17,11 @@ namespace CusromerProject.Controllers
         }
 
         // GET: api/Reviews/{customerId}/{bookingId}
-        [HttpGet("{customerId}")]
+        [HttpGet("{bookingId}")]
        //[Authorize]
-        public async Task<ActionResult<ReviewDTO>> GetReview(string customerId)
+        public async Task<ActionResult<ReviewDTO>> GetReview(int bookingId)
         {
-            var result = await _reviewRepository.GetReviewByIdAsync(customerId);
+            var result = await _reviewRepository.GetReviewByIdAsync(bookingId);
 
             if (!result.IsSuccess)
             {
@@ -43,7 +43,7 @@ namespace CusromerProject.Controllers
                 return BadRequest(result.Error);
             }
 
-            return Ok("Created Success");
+            return Ok(new { message = "Created Success" });
         }
     }
 }

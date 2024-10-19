@@ -27,8 +27,8 @@
         <div class="control-icons">
             <button
                 mat-button
-                [disabled]="onFavorites()"
-                (click)="addToFavorites()"
+                [disabled]="isInWishlist"
+                (click)="toggleWishlist()"
                 matTooltip="Add To Favorite"
             >
                 <mat-icon class="mat-icon-sm">favorite_border</mat-icon>
@@ -90,7 +90,7 @@
 
                 <div class="features mt-3">
                     <p>
-                        <span>Category Name</span
+                        <span>Category</span
                         ><span>{{ service.category }}</span>
                     </p>
                 </div>

@@ -130,9 +130,12 @@ namespace BookingServices.Controllers
             var user = await _userManager.GetUserAsync(User);
             string userIdFromManager = user?.Id ?? "";
             var provider = context.ServiceProviders.Find(userIdFromManager);
-            provider.Balance = 0;
-            context.SaveChanges();
-            return Json(new { success = true, message = "Withdrawal successful!", newBalance = provider?.Balance });
+            if (provider != null)
+            {
+                provider.Balance = 0;
+                await context.SaveChangesAsync();
+            }
+            return Json(new { success =  true , newBalance = 0});
         }
     }
 }

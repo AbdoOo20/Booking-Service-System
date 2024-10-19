@@ -1,5 +1,9 @@
-﻿// wwwroot/js/withdraw.js
+﻿
+// wwwroot/js/withdraw.js
 $(document).ready(function () {
+    $("form").on("submit", function (event) {
+        if ($(this).valid()) { } else { event.preventDefault(); }
+    });
     $('#withdrawButton').click(function (e) {
         e.preventDefault();
         if ($(this).is(':disabled')) {
@@ -23,31 +27,34 @@ $(document).ready(function () {
                     success: function (result) {
                         if (result.success) {
                             $('#balanceDisplay').text(result.newBalance);
-                            $('#responseMessage').html('<div class="alert alert-success">Withdrawal Successful</div>');
+                            $('#message').html('<div class="alert alert-success">Withdrawal Successful</div>');
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2000);
                         } else {
-                            $('#responseMessage').html('<div class="alert alert-danger">Error: Unable to update balance.</div>');
+                            $('#message').html('<div class="alert alert-danger">Error: Unable to update balance.</div>');
                         }
                     },
                     error: function (xhr, status, error) {
-                        $('#responseMessage').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
+                        $('#message').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
                     },
                     complete: function () {
                         $('#loadingOverlay').hide();
                         setTimeout(function () {
-                            $('#responseMessage').fadeOut();
+                            $('#message').fadeOut();
                         }, 3000);
                     }
                 });
             },
             error: function (xhr, status, error) {
-                $('#responseMessage').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
+                $('#message').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
             },
             complete: function () {
                 $('#loadingOverlay').hide();
                 setTimeout(function () {
-                    $('#responseMessage').fadeOut();
+                    $('#message').fadeOut();
                 }, 3000);
             }
-        });   
+        });
     });
 });

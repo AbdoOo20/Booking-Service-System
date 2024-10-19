@@ -11,8 +11,9 @@ namespace BookingServices.Data
         [ForeignKey("IdentityUser")]
         public string? ProviderId { get; set; }
 
-        [Required]
+        [Required, Display(Name = "Name")]
         [MinLength(3, ErrorMessage = "Name must be at least 3 character")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain letters and spaces.")]
         public required string Name { get; set; }
 
         [Range(0.00, double.MaxValue, ErrorMessage = "Balance must be greater than or equal zero.")]
@@ -26,7 +27,8 @@ namespace BookingServices.Data
         [Range(0.0, 5.0)]
         public decimal Rate { get; set; }
 
-        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email format.")]
+        [Display(Name = "Bank Account")]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.com$", ErrorMessage = "Invalid email format. It should be like (example@gmail.com)")]
         public string? BankAccount { get; set; }
 
         public bool? IsBlocked { get; set; } = false;

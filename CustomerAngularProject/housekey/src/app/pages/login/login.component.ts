@@ -86,6 +86,7 @@ export class LoginComponent implements OnInit {
     const loginData = {
       UserName: this.loginForm.value.username,
       Password: this.loginForm.value.password,
+      RememberMe: this.loginForm.value.rememberMe,
     };
 
     // Call the API for login
@@ -96,7 +97,11 @@ export class LoginComponent implements OnInit {
           if (response.token) {
             // Save the token and navigate to the home page
             this.authService.login(response.token);
-            //localStorage.setItem('token', response.token);
+            if (this.loginForm.value.rememberMe) {
+              localStorage.setItem("token", response.token);
+            } else {
+              sessionStorage.setItem("token", response.token);
+            }
             this.router.navigate(["/home"]);
             this.snackBar.open("Login successful!", "×", {
               panelClass: "success",

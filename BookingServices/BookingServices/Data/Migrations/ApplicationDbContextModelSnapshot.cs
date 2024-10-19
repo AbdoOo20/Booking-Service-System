@@ -284,6 +284,25 @@ namespace BookingServices.Data.Migrations
                     b.ToTable("Links");
                 });
 
+            modelBuilder.Entity("BookingServices.Data.NotificationAdmin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NotificationTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationAdmins");
+                });
+
             modelBuilder.Entity("BookingServices.Data.Package", b =>
                 {
                     b.Property<int>("PackageId")
@@ -366,7 +385,12 @@ namespace BookingServices.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", null, t =>
+                        {
+                            t.HasTrigger("ChangeBookingStatus_Trg");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("BookingServices.Data.PaymentIncome", b =>
@@ -456,6 +480,19 @@ namespace BookingServices.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ProviderRegisters");
+                });
+
+            modelBuilder.Entity("BookingServices.Data.RemainingCustomerBalance", b =>
+                {
+                    b.Property<string>("BankAccount")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("RemainingAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("BankAccount");
+
+                    b.ToTable("RemainingCustomerBalances");
                 });
 
             modelBuilder.Entity("BookingServices.Data.Review", b =>

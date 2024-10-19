@@ -43,6 +43,6 @@ export const appConfig: ApplicationConfig = {
       InputFileModule.forRoot(config), 
       // InMemoryWebApiModule.forRoot(UsersData, { passThruUnknownUrl: true, delay: 1000 })
     ]),
-    { provide: OverlayContainer, useClass: CustomOverlayContainer }       
+    { provide: OverlayContainer, useClass: CustomOverlayContainer }, provideAnimationsAsync()       
   ]
 };
