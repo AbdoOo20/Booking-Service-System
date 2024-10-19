@@ -12,16 +12,14 @@
 <table class="table" id="myTable">
     <thead>
         <tr>
-            <th class="col-1">
-                @Html.DisplayNameFor(model => model.ContractName)
-            </th>
+                <th class="col-1">Title</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model) {
                 <tr>
-                    <td>
+                    <td class="col-1">
                         @Html.DisplayFor(modelItem => item.ContractName)
                     </td>
                     <td>
@@ -29,19 +27,16 @@
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
 
-                        <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger">
-                            @{
-                                if (item.IsBlocked ?? false)
-                                {
-                                    <div>Un Block</div>
-                                }
-                                else
-                                {
-                                    <div> Block </div>
-                                }
+                        @{
+                            if (item.IsBlocked ?? false)
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-success me-2"><i class="fa-solid fa-unlock"></i></a>
                             }
-                        
-                        </a>
+                            else
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.ContractId" class="btn btn-outline-danger me-2"><i class="fa-solid fa-trash-can"></i></a>
+                            }
+                        }
                     </td>
                 </tr>
         }
