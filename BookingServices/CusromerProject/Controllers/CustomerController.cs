@@ -25,7 +25,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize]
+        [Authorize]
         public ActionResult<CustomerCrudDTO> GetByID(string id) 
         {
             if (id == null) return NotFound();
@@ -43,7 +43,7 @@ namespace CusromerProject.Controllers
             return customerData;
         }
         [HttpPut("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Update(string id, CustomerCrudDTO customerData)
         {
             if (id == null) return NotFound();
@@ -69,25 +69,26 @@ namespace CusromerProject.Controllers
             else return BadRequest(ModelState);
         }
 
-        [HttpPut("block{id}")]
-        //[Authorize]
+        [HttpPut("block/{id}")]
+        [Authorize]
         public IActionResult Block(string id)
         {
             if (id == null) return NotFound();
             var customer = context.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null) return NotFound();
-            int haveBooking = context.Bookings.Where(b => (b.CustomerId == id) && (b.Status == "Pending")).Count();
-            if(haveBooking == 0)
+            //int haveBooking = context.Bookings.Where(b => (b.CustomerId == id) && (b.Status == "Pending")).Count();
+            if(true) //haveBooking == 0
             {
                 customer.IsBlocked = true;
                 context.SaveChanges();
-                return Ok();
+                return Ok(new { message = "Blocked Successfully" });
             }
-            else return BadRequest();
+            else 
+                return BadRequest("You have book now and can not deactivate account");
         }
 
         [HttpPut("changePassword{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(string id , ChangeCustomerPasswordDTO chPassword) 
         {
             if (id == null) return NotFound();

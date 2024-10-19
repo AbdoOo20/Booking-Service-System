@@ -179,9 +179,10 @@ export class HomeComponent implements OnInit {
           console.error("Error loading wishlist", error);
         }
       );
+    } else {
+      this.GetRecSrvForBooking();
+      this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
     }
-    this.GetRecSrvForBooking();
-    this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
 
     //Test
 
