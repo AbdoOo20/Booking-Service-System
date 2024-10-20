@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PayPalService } from '@services/pay-pal.service';
-
+import { AlertDialogComponent } from "@shared-components/alert-dialog/alert-dialog.component";
+import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-pay-installments',
   standalone: true,
@@ -15,8 +16,7 @@ export class PayInstallmentsComponent implements OnInit {
   remainingValue: number | null = null;
   amount: number | null = null;
   loading: boolean = false; // Add this property to handle the loader
-
-  constructor(private route: ActivatedRoute, private payPal: PayPalService) { }
+  constructor(private route: ActivatedRoute, private payPal: PayPalService, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -28,7 +28,14 @@ export class PayInstallmentsComponent implements OnInit {
   }
 
   submitPayment() {
-    if (this.amount && this.amount <= (this.remainingValue || 0)) {
+    if (this.amount <= 0 || this.amount > this.remainingValue) {
+      this.dialog.open(AlertDialogComponent, {
+        maxWidth: '500px',
+        data: 'The amount must be greater than 0 and less than remaining values.',
+      });
+
+    }
+    else {
       this.loading = true; // Show loader when starting the payment process
 
       const paymentData = {
@@ -49,8 +56,6 @@ export class PayInstallmentsComponent implements OnInit {
           console.error("Payment Error:", error);
         }
       });
-    } else {
-      alert('Please enter a valid amount to pay.');
     }
   }
 }

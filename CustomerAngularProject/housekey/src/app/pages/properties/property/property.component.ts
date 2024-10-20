@@ -54,7 +54,6 @@ import { DecodingTokenService } from "@services/decoding-token.service";
 import { Observable, throwIfEmpty } from "rxjs";
 import { WishlistService } from "@services/wishlist.service";
 
-
 @Component({
   selector: "app-property",
   standalone: true,
@@ -127,8 +126,7 @@ export class PropertyComponent implements OnInit {
   };
   lat: number = 0;
   lng: number = 0;
-  token = localStorage.getItem("token");
-
+  token: string;
 
   constructor(
     public settingsService: SettingsService,
@@ -146,11 +144,14 @@ export class PropertyComponent implements OnInit {
     this.settings = this.settingsService.settings;
   }
 
+
   ngOnInit() {
     // this.sub = this.activatedRoute.params.subscribe((params) => {
     //     this.getPropertyById(params["id"]);
     // });
     // this.customerId=this.DecodingCustomerID.getUserIdFromToken();
+    this.token = this.DecodingCustomerID.getToken();
+
     this.activatedRoute.paramMap.subscribe((params) => {
       this.serviceID = Number(params.get("id"));
     })
@@ -429,7 +430,7 @@ export class PropertyComponent implements OnInit {
         this.bookId = [];
 
         data.forEach(item => {
-          const {booking, review} = item;
+          const { booking, review } = item;
           this.finalReviews.push(review || null);
           if (!review && booking?.bookId) {
             this.bookId.push(booking.bookId);

@@ -127,6 +127,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("GetBanckAccount/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetBanckAccount(string id)
         {
             if (string.IsNullOrEmpty(id))

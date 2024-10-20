@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
     private DecodeService: DecodingTokenService,
     private dialog: MatDialog,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.property = {
@@ -64,10 +64,9 @@ export class ProfileComponent implements OnInit {
       email: [
         "",
         Validators.compose([
-          Validators.required,
-          Validators.pattern("^[^@s]+@[^@s]+.com$"), // Email regex pattern
+          Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
         ]),
-      ],
+      ],      
       city: [
         "",
         Validators.compose([Validators.required, Validators.minLength(3)]),
@@ -94,8 +93,7 @@ export class ProfileComponent implements OnInit {
       bankAccount: [
         "",
         Validators.compose([
-          Validators.required,
-          Validators.pattern("^[^@s]+@[^@s]+.com$"),
+          Validators.pattern(/[^@\s]+@[^@\s]+\.com$/),
         ]),
       ], // Update balance to bank account email
     });
