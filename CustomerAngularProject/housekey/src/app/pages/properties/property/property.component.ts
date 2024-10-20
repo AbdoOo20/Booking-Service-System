@@ -80,7 +80,7 @@ import { WishlistService } from "@services/wishlist.service";
     MatButtonModule,
     FlexLayoutModule,
     ReviewFormComponent,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: "./property.component.html",
   styleUrl: "./property.component.scss",
@@ -89,7 +89,8 @@ import { WishlistService } from "@services/wishlist.service";
     EmbedVideoService,
     AllBookingsService,
     ReviewServiceService,
-    DecodingTokenService, WishlistService
+    DecodingTokenService,
+    WishlistService,
   ],
 })
 export class PropertyComponent implements OnInit {
@@ -139,11 +140,11 @@ export class PropertyComponent implements OnInit {
     private domHandlerService: DomHandlerService,
     public bookservice: AllBookingsService, //bookingService
     public ReviewService: ReviewServiceService, //ReviewService
-    public DecodingCustomerID: DecodingTokenService, public wishListService: WishlistService
+    public DecodingCustomerID: DecodingTokenService,
+    public wishListService: WishlistService
   ) {
     this.settings = this.settingsService.settings;
   }
-
 
   ngOnInit() {
     // this.sub = this.activatedRoute.params.subscribe((params) => {
@@ -154,7 +155,7 @@ export class PropertyComponent implements OnInit {
 
     this.activatedRoute.paramMap.subscribe((params) => {
       this.serviceID = Number(params.get("id"));
-    })
+    });
 
     this.sub = this.activatedRoute.params.subscribe((params) => {
       this.getSericeById(params["id"]);
@@ -184,7 +185,7 @@ export class PropertyComponent implements OnInit {
       phone: ["", Validators.required],
       message: ["", Validators.required],
     });
-    this.loadWishlistServices()
+    this.loadWishlistServices();
     this.checkForReview();
   }
 
@@ -324,45 +325,43 @@ export class PropertyComponent implements OnInit {
   }
 
   public addToFavorites() {
-    this.myServ.addToFavoritesInServiceDetails(
+    this.wishListService.addToFavorites(
       this.service,
       this.settings.rtl ? "rtl" : "ltr",
       this.customerId
     );
   }
+
   public loadWishlistServices() {
     this.wishListService.getWishlistServices(this.customerId).subscribe({
       next: (data) => {
         // Parse the response only if it's a string
-        if (typeof data === 'string') {
+        if (typeof data === "string") {
           try {
             data = JSON.parse(data);
           } catch (error) {
-            console.error('Failed to parse JSON string:', error);
             return;
           }
         }
 
         // Ensure the data is an array and populate service IDs
         if (Array.isArray(data)) {
-          this.servicesIDs = data.map(service => service.id);
+          this.servicesIDs = data.map((service) => service.id);
+          this.wishListService.addToWishList(data as Property[]);
         } else {
-          console.error('Expected an array but got:', typeof data);
+          console.error("Expected an array but got:", typeof data);
         }
       },
       error: (err) => {
-        console.error('Error fetching wishlist services:', err);
-      }
+        console.error("Error fetching wishlist services:", err);
+      },
     });
   }
 
   // Check if the service is already in favorites
   public onFavorites(): boolean {
-    return this.servicesIDs.includes(this.service.id);  // Simplified check
+    return this.servicesIDs.includes(this.service.id); // Simplified check
   }
-
-
-
 
   public getRelatedProperties() {
     this.appService.getRelatedProperties().subscribe((data) => {
@@ -423,13 +422,16 @@ export class PropertyComponent implements OnInit {
 
   checkForReview() {
     this.customerId = this.DecodingCustomerID.getUserIdFromToken();
-    this.ReviewService.getFilteredBookingsAndReviews(this.customerId, this.serviceID).subscribe({
+    this.ReviewService.getFilteredBookingsAndReviews(
+      this.customerId,
+      this.serviceID
+    ).subscribe({
       next: (data) => {
         console.log(data);
         this.finalReviews = [];
         this.bookId = [];
 
-        data.forEach(item => {
+        data.forEach((item) => {
           const { booking, review } = item;
           this.finalReviews.push(review || null);
           if (!review && booking?.bookId) {
@@ -438,8 +440,8 @@ export class PropertyComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Error fetching reviews:', err);
-      }
+        console.error("Error fetching reviews:", err);
+      },
     });
   }
 
@@ -453,7 +455,9 @@ export class PropertyComponent implements OnInit {
   }
 
   hasAllReviewsNull(): boolean {
-    return this.finalReviews.every(item => item === null || item.review === null);
+    return this.finalReviews.every(
+      (item) => item === null || item.review === null
+    );
   }
 
   // Handle review submission
@@ -465,11 +469,11 @@ export class PropertyComponent implements OnInit {
       ...reviewData,
       bookingId: lastBookingId,
       customerId: this.customerId,
-      customerCommentDate: new Date().toISOString()
+      customerCommentDate: new Date().toISOString(),
     };
 
     this.finalReviews.push(newReview);
-    console.log('New review added:', newReview);
+    console.log("New review added:", newReview);
     this.checkForReview();
   }
 }

@@ -16,7 +16,7 @@ namespace BookingServices.Models
 
         [Display(Name = "Details")]
         [Required(ErrorMessage = "Please provide details about the service.")]
-        [Length(minimumLength: 3, maximumLength: 450, ErrorMessage = "Please write at least 3 charcters")]
+        [MinLength(3, ErrorMessage = "Please write at least 3 charcters")]
         public string? Details { get; set; }
 
         [Display(Name = "Location")]
