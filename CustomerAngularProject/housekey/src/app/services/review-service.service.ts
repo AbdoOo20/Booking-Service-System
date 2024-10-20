@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, switchMap, of, forkJoin, catchError, throwError } from 'rxjs';
 import { AllBookingsService } from './all-bookings.service';
-
+import { PassTokenWithHeaderService } from './pass-token-with-header.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +10,14 @@ import { AllBookingsService } from './all-bookings.service';
 export class ReviewServiceService {
 private readonly _APIUrl="http://localhost:18105/api";
 
-  constructor(public http:HttpClient, public bookingServ:AllBookingsService) { }
+  constructor(public http:HttpClient, public bookingServ:AllBookingsService,private PassTokenWithHeaderService :PassTokenWithHeaderService) { }
 
   getCustomerBookings(customerId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this._APIUrl}/Book/GetBookingsForCustomer/${customerId}`)
+    return this.http.get<any[]>(`${this._APIUrl}/Book/GetBookingsForCustomer/${customerId}`, {headers: this.PassTokenWithHeaderService.getHeaders()})
   }
 
   getReview(bookingId: number): Observable<any> {
-    return this.http.get(`${this._APIUrl}/Reviews/${bookingId}`).pipe(
+    return this.http.get(`${this._APIUrl}/Reviews/${bookingId}`,{headers: this.PassTokenWithHeaderService.getHeaders()}).pipe(
       catchError(error => {
         if (error.status === 404) {
           // If the review is not found, return null
