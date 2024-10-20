@@ -18,7 +18,7 @@ namespace CusromerProject.Controllers
 
         // GET: api/Reviews/{customerId}/{bookingId}
         [HttpGet("{bookingId}")]
-       //[Authorize]
+       [Authorize]
         public async Task<ActionResult<ReviewDTO>> GetReview(int bookingId)
         {
             var result = await _reviewRepository.GetReviewByIdAsync(bookingId);
@@ -33,7 +33,7 @@ namespace CusromerProject.Controllers
 
         // POST: api/Reviews
         [HttpPost]
-      //  [Authorize]
+        [Authorize]
         public async Task<ActionResult<bool>> PostReview(PostedReviewDTO review)
         {
             var result = await _reviewRepository.AddReviewAsync(review);

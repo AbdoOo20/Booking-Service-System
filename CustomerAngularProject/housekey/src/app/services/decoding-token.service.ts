@@ -10,7 +10,7 @@ export class DecodingTokenService {
 
     constructor() { }
 
-    private getToken(): string | null {
+    public getToken(): string | null {
         if (!this.token) {
             this.token = sessionStorage.getItem("token") || localStorage.getItem("token");
         }

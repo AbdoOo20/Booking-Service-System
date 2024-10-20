@@ -176,7 +176,7 @@ export class ServicesService {
 
   GetRecomenditionServicesForBooking(): Observable<Service[]> {
     const bookingData$: Observable<any[]> = this.http.get<any[]>(
-      this.Booking_SRV_URL
+      this.Booking_SRV_URL, { headers: this.header.getHeaders() }
     );
     const serviceData$: Observable<Service[]> = this.http
       .get<Service[]>(this.API_URL)
