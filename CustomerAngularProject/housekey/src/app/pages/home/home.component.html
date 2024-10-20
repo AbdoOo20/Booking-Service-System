@@ -135,16 +135,15 @@
             <!-- End My Code-->
 
             <!-- Recomendition For Book Start-->
-            <div fxFlex="100" class="p-2">
-                <div
-                    fxLayout="column"
-                    fxLayoutAlign="center center"
-                    class="section"
-                >
-                    <h2 class="section-title">RECOMENDION SERVICE</h2>
-                    <div class="underline"></div>
+            @if(SrvBookingRec && SrvBookingRec.length > 0){
+                <div fxFlex="100" class="p-2">
+                    <div fxLayout="column" fxLayoutAlign="center center" class="section">
+                        <h2 class="section-title">RECOMENDION SERVICE</h2>
+                        <div class="underline"></div>
+                    </div>
                 </div>
-            </div>
+            }
+            
 
             @for (service of SrvBookingRec; track service.id) {
             @if(SrvBookingRec && SrvBookingRec.length > 0){
