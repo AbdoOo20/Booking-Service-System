@@ -361,6 +361,9 @@ export class SubmitPropertyComponent implements OnInit {
       this.QuantityForPayment = Math.abs(Number(this.submitForm.get("booking.quantity").value));
       console.log(this.QuantityForPayment);
 
+      if (this.QuantityForPayment == 0) {
+        this.QuantityForPayment = 1;
+      }
       this.submitForm.patchValue({
         payment: {
           minValue: ((this.service.initialPayment * this.service.priceForTheCurrentDay) / 100) * this.QuantityForPayment,

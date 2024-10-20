@@ -202,7 +202,7 @@ export class RegisterComponent implements OnInit {
         //debugger;
 
         this.http
-            .post("http://localhost:5285/api/Account/Register", registerData)
+            .post("http://localhost:18105/api/Account/Register", registerData)
             .subscribe(
                 (response) => {
                     // Successful registration message

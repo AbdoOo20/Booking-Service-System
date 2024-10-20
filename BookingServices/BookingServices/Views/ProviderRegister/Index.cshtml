@@ -45,7 +45,9 @@ Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
                     @Html.DisplayFor(modelItem => item.ProviderPhoneNumber)
                 </td>
                 <td class="customWidth">
-                    @Html.DisplayFor(modelItem => item.ServiceDetails)
+                    @Html.Raw(item.ServiceDetails != null && item.ServiceDetails.Length > 20
+                        ? item.ServiceDetails.Substring(0, 20) + "..."
+                        : item.ServiceDetails)
                 </td>
                 <td>
                     <a class="btn btn-outline-success" asp-area="Identity" asp-page="/Account/Register"

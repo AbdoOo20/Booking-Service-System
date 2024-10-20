@@ -34,7 +34,7 @@ namespace BookingServices.Controllers
                             from m in _context.PaymentIncomes
                             where b.BookingId == bs.BookingId
                             && bs.ServiceId == s.ServiceId
-                            && s.ProviderId == userIdFromManager && b.CustomerId == c.CustomerId && b.PaymentIncomeId == m.PaymentIncomeId
+                            && s.ProviderId == userIdFromManager && b.CustomerId == c.CustomerId 
                             select new 
                             {
                                 BookingId = b.BookingId,
