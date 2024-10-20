@@ -8,7 +8,7 @@ namespace BookingServices.Models
 
         public string ServiceName { get; set; }
 
-        public decimal? servicePrice { get; set; }
+        public decimal servicePrice { get; set; }
 
         public TimeSpan startTime { get; set; }
         public TimeSpan endTime { get; set; }
