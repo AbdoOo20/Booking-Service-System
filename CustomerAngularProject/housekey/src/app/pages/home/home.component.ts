@@ -165,9 +165,9 @@ export class HomeComponent implements OnInit {
     // this.getServiceCategories(this.catChangeName);
     // this.getServiceLocation(this.locChangeName);
     // this.getServicePrice(this.fromPrice, this.toPrice);
-    // this.getServices();
+
     this.getCategories();
-    if (localStorage.getItem("token")) {
+    if (this.decodeCustomerID.getToken()) {
       this.wishListService.getWishlistServices(this.customerId).subscribe(
         (data) => {
           let properties: Property[] = JSON.parse(data);
@@ -177,11 +177,12 @@ export class HomeComponent implements OnInit {
         },
         (error) => {
           console.error("Error loading wishlist", error);
-        }
+        } //ss
       );
     } else {
-      this.GetRecSrvForBooking();
-      this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
+      this.getServices();
+      //this.GetRecSrvForBooking();
+      //this.getServ(this.catTest, this.locTest, this.fromTest, this.toTest);
     }
 
     //Test

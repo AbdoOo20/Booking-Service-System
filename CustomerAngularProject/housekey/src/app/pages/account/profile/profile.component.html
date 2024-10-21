@@ -46,8 +46,7 @@
 
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Bank Account Email</mat-label>
-                <input matInput placeholder="Bank Account Email" formControlName="bankAccount" required autocomplete="off">
-                <mat-error *ngIf="infoForm.controls.bankAccount.errors?.required">Bank Account Email is required</mat-error>
+                <input matInput placeholder="Bank Account Email" formControlName="bankAccount" autocomplete="off">
                 <mat-error *ngIf="infoForm.controls.bankAccount.hasError('pattern')">Invalid email format</mat-error>
             </mat-form-field>
 

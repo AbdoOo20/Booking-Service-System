@@ -174,7 +174,7 @@ export class SubmitPropertyComponent implements OnInit {
 
   ngOnInit() {
     localStorage.setItem('firstCall', 'false');
-    if (!localStorage.getItem("token")) {
+    if (!this.decodingService.getToken()) {
       const targetPage = "/login";
       this.router.navigate([targetPage]);
     }
@@ -243,7 +243,7 @@ export class SubmitPropertyComponent implements OnInit {
         //   },
         // });
         this.hasQuantity = this.service.quantity > 0 ? true : false;
-        this.calculateTotal();
+        //this.calculateTotal();
         this.initializeTimeOptions();
 
         const quantityControl = this.submitForm.get("booking.quantity");
@@ -358,17 +358,18 @@ export class SubmitPropertyComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.QuantityForPayment = Number(this.submitForm.get("booking.quantity").value);
-      if (this.QuantityForPayment == 0) {
-        this.QuantityForPayment = 1;
-      }
+      this.QuantityForPayment = Math.abs(Number(this.submitForm.get("booking.quantity").value));
+      console.log(this.QuantityForPayment);
+
       this.submitForm.patchValue({
         payment: {
           minValue: ((this.service.initialPayment * this.service.priceForTheCurrentDay) / 100) * this.QuantityForPayment,
           maxValue: this.service.priceForTheCurrentDay * this.QuantityForPayment,
+          amount: ((this.service.initialPayment * this.service.priceForTheCurrentDay) / 100) * this.QuantityForPayment,
           paymentMethod: [1, Validators.required],
         },
       });
+
 
       if (result) {
         this.acceptContract = true;
@@ -412,13 +413,16 @@ export class SubmitPropertyComponent implements OnInit {
 
   CreatePayment() {
     // Step 1: Retrieve form values and validate the amount
-    const amount = this.submitForm.get('payment.minValue')?.value;
+    const amount = this.submitForm.get('payment.amount')?.value;
     this.minValue = parseFloat(this.submitForm.get('payment.minValue')?.value);
     this.maxValue = parseFloat(this.submitForm.get('payment.maxValue')?.value);
+    console.log(this.minValue);
+    console.log(amount);
 
     if (
       amount < this.minValue ||
-      amount > this.maxValue
+      amount > this.maxValue ||
+      amount <= 0
     ) {
       console.warn('Total must be between minimum and maximum values:', amount);
 

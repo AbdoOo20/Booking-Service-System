@@ -20,7 +20,7 @@ namespace CusromerProject.Controllers
 
         // GET: api/Payments
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
         {
             try
@@ -58,7 +58,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("PaymentGetways")]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<PaymentIncome>>> GetPaymentIncome()
         {
             try
@@ -83,7 +83,7 @@ namespace CusromerProject.Controllers
 
         //GET: api/Payments/5
         [HttpGet("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<Payment>> GetPaymentByID(int id)
         {
             var payment = await _context.Payments
@@ -116,12 +116,9 @@ namespace CusromerProject.Controllers
             return Ok(payment);
         }
 
-
-
         // POST: api/Payments
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<Payment>> PostPayment([Bind("CustomerId,PaymentValue,PaymentDate,BookingId")] PostedPaymentDTO postedPaymentDTO)
         {
             try
@@ -154,29 +151,5 @@ namespace CusromerProject.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"An unexpected error occurred: {ex.Message}");
             }
         }
-
-
-        /*  // DELETE: api/Payments/5
-          [HttpDelete("{id}")]
-          public async Task<IActionResult> DeletePayment(int id)
-          {
-              var payment = await _context.Payments.FindAsync(id);
-              if (payment == null)
-              {
-                  return NotFound();
-              }
-
-              _context.Payments.Remove(payment);
-              await _context.SaveChangesAsync();
-
-              return NoContent();
-          }*/
-
-        private bool PaymentExists(int id)
-        {
-            return _context.Payments.Any(e => e.PaymentId == id);
-        }
-
-
     }
 }

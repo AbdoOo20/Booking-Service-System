@@ -28,7 +28,7 @@
                     orientation="vertical"
                     class="mat-elevation-z1"
                 >
-                    <mat-card class="p-3">
+                    <mat-card class="p-3" *ngIf="service?.provider">
                         <div class="widget">
                             @if (service?.provider) {
                             <mat-card>
@@ -96,26 +96,7 @@
 
                 <mat-card class="p-3 mt-3">
                     <div class="main-carousel mb-3">
-                        @if (property) {
-                        <div class="control-icons">
-                            <!-- <button
-                                mat-button
-                                [disabled]="onFavorites()"
-                                (click)="addToFavorites()"
-                                matTooltip="Add To Favorite"
-                            >
-                                <mat-icon class="m-0">favorite_border</mat-icon>
-                            </button> -->
-                            <!-- <button
-                                mat-button
-                                [disabled]="onCompare()"
-                                (click)="addToCompare()"
-                                matTooltip="Add To Compare"
-                            >
-                                <mat-icon class="m-0">compare_arrows</mat-icon>
-                            </button> -->
-                        </div>
-                        }
+                        
                         <div
                             id="main-carousel"
                             class="swiper-container"
@@ -224,7 +205,7 @@
                             class="item"
                         >
                             <span>Initail Payment:</span>
-                            <span>{{ service?.initialPayment }}</span>
+                            <span>{{ service?.initialPayment }} %</span>
                         </div>
                         <div
                             fxFlex="100"

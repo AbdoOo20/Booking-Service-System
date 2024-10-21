@@ -181,31 +181,26 @@ namespace BookingServices.Controllers
 
             var CurrentDate = DateTime.Now.Date;
 
-            var servicePrice = await (from s in _context.Services
-                                      join sp in _context.ServicePrices
-                                      on s.ServiceId equals sp.ServiceId
-                                      where sp.PriceDate.Date == CurrentDate
-                                      select new
-                                      {
-                                          ServicePrice = sp.Price
-                                      }).FirstOrDefaultAsync();
+            var servicePrice = await (from sp in _context.ServicePrices
+                                      where sp.ServiceId == id && sp.PriceDate.Date == CurrentDate.Date
+                                      select sp.Price).FirstOrDefaultAsync();
 
-            int daysBack = 1;
-            while (servicePrice == null)
-            {
-                var previousDate = CurrentDate.AddDays(-daysBack);
+            //int daysBack = 1;
+            //while (servicePrice == null)
+            //{
+            //    var previousDate = CurrentDate.AddDays(-daysBack);
 
-                servicePrice = await (from s in _context.Services
-                                      join sp in _context.ServicePrices
-                                      on s.ServiceId equals sp.ServiceId
-                                      where sp.PriceDate.Date == previousDate
-                                      select new
-                                      {
-                                          ServicePrice = sp.Price
-                                      }).FirstOrDefaultAsync();
+            //    servicePrice = await (from s in _context.Services
+            //                          join sp in _context.ServicePrices
+            //                          on s.ServiceId equals sp.ServiceId
+            //                          where sp.PriceDate.Date == previousDate
+            //                          select new
+            //                          {
+            //                              ServicePrice = sp.Price
+            //                          }).FirstOrDefaultAsync();
 
-                daysBack++;
-            }
+            //    daysBack++;
+            //}
 
             /*  var providerName = await (from s in _context.Services
                                         join sp in _context.ServiceProviders
@@ -306,7 +301,7 @@ namespace BookingServices.Controllers
             ServiceDetailsModel serviceDetailsModel = new ServiceDetailsModel()
             {
                 ServiceName = service.Name,
-                servicePrice = servicePrice.ServicePrice,
+                servicePrice = servicePrice,
                 startTime = service.StartTime,
                 endTime = service.EndTime,
                 AvailableQuantity = service.Quantity,

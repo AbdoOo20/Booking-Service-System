@@ -26,7 +26,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetBookings()
         {
             List<Book> books = new List<Book>();
@@ -35,7 +35,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("GetBookingsForCustomer/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetBookingsForCustomer(string id)
         {
             List<Book> books = new List<Book>();
@@ -44,7 +44,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("GetBookingsForService/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetBookingsForService(int id, DateTime date)
         {
             List<Book> books = new List<Book>();
@@ -76,7 +76,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetBooking(int id)
         {
             var item = await (from b in _context.Bookings
@@ -102,7 +102,7 @@ namespace CusromerProject.Controllers
                               }).FirstOrDefaultAsync();
             if (item == null)
             {
-                return NotFound("Not Found This Book");
+                return NotFound(new { Message = "Not Found This Book" });
             }
             Book newBook = new Book()
             {
@@ -125,7 +125,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> CreateBook(Book book)
         {
             if (book == null)
@@ -181,7 +181,7 @@ namespace CusromerProject.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> DeleteBook(int id)
         {
             decimal sumPayment = 0;
