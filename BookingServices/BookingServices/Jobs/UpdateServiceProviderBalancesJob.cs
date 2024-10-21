@@ -24,6 +24,7 @@ namespace BookingServices.Jobs
             try
             {
                 await _context.Database.ExecuteSqlRawAsync("EXEC UpdateServiceProviderBalances");
+                await _context.Database.ExecuteSqlRawAsync("EXEC UpdateReservedBalance");
                 _context.Database.ExecuteSqlRaw("EXEC ProcessPendingBookings");
                 var customershaveremainmony = _context.RemainingCustomerBalances.ToList();
                 foreach (var customer in customershaveremainmony)
