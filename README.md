@@ -26,40 +26,40 @@ The project leverages modern web development technologies to provide a reliable 
 
 To ensure the system operates properly, several key NuGet packages were used. Below is a list of packages critical to the system's functionality:
 
-1. **Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore (8.0.8)**  
+1. **Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore**  
    Provides diagnostic middleware that helps in managing and logging Entity Framework Core-related exceptions.
 
-2. **Microsoft.AspNetCore.Identity.EntityFrameworkCore (8.0.8)**  
+2. **Microsoft.AspNetCore.Identity.EntityFrameworkCore**  
    Integrates ASP.NET Core Identity with Entity Framework Core, allowing for easy handling of user authentication and role management with a SQL database as storage.
 
-3. **Microsoft.AspNetCore.Identity.UI (8.0.8)**  
+3. **Microsoft.AspNetCore.Identity.UI**  
    Adds the necessary user interface components to handle identity features, like login pages, registration forms, password resets, etc.
 
-4. **Microsoft.AspNetCore.Localization (2.1.1)**  
+4. **Microsoft.AspNetCore.Localization**  
    Provides localization capabilities for building multi-language support into the web application, making it accessible to users in different regions.
 
-5. **Microsoft.EntityFrameworkCore.SqlServer (8.0.8)**  
+5. **Microsoft.EntityFrameworkCore.SqlServer**  
    The Entity Framework Core provider for SQL Server, used to interact with the SQL database.
 
-6. **Microsoft.EntityFrameworkCore.Tools (8.0.8)**  
+6. **Microsoft.EntityFrameworkCore.Tools**  
    Provides tools for managing Entity Framework Core migrations, allowing for easy database updates and schema changes.
 
-7. **Microsoft.Extensions.Localization (8.0.8)**  
+7. **Microsoft.Extensions.Localization**  
    Extends localization functionality within ASP.NET Core to handle multi-language scenarios.
 
-8. **Microsoft.VisualStudio.Web.CodeGeneration.Design (8.0.5)**  
+8. **Microsoft.VisualStudio.Web.CodeGeneration.Design**  
    Helps in generating controllers, views, and models via command-line scaffolding, speeding up development.
 
-9. **Quartz (3.13.0)**  
+9. **Quartz**  
    A popular open-source job scheduling library used to schedule and run background tasks like sending out email reminders or updating data at specific intervals.
 
-10. **Quartz.Extensions.DependencyInjection (3.13.0)**  
+10. **Quartz.Extensions.DependencyInjection**  
     Allows the integration of Quartz with ASP.NET Core’s dependency injection system, ensuring jobs are handled efficiently within the framework.
 
-11. **Quartz.Extensions.Hosting (3.13.0)**  
+11. **Quartz.Extensions.Hosting**  
     Adds support for running Quartz as a hosted service, making it easier to manage long-running background processes.
 
-12. **SendGrid (9.29.3)**  
+12. **SendGrid**  
     This package integrates with SendGrid, enabling the system to send email notifications for various events, such as bookings, cancellations, and reminders.
 
 ## Setup Instructions
