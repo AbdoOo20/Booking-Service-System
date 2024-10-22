@@ -42,8 +42,8 @@ export class PayInstallmentsComponent implements OnInit {
         total: this.amount,
         currency: "USD",
         description: "New Transaction",
-        returnUrl: "http://localhost:4200/confirmation",
-        cancelUrl: "http://localhost:4200/submit-property",
+        returnUrl: "https://lilynight.vercel.app/confirmation",
+        cancelUrl: "https://lilynight.vercel.app/submit-property",
       };
 
       this.payPal.addPayment(paymentData).subscribe({

@@ -3,16 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ConfirmEmailService {
   private _httpClient = inject(HttpClient);
-  private _apiURL = "http://localhost:18105/api/Account";
+  private _apiURL = "http://lilynightapi.runasp.net/api/Account";
 
-  constructor() { }
+  constructor() {}
 
   getConfirmEmail(userId: string, token: string): Observable<any> {
-    return this._httpClient.get(`${this._apiURL}/ConfirmEmail?userId=${userId}&token=${token}`, { observe: 'response' });
+    return this._httpClient.get(
+      `${this._apiURL}/ConfirmEmail?userId=${userId}&token=${token}`,
+      { observe: "response" }
+    );
   }
-
 }

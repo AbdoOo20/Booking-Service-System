@@ -7,7 +7,7 @@ import { PassTokenWithHeaderService } from "./pass-token-with-header.service";
   providedIn: "root",
 })
 export class BookingService {
-  private readonly DB_URL = "http://localhost:18105/api";
+  private readonly DB_URL = "http://lilynightapi.runasp.net/api";
   constructor(
     private readonly http: HttpClient,
     public header: PassTokenWithHeaderService
@@ -16,7 +16,7 @@ export class BookingService {
   getService(id: number): Observable<any> {
     var headers = this.header.getHeaders();
     const url = `${this.DB_URL}/Services/${encodeURIComponent(id)}`;
-    return this.http.get(url, {headers});
+    return this.http.get(url, { headers });
   }
 
   getBooingTimeForService(id: number, date: string): Observable<any> {
@@ -24,7 +24,7 @@ export class BookingService {
     const url = `${this.DB_URL}/Book/GetBookingsForService/${encodeURIComponent(
       id
     )}?date=${date}`;
-    return this.http.get(url, {headers});
+    return this.http.get(url, { headers });
   }
 
   addBooking(BookingData: any): Observable<any> {

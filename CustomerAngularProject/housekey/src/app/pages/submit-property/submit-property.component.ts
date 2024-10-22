@@ -466,8 +466,8 @@ export class SubmitPropertyComponent implements OnInit {
         total: amount,
         currency: "USD",
         description: "New Transaction",
-        returnUrl: "http://localhost:4200/confirmation",
-        cancelUrl: "http://localhost:4200/submit-property",
+        returnUrl: "https://lilynight.vercel.app/confirmation",
+        cancelUrl: "https://lilynight.vercel.app/submit-property",
       };
 
       // Proceed with PayPal payment

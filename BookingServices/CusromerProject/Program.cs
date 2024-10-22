@@ -22,6 +22,12 @@ namespace CusromerProject
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.api.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("appsettings.api.Development.json", optional: true)
+            .AddEnvironmentVariables();
+
             // Configure Database (Entity Framework Core)
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

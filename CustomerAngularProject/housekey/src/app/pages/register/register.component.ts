@@ -202,60 +202,59 @@ export class RegisterComponent implements OnInit {
         //debugger;
 
         this.http
-            .post("http://localhost:5285/api/Account/Register", registerData)
-            .subscribe(
-                (response) => {
-                    // Successful registration message
-                    console.log("Registration successful:", response);
-                    this.snackBar.open(
-                        "You registered successfully! Please check your email for confirmation.Please check your email for confirmation.",
-                        "×",
-                        {
-                            panelClass: "success",
-                            verticalPosition: "top",
-                            duration: 3000,
-                        }
-                    );
-                    // setTimeout(() => {
-                    //     this.router.navigate(["/login"]); // Redirect after a delay
-                    // }, 5000); // 3 seconds delay
-                },
-                (error: HttpErrorResponse) => {
-                    console.error("API Error:", error);
-                    if (
-                        error.status === 400 &&
-                        error.error &&
-                        error.error.errors
-                    ) {
-                        // Handle validation errors from the server
-                        const validationErrors = error.error.errors;
-                        console.error("Validation errors:", validationErrors);
-
-                        let errorMessage =
-                            "Registration failed. Please check the following fields:\n";
-                        Object.keys(validationErrors).forEach((field) => {
-                            errorMessage += `${field}: ${validationErrors[
-                                field
-                            ].join(", ")}\n`;
-                        });
-                        this.snackBar.open(errorMessage, "×", {
-                            panelClass: "error",
-                            verticalPosition: "top",
-                            duration: 5000,
-                        });
-                    } else {
-                        // General error message if other error occurs
-                        this.snackBar.open(
-                            "Registration failed. Please try again.",
-                            "×",
-                            {
-                                panelClass: "error",
-                                verticalPosition: "top",
-                                duration: 3000,
-                            }
-                        );
-                    }
+          .post(
+            "http://lilynightapi.runasp.net/api/Account/Register",
+            registerData
+          )
+          .subscribe(
+            (response) => {
+              // Successful registration message
+              console.log("Registration successful:", response);
+              this.snackBar.open(
+                "You registered successfully! Please check your email for confirmation.Please check your email for confirmation.",
+                "×",
+                {
+                  panelClass: "success",
+                  verticalPosition: "top",
+                  duration: 3000,
                 }
-            );
+              );
+              // setTimeout(() => {
+              //     this.router.navigate(["/login"]); // Redirect after a delay
+              // }, 5000); // 3 seconds delay
+            },
+            (error: HttpErrorResponse) => {
+              console.error("API Error:", error);
+              if (error.status === 400 && error.error && error.error.errors) {
+                // Handle validation errors from the server
+                const validationErrors = error.error.errors;
+                console.error("Validation errors:", validationErrors);
+
+                let errorMessage =
+                  "Registration failed. Please check the following fields:\n";
+                Object.keys(validationErrors).forEach((field) => {
+                  errorMessage += `${field}: ${validationErrors[field].join(
+                    ", "
+                  )}\n`;
+                });
+                this.snackBar.open(errorMessage, "×", {
+                  panelClass: "error",
+                  verticalPosition: "top",
+                  duration: 5000,
+                });
+              } else {
+                // General error message if other error occurs
+                this.snackBar.open(
+                  "Registration failed. Please try again.",
+                  "×",
+                  {
+                    panelClass: "error",
+                    verticalPosition: "top",
+                    duration: 3000,
+                  }
+                );
+              }
+            }
+          );
     }
 }

@@ -7,7 +7,7 @@ import { PassTokenWithHeaderService } from "@services/pass-token-with-header.ser
   providedIn: "root",
 })
 export class UserService {
-  private apiUrl = "http://localhost:18105/api/Customer/"; // استبدل هذا الرابط برابط API الخاص بك
+  private apiUrl = "http://lilynightapi.runasp.net/api/Customer/"; // استبدل هذا الرابط برابط API الخاص بك
 
   constructor(
     private http: HttpClient,

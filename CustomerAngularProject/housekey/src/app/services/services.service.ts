@@ -22,17 +22,16 @@ import { PassTokenWithHeaderService } from "./pass-token-with-header.service";
 @Injectable({
   providedIn: "root",
 })
-
 export class ServicesService {
-  API_URL = "http://localhost:18105/api/Services/all";
-  CAT_URL = "http://localhost:18105/api/Categories";
+  API_URL = "http://lilynightapi.runasp.net/api/Services/all";
+  CAT_URL = "http://lilynightapi.runasp.net/api/Categories";
   LOCATION_URL =
     "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
-  Booking_SRV_URL = "http://localhost:18105/api/Book";
-  CUSTOMER_API = "http://localhost:18105/api/Customer/";
+  Booking_SRV_URL = "http://lilynightapi.runasp.net/api/Book";
+  CUSTOMER_API = "http://lilynightapi.runasp.net/api/Customer/";
   // Basma Code
-  API_GetServicebyID = "http://localhost:18105/api/Services/";
-  ApI_Add_to_wishList = "http://localhost:18105/api/wishlist";
+  API_GetServicebyID = "http://lilynightapi.runasp.net/api/Services/";
+  ApI_Add_to_wishList = "http://lilynightapi.runasp.net/api/wishlist";
   API_getAgents = "";
   // API_get_allWishList = "http://localhost:18105/api/wishlist/";
   Favourite_service: wishList;
@@ -44,7 +43,7 @@ export class ServicesService {
     public dialog: MatDialog,
     public translateService: TranslateService,
     private domHandlerService: DomHandlerService,
-    public header: PassTokenWithHeaderService,
+    public header: PassTokenWithHeaderService
   ) {}
 
   /*  getServiceById(id: number) {
@@ -176,7 +175,8 @@ export class ServicesService {
 
   GetRecomenditionServicesForBooking(): Observable<Service[]> {
     const bookingData$: Observable<any[]> = this.http.get<any[]>(
-      this.Booking_SRV_URL, { headers: this.header.getHeaders() }
+      this.Booking_SRV_URL,
+      { headers: this.header.getHeaders() }
     );
     const serviceData$: Observable<Service[]> = this.http
       .get<Service[]>(this.API_URL)
