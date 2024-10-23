@@ -7,7 +7,7 @@ import { PassTokenWithHeaderService } from './pass-token-with-header.service';
 })
 export class CustomerPaymentsService {
   _httpClient = inject(HttpClient);
-  _apiURL = "http://lilynightapi.runasp.net/api";
+  _apiURL = "https://lilynightapi.runasp.net/api";
 
   constructor(private PassTokenWithHeaderService: PassTokenWithHeaderService) {}
 

@@ -7,7 +7,7 @@ import { PassTokenWithHeaderService } from './pass-token-with-header.service';
   providedIn: "root",
 })
 export class PayPalService {
-  private endPoint = "http://lilynightapi.runasp.net/api/PayPal/";
+  private endPoint = "https://lilynightapi.runasp.net/api/PayPal/";
 
   constructor(
     private http: HttpClient,

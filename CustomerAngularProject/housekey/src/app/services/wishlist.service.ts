@@ -11,7 +11,7 @@ import { Property } from "@models/app.models";
   providedIn: "root",
 })
 export class WishlistService {
-  private apiUrl = "http://lilynightapi.runasp.net/api/wishlist"; // الأساس للـ API
+  private apiUrl = "https://lilynightapi.runasp.net/api/wishlist"; // الأساس للـ API
   private wishlist: Set<number> = new Set(); // To store property IDs in the wishlist
   private wishlistCount = new BehaviorSubject<number>(0);
   wishlistCount$ = this.wishlistCount.asObservable();

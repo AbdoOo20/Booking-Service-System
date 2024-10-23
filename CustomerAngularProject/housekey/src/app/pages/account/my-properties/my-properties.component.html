@@ -16,7 +16,7 @@
         <ng-container matColumnDef="serviceImage">
           <th mat-header-cell *matHeaderCellDef> Image </th>
           <td mat-cell *matCellDef="let property">
-            <img [src]="property.service.images[0] ? 'http://lilynight.runasp.net' + property.service.images[0] 
+            <img [src]="property.service.images[0] ? 'https://lilynight.runasp.net' + property.service.images[0] 
             : 'images/bookingService/notFound.jpeg'"  
             [style.width.px]="100" class="d-block" alt="Service Image Not Found"
             (error)="onImageError($event)">

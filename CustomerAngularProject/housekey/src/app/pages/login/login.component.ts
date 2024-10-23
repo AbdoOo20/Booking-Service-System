@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
 
     // Call the API for login
     this.http
-      .post("http://lilynightapi.runasp.net/api/Account/Login", loginData)
+      .post("https://lilynightapi.runasp.net/api/Account/Login", loginData)
       .subscribe({
         next: (response: any) => {
           if (response.token) {

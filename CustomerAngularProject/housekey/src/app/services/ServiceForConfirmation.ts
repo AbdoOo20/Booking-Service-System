@@ -7,7 +7,7 @@ import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
   providedIn: "root",
 })
 export class ServiceForConfirmation {
-  private endPoint = "http://lilynightapi.runasp.net/api";
+  private endPoint = "https://lilynightapi.runasp.net/api";
 
   constructor(
     private http: HttpClient,

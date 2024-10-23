@@ -23,15 +23,15 @@ import { PassTokenWithHeaderService } from "./pass-token-with-header.service";
   providedIn: "root",
 })
 export class ServicesService {
-  API_URL = "http://lilynightapi.runasp.net/api/Services/all";
-  CAT_URL = "http://lilynightapi.runasp.net/api/Categories";
+  API_URL = "https://lilynightapi.runasp.net/api/Services/all";
+  CAT_URL = "https://lilynightapi.runasp.net/api/Categories";
   LOCATION_URL =
     "https://raw.githubusercontent.com/homaily/Saudi-Arabia-Regions-Cities-and-Districts/refs/heads/master/json/regions_lite.json";
-  Booking_SRV_URL = "http://lilynightapi.runasp.net/api/Book";
-  CUSTOMER_API = "http://lilynightapi.runasp.net/api/Customer/";
+  Booking_SRV_URL = "https://lilynightapi.runasp.net/api/Book";
+  CUSTOMER_API = "https://lilynightapi.runasp.net/api/Customer/";
   // Basma Code
-  API_GetServicebyID = "http://lilynightapi.runasp.net/api/Services/";
-  ApI_Add_to_wishList = "http://lilynightapi.runasp.net/api/wishlist";
+  API_GetServicebyID = "https://lilynightapi.runasp.net/api/Services/";
+  ApI_Add_to_wishList = "https://lilynightapi.runasp.net/api/wishlist";
   API_getAgents = "";
   // API_get_allWishList = "http://localhost:18105/api/wishlist/";
   Favourite_service: wishList;

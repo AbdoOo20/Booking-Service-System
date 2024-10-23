@@ -7,7 +7,7 @@ import { PassTokenWithHeaderService } from "./pass-token-with-header.service";
   providedIn: "root",
 })
 export class BookingService {
-  private readonly DB_URL = "http://lilynightapi.runasp.net/api";
+  private readonly DB_URL = "https://lilynightapi.runasp.net/api";
   constructor(
     private readonly http: HttpClient,
     public header: PassTokenWithHeaderService

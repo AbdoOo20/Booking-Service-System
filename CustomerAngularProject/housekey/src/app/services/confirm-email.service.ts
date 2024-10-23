@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ConfirmEmailService {
   private _httpClient = inject(HttpClient);
-  private _apiURL = "http://lilynightapi.runasp.net/api/Account";
+  private _apiURL = "https://lilynightapi.runasp.net/api/Account";
 
   constructor() {}
 

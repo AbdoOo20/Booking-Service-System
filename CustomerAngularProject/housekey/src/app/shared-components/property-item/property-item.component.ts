@@ -77,7 +77,7 @@ export class PropertyItemComponent implements OnInit {
   }
   // My Function
   public getImageUrl(imagePath: string): string {
-    const baseUrl = "http://lilynight.runasp.net";
+    const baseUrl = "https://lilynight.runasp.net";
     return `${baseUrl}${imagePath}`;
   }
   ngOnInit() {

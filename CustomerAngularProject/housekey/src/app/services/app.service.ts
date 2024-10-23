@@ -40,7 +40,7 @@ export class AppService {
   );
 
   public url = environment.url + "/data/";
-  API_URL = "http://lilynightapi.runasp.net/api/Services/all";
+  API_URL = "https://lilynightapi.runasp.net/api/Services/all";
 
   public apiKey = "AIzaSyAO7Mg2Cs1qzo_3jkKkZAKY6jtwIlm41-I";
 

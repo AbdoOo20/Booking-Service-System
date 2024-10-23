@@ -109,7 +109,7 @@ export class PropertyComponent implements OnInit {
   public relatedServices: Service[];
   public featuredProperties: Property[];
   public agent: any;
-  public baseUrlImage = "http://lilynight.runasp.net";
+  public baseUrlImage = "https://lilynight.runasp.net";
   public mortgageForm: FormGroup;
   public monthlyPayment: any;
   public contactForm: FormGroup;

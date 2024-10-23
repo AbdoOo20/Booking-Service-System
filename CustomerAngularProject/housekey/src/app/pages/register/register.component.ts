@@ -203,7 +203,7 @@ export class RegisterComponent implements OnInit {
 
         this.http
           .post(
-            "http://lilynightapi.runasp.net/api/Account/Register",
+            "https://lilynightapi.runasp.net/api/Account/Register",
             registerData
           )
           .subscribe(

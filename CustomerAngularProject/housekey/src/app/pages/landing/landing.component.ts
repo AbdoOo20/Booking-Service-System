@@ -54,12 +54,12 @@ export class LandingComponent {
 
   // Navigate to the provider's login page (external)
   navigateToProviderLogin() {
-    window.location.href = "http://lilynight.runasp.net/Identity/Account/Login"; // Ensure the link is valid
+    window.location.href = "https://lilynight.runasp.net/Identity/Account/Login"; // Ensure the link is valid
   }
 
   // Navigate to the provider's registration page (external)
   navigateToProviderRegister() {
     window.location.href =
-      "http://lilynight.runasp.net/ProviderRegister/Create"; // Ensure the link is valid
+      "https://lilynight.runasp.net/ProviderRegister/Create"; // Ensure the link is valid
   }
 }
