@@ -11,6 +11,7 @@ The **Booking Service System** is a platform that automates and manages the book
 - **Automated Background Tasks**: Using Quartz for scheduled tasks like reminders and reporting.
 - **Localization Support**: Multi-language support for broader audience reach.
 - **Email Notifications**: Integrated SendGrid for email-based communications (reminders, confirmations).
+- **Payment Management**: Integrated PayPal for Payment and Payout.
   
 ## Technologies & Tools
 
@@ -61,6 +62,9 @@ To ensure the system operates properly, several key NuGet packages were used. Be
 
 12. **SendGrid**  
     This package integrates with SendGrid, enabling the system to send email notifications for various events, such as bookings, cancellations, and reminders.
+
+13. **PayPal**
+    Integrate with PayPal for all payment and payout operations.
 
 ## Setup Instructions
 
