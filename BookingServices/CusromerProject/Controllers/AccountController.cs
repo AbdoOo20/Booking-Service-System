@@ -30,7 +30,7 @@ namespace CusromerProject.Controllers
             ApplicationDbContext _context,
             IEmailSender emailSender)
         { 
-            _userManager = userManager;
+            _userManager = userManager; // git hub check new changes 
             _configuration = configuration;
             context = _context;
             _emailSender = emailSender;
