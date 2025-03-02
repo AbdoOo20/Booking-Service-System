@@ -19,7 +19,7 @@ namespace BookingServices.Controllers
         public _BookingController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
-            _userManager = userManager;
+            _userManager = userManager; // ramadan karrem
         }
 
         public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
